@@ -1,258 +1,214 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Stage, Layer, Line, Circle, Text } from "react-konva";
+import React, { useRef, useState, useEffect } from "react";
+import { Stage, Layer, Line, Circle, Text, Rect } from "react-konva";
 
 export default function GardenCanvas() {
   const stageRef = useRef(null);
-  const stageWrapperRef = useRef(null);
 
-  /* ================== STATO AIUOLA ================== */
-  const [points, setPoints] = useState([]);
-  const [segments, setSegments] = useState([]);
-  const [isDrawing, setIsDrawing] = useState(true);
-  const [currentPos, setCurrentPos] = useState(null);
+  const [size, setSize] = useState({ width: 0, height: 0 });
 
-  /* ================== STATO PIANTE ================== */
-  const [plants, setPlants] = useState([]);
-  const plantCatalog = [
-    { id: "lavanda", name: "Lavanda", radius: 22 },
-    { id: "rosa", name: "Rosa", radius: 20 },
-    { id: "salvia", name: "Salvia", radius: 18 },
-    { id: "ortensia", name: "Ortensia", radius: 24 },
-  ];
+  // lista di aiuole completate
+  const [beds, setBeds] = useState([]);
 
-  /* ================== UI ================== */
-  const [search, setSearch] = useState("");
-  const [toast, setToast] = useState(null);
+  // aiuola in costruzione
+  const [currentBed, setCurrentBed] = useState({ points: [], segments: [], isClosed: false });
 
-  const showToast = (msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 2500);
-  };
+  // preview linea
+  const [preview, setPreview] = useState(null);
 
-  /* ================== UTILS ================== */
-  const getDistance = (x1, y1, x2, y2) =>
-    Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2).toFixed(1);
+  // pan/zoom
+  const [stageScale, setStageScale] = useState(1);
+  const [stagePos, setStagePos] = useState({ x: 0, y: 0 });
+  const [isDraggingStage, setIsDraggingStage] = useState(false);
+  const [lastDragPos, setLastDragPos] = useState(null);
 
-  const isInsidePolygon = (x, y) => {
-    if (points.length < 6) return false;
-    let inside = false;
-    for (let i = 0, j = points.length / 2 - 1; i < points.length / 2; j = i++) {
-      const xi = points[i * 2], yi = points[i * 2 + 1];
-      const xj = points[j * 2], yj = points[j * 2 + 1];
-      const intersect =
-        yi > y !== yj > y &&
-        x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
-      if (intersect) inside = !inside;
-    }
-    return inside;
-  };
+  // undo/redo
+  const [history, setHistory] = useState([]);
+  const [future, setFuture] = useState([]);
 
-  const canPlacePlant = (x, y, radius, excludeId = null) => {
-    if (!isInsidePolygon(x, y)) return false;
-    for (const p of plants) {
-      if (excludeId && p.id === excludeId) continue;
-      const dx = p.x - x;
-      const dy = p.y - y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < p.radius + radius + 6) return false;
-    }
-    return true;
-  };
-
-  /* ================== DISEGNO AIUOLA ================== */
-  const handleMouseDown = () => {
-    if (!isDrawing) return;
-    const pos = stageRef.current.getPointerPosition();
-
-    if (points.length > 0) {
-      const px = points[points.length - 2];
-      const py = points[points.length - 1];
-      const dist = getDistance(px, py, pos.x, pos.y);
-      setSegments((s) => [...s, { x1: px, y1: py, x2: pos.x, y2: pos.y, distance: dist }]);
-    }
-
-    setPoints((p) => [...p, pos.x, pos.y]);
-  };
-
-  const handleMouseMove = () => {
-    if (!isDrawing || points.length === 0) return;
-    setCurrentPos(stageRef.current.getPointerPosition());
-  };
-
-  const closePolygon = () => {
-    if (points.length < 6) return;
-    setIsDrawing(false);
-    setCurrentPos(null);
-
-    const x1 = points[points.length - 2];
-    const y1 = points[points.length - 1];
-    const x2 = points[0];
-    const y2 = points[1];
-    const dist = getDistance(x1, y1, x2, y2);
-    setSegments((s) => [...s, { x1, y1, x2, y2, distance: dist }]);
-  };
-
-  /* ================== DRAG DAL MENU ================== */
-  const handleDragStart = (e, plant) => {
-    e.dataTransfer.setData("plant", JSON.stringify(plant));
-  };
+  const AUTO_CLOSE_DISTANCE = 15;
+  const MIN_SCALE = 0.5;
+  const MAX_SCALE = 3;
 
   useEffect(() => {
-    const el = stageWrapperRef.current;
-    if (!el) return;
-
-    const onDragOver = (e) => e.preventDefault();
-
-    const onDrop = (e) => {
-      e.preventDefault();
-
-      if (points.length < 6) {
-        showToast("Disegna e chiudi prima l'aiuola");
-        return;
-      }
-
-      const data = JSON.parse(e.dataTransfer.getData("plant"));
-      const rect = el.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      if (!canPlacePlant(x, y, data.radius)) {
-        showToast("Posizione non valida");
-        return;
-      }
-
-      setPlants((p) => [...p, { ...data, x, y, id: Date.now() }]);
+    const resize = () => {
+      setSize({ width: window.innerWidth - 40, height: window.innerHeight - 100 });
     };
+    resize();
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
+  }, []);
 
-    el.addEventListener("dragover", onDragOver);
-    el.addEventListener("drop", onDrop);
+  const distance = (a, b) =>
+    Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2).toFixed(1);
 
-    return () => {
-      el.removeEventListener("dragover", onDragOver);
-      el.removeEventListener("drop", onDrop);
-    };
-  }, [points, plants]);
+  const checkAutoClose = (pos) => {
+    if (currentBed.points.length < 3) return false;
+    const first = currentBed.points[0];
+    return distance(first, pos) < AUTO_CLOSE_DISTANCE;
+  };
 
-  /* ================== DRAG INTERNO ================== */
-  const handlePlantDragMove = (e, plant) => {
-    const x = e.target.x();
-    const y = e.target.y();
+  const saveHistory = (bedsState, current) => {
+    setHistory((h) => [...h, { beds: bedsState, currentBed: current }]);
+    setFuture([]);
+  };
 
-    if (!canPlacePlant(x, y, plant.radius, plant.id)) {
-      e.target.position({ x: plant.x, y: plant.y });
+  const handleClick = () => {
+    if (isDraggingStage) return;
+    const pos = stageRef.current.getPointerPosition();
+    const scaledPos = { x: (pos.x - stagePos.x) / stageScale, y: (pos.y - stagePos.y) / stageScale };
+
+    if (currentBed.isClosed) return;
+
+    if (currentBed.points.length === 0) {
+      setCurrentBed({ points: [scaledPos], segments: [], isClosed: false });
+      saveHistory(beds, { points: [scaledPos], segments: [], isClosed: false });
       return;
     }
 
-    setPlants((p) => p.map((pl) => (pl.id === plant.id ? { ...pl, x, y } : pl)));
+    if (checkAutoClose(scaledPos)) {
+      // chiudi aiuola
+      const last = currentBed.points[currentBed.points.length - 1];
+      const segment = { x1: last.x, y1: last.y, x2: currentBed.points[0].x, y2: currentBed.points[0].y, distance: distance(last, currentBed.points[0]) };
+      const newBed = { ...currentBed, segments: [...currentBed.segments, segment], isClosed: true };
+      setBeds((b) => [...b, newBed]);
+      setCurrentBed({ points: [], segments: [], isClosed: false });
+      saveHistory([...beds, newBed], { points: [], segments: [], isClosed: false });
+      setPreview(null);
+      return;
+    }
+
+    // aggiungi punto
+    const last = currentBed.points[currentBed.points.length - 1];
+    const segment = { x1: last.x, y1: last.y, x2: scaledPos.x, y2: scaledPos.y, distance: distance(last, scaledPos) };
+    const newBed = { ...currentBed, points: [...currentBed.points, scaledPos], segments: [...currentBed.segments, segment] };
+    setCurrentBed(newBed);
+    saveHistory(beds, newBed);
   };
 
-  /* ================== LINEA TEMP ================== */
-  let tempLine = null;
-  let tempText = null;
-  if (isDrawing && currentPos && points.length > 0) {
-    const x1 = points[points.length - 2];
-    const y1 = points[points.length - 1];
-    const x2 = currentPos.x;
-    const y2 = currentPos.y;
-    const dist = getDistance(x1, y1, x2, y2);
+  const handleMove = () => {
+    if (currentBed.isClosed || currentBed.points.length === 0) return;
+    const pos = stageRef.current.getPointerPosition();
+    const scaledPos = { x: (pos.x - stagePos.x) / stageScale, y: (pos.y - stagePos.y) / stageScale };
+    setPreview(scaledPos);
+  };
 
-    tempLine = <Line points={[x1, y1, x2, y2]} stroke="#b8c4a2" strokeWidth={3} />;
-    tempText = <Text x={(x1 + x2) / 2} y={(y1 + y2) / 2 - 16} text={`${dist} m`} fill="#6b705c" />;
-  }
+  const reset = () => {
+    setBeds([]);
+    setCurrentBed({ points: [], segments: [], isClosed: false });
+    setHistory([]);
+    setFuture([]);
+    setPreview(null);
+  };
 
-  /* ================== RENDER ================== */
+  const undo = () => {
+    if (history.length === 0) return;
+    const last = history[history.length - 1];
+    setFuture((f) => [last, ...f]);
+    const prev = history[history.length - 2] || { beds: [], currentBed: { points: [], segments: [], isClosed: false } };
+    setBeds(prev.beds);
+    setCurrentBed(prev.currentBed);
+    setHistory(history.slice(0, history.length - 1));
+  };
+
+  const redo = () => {
+    if (future.length === 0) return;
+    const next = future[0];
+    setBeds(next.beds);
+    setCurrentBed(next.currentBed);
+    setHistory((h) => [...h, next]);
+    setFuture(future.slice(1));
+  };
+
+  const handleWheel = (e) => {
+    e.evt.preventDefault();
+    const scaleBy = 1.05;
+    const oldScale = stageScale;
+    const pointer = stageRef.current.getPointerPosition();
+    const mousePointTo = { x: (pointer.x - stagePos.x) / oldScale, y: (pointer.y - stagePos.y) / oldScale };
+    let newScale = e.evt.deltaY < 0 ? oldScale * scaleBy : oldScale / scaleBy;
+    newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
+    setStageScale(newScale);
+    setStagePos({ x: pointer.x - mousePointTo.x * newScale, y: pointer.y - mousePointTo.y * newScale });
+  };
+
+  const handleStageDragStart = (e) => { setIsDraggingStage(true); setLastDragPos({ x: e.evt.clientX, y: e.evt.clientY }); };
+  const handleStageDragEnd = () => { setIsDraggingStage(false); setLastDragPos(null); };
+  const handleStageDragMove = (e) => {
+    if (!isDraggingStage) return;
+    const dx = e.evt.clientX - lastDragPos.x;
+    const dy = e.evt.clientY - lastDragPos.y;
+    setStagePos((pos) => ({ x: pos.x + dx, y: pos.y + dy }));
+    setLastDragPos({ x: e.evt.clientX, y: e.evt.clientY });
+  };
+
   return (
-    <section className="section" style={{ background: "linear-gradient(180deg,#f7f9f3,#eef2e6)", minHeight: "100vh" }}>
-      <div className="container is-fluid">
-        <div className="columns is-gapless is-vcentered">
-
-          {/* SIDEBAR */}
-          <aside className="column is-3">
-            <div className="box" style={{ backgroundColor: "#ffffffcc", borderRadius: 16 }}>
-              <h1 className="title is-5" style={{ color: "#6b705c" }}>GardenCanvas</h1>
-              <p className="is-size-7 mb-3" style={{ color: "#7d8471" }}>
-                Trascina le piante e disegna la tua aiuola
-              </p>
-
-              <input
-                className="input is-small mb-3"
-                placeholder="Cerca pianta"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-
-              {plantCatalog
-                .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
-                .map((p) => (
-                  <div
-                    key={p.id}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, p)}
-                    className="box is-clickable is-shadowless"
-                    style={{ background: "#f1f5ec", borderRadius: 12 }}
-                  >
-                    🌱 {p.name}
-                  </div>
-                ))}
-
-              <button
-                className="button is-fullwidth is-small mt-4"
-                style={{ backgroundColor: "#b7c4a0", color: "#fff" }}
-                onClick={closePolygon}
-                disabled={!isDrawing}
-              >
-                Chiudi aiuola
-              </button>
-            </div>
-          </aside>
-
-          {/* CANVAS */}
-          <div className="column is-9" ref={stageWrapperRef} style={{ position: "relative" }}>
-            {toast && (
-              <div className="notification" style={{ position: "absolute", top: 20, right: 20, backgroundColor: "#fefae0", color: "#6b705c", borderRadius: 12, zIndex: 10 }}>
-                {toast}
-              </div>
-            )}
-
-            <div className="box" style={{ backgroundColor: "#ffffffcc", borderRadius: 20 }}>
-              <Stage
-                width={900}
-                height={600}
-                ref={stageRef}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                style={{ background: "#fafbf7", borderRadius: 16 }}
-              >
-                <Layer>
-                  {segments.map((s, i) => (
-                    <React.Fragment key={i}>
-                      <Line points={[s.x1, s.y1, s.x2, s.y2]} stroke="#6b705c" strokeWidth={3} />
-                      <Text x={(s.x1 + s.x2) / 2} y={(s.y1 + s.y2) / 2 - 16} text={`${s.distance} m`} fill="#6b705c" />
-                    </React.Fragment>
-                  ))}
-
-                  {tempLine}
-                  {tempText}
-
-                  {plants.map((p) => (
-                    <Circle
-                      key={p.id}
-                      x={p.x}
-                      y={p.y}
-                      radius={p.radius}
-                      fill="#a5b68d"
-                      stroke="#6b705c"
-                      strokeWidth={2}
-                      draggable
-                      onDragMove={(e) => handlePlantDragMove(e, p)}
-                    />
-                  ))}
-                </Layer>
-              </Stage>
-            </div>
-          </div>
-        </div>
+    <section className="section" style={{ minHeight: "100vh", background: "#e4f0d9" }}>
+      <div className="mb-3">
+        <button className="button is-small is-danger mr-2" onClick={reset}>Reset</button>
+        <button className="button is-small is-warning mr-2" onClick={undo}>Undo</button>
+        <button className="button is-small is-success" onClick={redo}>Redo</button>
       </div>
+
+      <Stage
+        width={size.width}
+        height={size.height}
+        ref={stageRef}
+        scaleX={stageScale}
+        scaleY={stageScale}
+        x={stagePos.x}
+        y={stagePos.y}
+        onClick={handleClick}
+        onMouseMove={handleMove}
+        onWheel={handleWheel}
+        draggable
+        onDragStart={handleStageDragStart}
+        onDragMove={handleStageDragMove}
+        onDragEnd={handleStageDragEnd}
+      >
+        <Layer>
+          {/* SFONDO */}
+          <Rect x={0} y={0} width={size.width} height={size.height} fill="#d4edc4" />
+
+          {/* AIUOLE COMPLETATE */}
+          {beds.map((bed, i) => (
+            <React.Fragment key={i}>
+              {/* Riempimento */}
+              {bed.isClosed && <Line points={bed.points.flatMap(p => [p.x, p.y])} closed fill="#b7d3a8" />}
+              {/* Ombra */}
+              {bed.segments.map((s, j) => <Line key={`shadow-${i}-${j}`} points={[s.x1+4,s.y1+4,s.x2+4,s.y2+4]} stroke="rgba(0,0,0,0.25)" strokeWidth={6} lineCap="square" lineJoin="miter" />)}
+              {/* Bordi */}
+              {bed.segments.map((s, j) => (
+                <React.Fragment key={j}>
+                  <Line points={[s.x1, s.y1, s.x2, s.y2]} stroke="#6F4E37" strokeWidth={6} lineCap="square" lineJoin="miter" />
+                  <Text x={(s.x1+s.x2)/2} y={(s.y1+s.y2)/2-16} text={`${s.distance} m`} fill="#3b3b3b" fontSize={14} />
+                </React.Fragment>
+              ))}
+              {/* Giunture */}
+              {bed.points.map((p, j) => <Circle key={j} x={p.x} y={p.y} radius={6} fill="#6F4E37" stroke="#e8efe4" strokeWidth={1} />)}
+            </React.Fragment>
+          ))}
+
+          {/* AIUOLA IN COSTRUZIONE */}
+          {currentBed.points.length > 0 && currentBed.segments.map((s, i) => (
+            <React.Fragment key={`cur-${i}`}>
+              <Line points={[s.x1, s.y1, s.x2, s.y2]} stroke="#6F4E37" strokeWidth={6} lineCap="square" lineJoin="miter" />
+              <Text x={(s.x1+s.x2)/2} y={(s.y1+s.y2)/2-16} text={`${s.distance} m`} fill="#3b3b3b" fontSize={14} />
+            </React.Fragment>
+          ))}
+
+          {currentBed.points.map((p, i) => <Circle key={`curc-${i}`} x={p.x} y={p.y} radius={6} fill="#44533a" stroke="#e8efe4" strokeWidth={1} />)}
+
+          {/* Preview */}
+          {preview && currentBed.points.length > 0 && (
+            <Line points={[currentBed.points[currentBed.points.length-1].x, currentBed.points[currentBed.points.length-1].y, preview.x, preview.y]} stroke="#6b7a57" strokeWidth={2} dash={[6,4]} />
+          )}
+
+          {/* Auto-close indicator */}
+          {preview && checkAutoClose(preview) && (
+            <Circle x={currentBed.points[0].x} y={currentBed.points[0].y} radius={8} fill="rgba(255,0,0,0.5)" />
+          )}
+        </Layer>
+      </Stage>
     </section>
   );
 }
