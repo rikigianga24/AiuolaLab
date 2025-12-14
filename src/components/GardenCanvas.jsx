@@ -1,52 +1,37 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Stage, Layer, Line, Circle, Text } from "react-konva";
 
 export default function GardenCanvas() {
-  const stageRef = useRef();
+  const stageRef = useRef(null);
+  const stageWrapperRef = useRef(null);
+
+  /* ================== STATO AIUOLA ================== */
   const [points, setPoints] = useState([]);
+  const [segments, setSegments] = useState([]);
   const [isDrawing, setIsDrawing] = useState(true);
   const [currentPos, setCurrentPos] = useState(null);
-  const [segments, setSegments] = useState([]);
-  const [plants, setPlants] = useState([
-    { id: 1, x: 300, y: 200, radius: 25, name: "Lavanda" },
-    { id: 2, x: 400, y: 300, radius: 20, name: "Rosa" },
-  ]);
 
-  const getDistance = (x1, y1, x2, y2) => Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2).toFixed(1);
+  /* ================== STATO PIANTE ================== */
+  const [plants, setPlants] = useState([]);
+  const plantCatalog = [
+    { id: "lavanda", name: "Lavanda", radius: 22 },
+    { id: "rosa", name: "Rosa", radius: 20 },
+    { id: "salvia", name: "Salvia", radius: 18 },
+    { id: "ortensia", name: "Ortensia", radius: 24 },
+  ];
 
-  const handleMouseDown = (e) => {
-    if (!isDrawing) return;
-    const pos = stageRef.current.getPointerPosition();
+  /* ================== UI ================== */
+  const [search, setSearch] = useState("");
+  const [toast, setToast] = useState(null);
 
-    if (points.length > 0) {
-      const prevX = points[points.length - 2];
-      const prevY = points[points.length - 1];
-      const dist = getDistance(prevX, prevY, pos.x, pos.y);
-      setSegments((prev) => [...prev, { x1: prevX, y1: prevY, x2: pos.x, y2: pos.y, distance: dist }]);
-    }
-
-    setPoints((prev) => [...prev, pos.x, pos.y]);
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2500);
   };
 
-  const handleMouseMove = (e) => {
-    if (!isDrawing || points.length === 0) return;
-    const pos = stageRef.current.getPointerPosition();
-    setCurrentPos(pos);
-  };
-
-  const closePolygon = () => {
-    setIsDrawing(false);
-    setCurrentPos(null);
-
-    if (points.length >= 4) {
-      const x1 = points[points.length - 2];
-      const y1 = points[points.length - 1];
-      const x2 = points[0];
-      const y2 = points[1];
-      const dist = getDistance(x1, y1, x2, y2);
-      setSegments((prev) => [...prev, { x1, y1, x2, y2, distance: dist }]);
-    }
-  };
+  /* ================== UTILS ================== */
+  const getDistance = (x1, y1, x2, y2) =>
+    Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2).toFixed(1);
 
   const isInsidePolygon = (x, y) => {
     if (points.length < 6) return false;
@@ -54,24 +39,114 @@ export default function GardenCanvas() {
     for (let i = 0, j = points.length / 2 - 1; i < points.length / 2; j = i++) {
       const xi = points[i * 2], yi = points[i * 2 + 1];
       const xj = points[j * 2], yj = points[j * 2 + 1];
-      const intersect = ((yi > y) !== (yj > y)) &&
-        (x < ((xj - xi) * (y - yi)) / (yj - yi) + xi);
+      const intersect =
+        yi > y !== yj > y &&
+        x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
       if (intersect) inside = !inside;
     }
     return inside;
   };
 
-  const handleDragMove = (e, id) => {
-    const x = e.target.x();
-    const y = e.target.y();
-    if (!isInsidePolygon(x, y)) {
-      e.target.position({ x: plants.find(p => p.id === id).x, y: plants.find(p => p.id === id).y });
-      return;
+  const canPlacePlant = (x, y, radius, excludeId = null) => {
+    if (!isInsidePolygon(x, y)) return false;
+    for (const p of plants) {
+      if (excludeId && p.id === excludeId) continue;
+      const dx = p.x - x;
+      const dy = p.y - y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < p.radius + radius + 6) return false;
     }
-    setPlants((prev) => prev.map(p => p.id === id ? { ...p, x, y } : p));
+    return true;
   };
 
-  // linea temporanea e distanza
+  /* ================== DISEGNO AIUOLA ================== */
+  const handleMouseDown = () => {
+    if (!isDrawing) return;
+    const pos = stageRef.current.getPointerPosition();
+
+    if (points.length > 0) {
+      const px = points[points.length - 2];
+      const py = points[points.length - 1];
+      const dist = getDistance(px, py, pos.x, pos.y);
+      setSegments((s) => [...s, { x1: px, y1: py, x2: pos.x, y2: pos.y, distance: dist }]);
+    }
+
+    setPoints((p) => [...p, pos.x, pos.y]);
+  };
+
+  const handleMouseMove = () => {
+    if (!isDrawing || points.length === 0) return;
+    setCurrentPos(stageRef.current.getPointerPosition());
+  };
+
+  const closePolygon = () => {
+    if (points.length < 6) return;
+    setIsDrawing(false);
+    setCurrentPos(null);
+
+    const x1 = points[points.length - 2];
+    const y1 = points[points.length - 1];
+    const x2 = points[0];
+    const y2 = points[1];
+    const dist = getDistance(x1, y1, x2, y2);
+    setSegments((s) => [...s, { x1, y1, x2, y2, distance: dist }]);
+  };
+
+  /* ================== DRAG DAL MENU ================== */
+  const handleDragStart = (e, plant) => {
+    e.dataTransfer.setData("plant", JSON.stringify(plant));
+  };
+
+  useEffect(() => {
+    const el = stageWrapperRef.current;
+    if (!el) return;
+
+    const onDragOver = (e) => e.preventDefault();
+
+    const onDrop = (e) => {
+      e.preventDefault();
+
+      if (points.length < 6) {
+        showToast("Disegna e chiudi prima l'aiuola");
+        return;
+      }
+
+      const data = JSON.parse(e.dataTransfer.getData("plant"));
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      if (!canPlacePlant(x, y, data.radius)) {
+        showToast("Posizione non valida");
+        return;
+      }
+
+      setPlants((p) => [...p, { ...data, x, y, id: Date.now() }]);
+    };
+
+    el.addEventListener("dragover", onDragOver);
+    el.addEventListener("drop", onDrop);
+
+    return () => {
+      el.removeEventListener("dragover", onDragOver);
+      el.removeEventListener("drop", onDrop);
+    };
+  }, [points, plants]);
+
+  /* ================== DRAG INTERNO ================== */
+  const handlePlantDragMove = (e, plant) => {
+    const x = e.target.x();
+    const y = e.target.y();
+
+    if (!canPlacePlant(x, y, plant.radius, plant.id)) {
+      e.target.position({ x: plant.x, y: plant.y });
+      return;
+    }
+
+    setPlants((p) => p.map((pl) => (pl.id === plant.id ? { ...pl, x, y } : pl)));
+  };
+
+  /* ================== LINEA TEMP ================== */
   let tempLine = null;
   let tempText = null;
   if (isDrawing && currentPos && points.length > 0) {
@@ -81,96 +156,103 @@ export default function GardenCanvas() {
     const y2 = currentPos.y;
     const dist = getDistance(x1, y1, x2, y2);
 
-    tempLine = <Line points={[x1, y1, x2, y2]} stroke="#a67c52" strokeWidth={3} />;
-    tempText = <Text x={(x1 + x2) / 2} y={(y1 + y2) / 2 - 20} text={`${dist} m`} fontSize={16} fill="#5c4033" />;
+    tempLine = <Line points={[x1, y1, x2, y2]} stroke="#b8c4a2" strokeWidth={3} />;
+    tempText = <Text x={(x1 + x2) / 2} y={(y1 + y2) / 2 - 16} text={`${dist} m`} fill="#6b705c" />;
   }
 
+  /* ================== RENDER ================== */
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      minHeight: '100vh',
-      backgroundColor: '#efe8dc',
-      fontFamily: 'Arial, sans-serif',
-      paddingTop: '20px',
-    }}>
-      <h1 style={{ color: '#5c4033', marginBottom: '10px' }}>Editor Aiuola</h1>
-      <p style={{ color: '#5c4033', marginBottom: '20px' }}>Traccia la tua aiuola cliccando e trascinando. Le distanze sono mostrate in tempo reale.</p>
-      
-      <button
-        onClick={closePolygon}
-        disabled={!isDrawing}
-        style={{
-          padding: '10px 20px',
-          fontSize: '16px',
-          marginBottom: '20px',
-          backgroundColor: '#a67c52',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '8px',
-          cursor: 'pointer',
-          boxShadow: '2px 2px 5px rgba(0,0,0,0.3)',
-          transition: 'all 0.2s'
-        }}
-        onMouseEnter={e => e.currentTarget.style.backgroundColor = '#8c6239'}
-        onMouseLeave={e => e.currentTarget.style.backgroundColor = '#a67c52'}
-      >
-        Chiudi Aiuola
-      </button>
+    <section className="section" style={{ background: "linear-gradient(180deg,#f7f9f3,#eef2e6)", minHeight: "100vh" }}>
+      <div className="container is-fluid">
+        <div className="columns is-gapless is-vcentered">
 
-      <Stage
-        width={900}
-        height={600}
-        style={{
-          borderRadius: '15px',
-          boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
-          border: '3px solid #5c4033',
-          backgroundColor: '#f5f0e1',
-        }}
-        ref={stageRef}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-      >
-        <Layer>
-          {/* segmenti piazzati */}
-          {segments.map((seg, idx) => (
-            <React.Fragment key={idx}>
-              <Line points={[seg.x1, seg.y1, seg.x2, seg.y2]} stroke="#5c4033" strokeWidth={3} />
-              <Text
-                x={(seg.x1 + seg.x2) / 2}
-                y={(seg.y1 + seg.y2) / 2 - 20}
-                text={`${seg.distance} m`}
-                fontSize={16}
-                fill="#5c4033"
+          {/* SIDEBAR */}
+          <aside className="column is-3">
+            <div className="box" style={{ backgroundColor: "#ffffffcc", borderRadius: 16 }}>
+              <h1 className="title is-5" style={{ color: "#6b705c" }}>GardenCanvas</h1>
+              <p className="is-size-7 mb-3" style={{ color: "#7d8471" }}>
+                Trascina le piante e disegna la tua aiuola
+              </p>
+
+              <input
+                className="input is-small mb-3"
+                placeholder="Cerca pianta"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
-            </React.Fragment>
-          ))}
 
-          {/* linea temporanea */}
-          {tempLine}
-          {tempText}
+              {plantCatalog
+                .filter((p) => p.name.toLowerCase().includes(search.toLowerCase()))
+                .map((p) => (
+                  <div
+                    key={p.id}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, p)}
+                    className="box is-clickable is-shadowless"
+                    style={{ background: "#f1f5ec", borderRadius: 12 }}
+                  >
+                    🌱 {p.name}
+                  </div>
+                ))}
 
-          {/* piante */}
-          {plants.map((p) => (
-            <Circle
-              key={p.id}
-              x={p.x}
-              y={p.y}
-              radius={p.radius}
-              fill="#8a9a5b"
-              stroke="#5c4033"
-              strokeWidth={3}
-              draggable
-              onDragMove={(e) => handleDragMove(e, p.id)}
-            />
-          ))}
-        </Layer>
-      </Stage>
+              <button
+                className="button is-fullwidth is-small mt-4"
+                style={{ backgroundColor: "#b7c4a0", color: "#fff" }}
+                onClick={closePolygon}
+                disabled={!isDrawing}
+              >
+                Chiudi aiuola
+              </button>
+            </div>
+          </aside>
 
-      <footer style={{ marginTop: '30px', color: '#5c4033' }}>
-        &copy; 2025 GardenAI
-      </footer>
-    </div>
+          {/* CANVAS */}
+          <div className="column is-9" ref={stageWrapperRef} style={{ position: "relative" }}>
+            {toast && (
+              <div className="notification" style={{ position: "absolute", top: 20, right: 20, backgroundColor: "#fefae0", color: "#6b705c", borderRadius: 12, zIndex: 10 }}>
+                {toast}
+              </div>
+            )}
+
+            <div className="box" style={{ backgroundColor: "#ffffffcc", borderRadius: 20 }}>
+              <Stage
+                width={900}
+                height={600}
+                ref={stageRef}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                style={{ background: "#fafbf7", borderRadius: 16 }}
+              >
+                <Layer>
+                  {segments.map((s, i) => (
+                    <React.Fragment key={i}>
+                      <Line points={[s.x1, s.y1, s.x2, s.y2]} stroke="#6b705c" strokeWidth={3} />
+                      <Text x={(s.x1 + s.x2) / 2} y={(s.y1 + s.y2) / 2 - 16} text={`${s.distance} m`} fill="#6b705c" />
+                    </React.Fragment>
+                  ))}
+
+                  {tempLine}
+                  {tempText}
+
+                  {plants.map((p) => (
+                    <Circle
+                      key={p.id}
+                      x={p.x}
+                      y={p.y}
+                      radius={p.radius}
+                      fill="#a5b68d"
+                      stroke="#6b705c"
+                      strokeWidth={2}
+                      draggable
+                      onDragMove={(e) => handlePlantDragMove(e, p)}
+                    />
+                  ))}
+                </Layer>
+              </Stage>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
