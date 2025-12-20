@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import GardenCanvas from './components/GardenCanvas';
 import AboutMe from './components/AboutMe';
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/gardencanvas" element={<GardenCanvas />} />
         <Route path="/aboutme" element={<AboutMe />} />
       </Routes>
+      <Footer/>
     </BrowserRouter>
   );
 }

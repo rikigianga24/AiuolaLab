@@ -2,7 +2,7 @@ const AboutMe = () => {
   return (
     <>
       {/* HERO */}
-      <section className="hero is-medium is-primary is-light">
+      <section className="hero is-medium green-dark">
         <div className="hero-body">
           <div className="container">
             <h1 className="title is-2">AiuolaLab</h1>

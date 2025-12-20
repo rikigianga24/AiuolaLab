@@ -1,6 +1,6 @@
 const Navbar = () => {
   return (
-    <nav className="navbar is-transparent">
+    <nav className="navbar is-transparent navbar-overlay">
       <div className="navbar-brand">
         <a className="navbar-item has-text-white">
           <strong>AiuolaLab</strong>

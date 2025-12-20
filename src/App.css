@@ -1,9 +1,77 @@
 :root {
-  --bulma-primary-h: 28;
-  --bulma-primary-s: 34%;
-  --bulma-primary-l: 33%;
+  --green-primary: #4F7942	;
+  --green-soft: #CFE3D1;
+  --green-dark: #2F3E2F;
 
-  --bulma-link-h: 28;
-  --bulma-link-s: 34%;
-  --bulma-link-l: 33%;
+  --beige-cream: #F4EFEA;
+  --beige-warm: #E6D8C3;
+  --brown-soft: #B8A48A;
+}
+
+.navbar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  background: rgba(0, 0, 0, 0.25); /* trasparente */
+  backdrop-filter: blur(6px);     /* effetto vetro */
+  
+  z-index: 1000;
+}
+
+.garden-footer {
+  background: linear-gradient(
+    180deg,
+    #e4f0d9 0%,
+    #f5f1eb 100%
+  );
+  padding: 3rem 1.5rem;
+  border-top: 1px solid rgba(79, 121, 66, 0.25);
+}
+
+.footer-copy {
+  font-size: 0.8rem;
+  color: #7a7a7a;
+}
+
+
+.green-primary {
+  background-color: #9FC5A1;
+}
+
+.green-soft {
+  background-color: #CFE3D1;
+}
+
+.green-dark {
+  background-color: #2F3E2F;
+}
+
+.beige-cream {
+  background-color: #F4EFEA;
+}
+
+.beige-warm {
+  background-color: #E6D8C3;
+}
+
+.brown-soft {
+  background-color: #B8A48A;
+}
+
+.text-green-dark {
+  color: #2F3E2F;
+}
+
+.text-muted {
+  color: #5F6F5F;
+}
+
+.text-dark {
+  color: #2B2B2B;
+}
+
+.text-white {
+  color: #FFFFFF;
 }

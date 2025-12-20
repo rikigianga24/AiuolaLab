@@ -30,7 +30,7 @@ export default function Home() {
       <div className="hero-foot">
         <div className="container has-text-centered pb-5">
           <p className="has-text-white">
-            Progetto AiuolaLab · progettazione intuitiva di spazi verdi
+            Progetto AiuolaLab · © {new Date().getFullYear()} — Riccardo Giangani
           </p>
         </div>
       </div>
