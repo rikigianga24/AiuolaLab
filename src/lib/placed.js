@@ -7,6 +7,7 @@ export function toPlaced(plant, point, overrides = {}) {
   return {
     id: newId(),
     plantId: plant.id ?? null,
+    cropId: plant.cropId ?? null,
     name: plant.commonName ?? plant.name,
     scientificName: plant.scientificName ?? null,
     spreadM: plantSpreadM(plant),

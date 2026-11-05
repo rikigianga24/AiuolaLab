@@ -35,7 +35,7 @@ export function dailySummary(timeseries = []) {
   }
   return [...days.values()]
     .filter((d) => Number.isFinite(d.tMin))
-    .map(({ symbolHour: _s, ...d }) => ({ ...d, rain: Math.round(d.rain * 10) / 10 }));
+    .map((d) => ({ date: d.date, tMin: d.tMin, tMax: d.tMax, rain: Math.round(d.rain * 10) / 10, windMax: d.windMax, symbol: d.symbol }));
 }
 
 const fmtDay = (date) =>

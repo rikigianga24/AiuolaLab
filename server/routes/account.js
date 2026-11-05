@@ -1,0 +1,172 @@
+// Account: preferenze, notifiche, export e cancellazione dei dati (GDPR).
+import { Router } from "express";
+import { z } from "zod";
+import { destroySession, publicUser, requireUser, verifyPassword } from "../auth.js";
+import { config } from "../config.js";
+import { query } from "../db.js";
+import { emailLayout, mailEnabled, pushEnabled, sendMail, sendPush } from "../notify.js";
+
+const router = Router();
+router.use(requireUser);
+
+const Settings = z
+  .object({
+    climate: z.enum(["nord", "centro", "sud"]),
+    location: z
+      .object({ lat: z.number().min(-90).max(90), lon: z.number().min(-180).max(180), name: z.string().max(120) })
+      .nullable(),
+    notify: z.object({
+      push: z.boolean(),
+      emailWeekly: z.boolean(),
+      emailWeather: z.boolean(),
+      hour: z.number().int().min(5).max(21),
+    }).partial(),
+    taskState: z.record(z.string().max(300), z.object({ done: z.string().max(10).optional(), snoozedUntil: z.string().max(10).optional() })),
+  })
+  .partial();
+
+export const DEFAULT_SETTINGS = {
+  climate: "centro",
+  location: null,
+  notify: { push: false, emailWeekly: true, emailWeather: true, hour: config.notifyHour },
+  taskState: {},
+};
+
+export const userSettings = (u) => ({
+  ...DEFAULT_SETTINGS,
+  ...(u.settings ?? {}),
+  notify: { ...DEFAULT_SETTINGS.notify, ...(u.settings?.notify ?? {}) },
+});
+
+router.get("/", (req, res) => {
+  res.json({
+    user: publicUser(req.user),
+    settings: userSettings(req.user),
+    features: { mail: mailEnabled(), push: pushEnabled(), vapidPublicKey: config.push.publicKey ?? null },
+  });
+});
+
+router.put("/settings", async (req, res, next) => {
+  const body = Settings.safeParse(req.body);
+  if (!body.success) return res.status(400).json({ error: "Impostazioni non valide" });
+  if (JSON.stringify(body.data).length > 300_000) return res.status(413).json({ error: "Troppi dati" });
+  try {
+    const current = userSettings(req.user);
+    const next = { ...current, ...body.data, notify: { ...current.notify, ...(body.data.notify ?? {}) } };
+    await query("UPDATE users SET settings = $2 WHERE id = $1", [req.user.id, JSON.stringify(next)]);
+    res.json({ settings: next });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.put("/consents", async (req, res, next) => {
+  const body = z.object({ marketing: z.boolean() }).safeParse(req.body);
+  if (!body.success) return res.status(400).json({ error: "Dati non validi" });
+  try {
+    await query("UPDATE users SET marketing_consent = $2, marketing_consent_at = now() WHERE id = $1", [req.user.id, body.data.marketing]);
+    res.json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ---- notifiche push ----
+
+router.post("/push", async (req, res, next) => {
+  const body = z
+    .object({ endpoint: z.string().url().max(1000), keys: z.object({ p256dh: z.string().max(200), auth: z.string().max(100) }) })
+    .safeParse(req.body);
+  if (!body.success) return res.status(400).json({ error: "Iscrizione non valida" });
+  if (!pushEnabled()) return res.status(503).json({ error: "Notifiche push non configurate sul server" });
+  try {
+    await query(
+      `INSERT INTO push_subscriptions (endpoint, user_id, keys) VALUES ($1, $2, $3)
+       ON CONFLICT (endpoint) DO UPDATE SET user_id = EXCLUDED.user_id, keys = EXCLUDED.keys`,
+      [body.data.endpoint, req.user.id, JSON.stringify(body.data.keys)],
+    );
+    res.status(201).json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete("/push", async (req, res, next) => {
+  try {
+    const endpoint = z.string().max(1000).safeParse(req.body?.endpoint);
+    if (endpoint.success) await query("DELETE FROM push_subscriptions WHERE endpoint = $1 AND user_id = $2", [endpoint.data, req.user.id]);
+    else await query("DELETE FROM push_subscriptions WHERE user_id = $1", [req.user.id]);
+    res.json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/test-notification", async (req, res, next) => {
+  try {
+    const pushes = await sendPush(req.user.id, {
+      title: "AiuolaLab",
+      body: "Le notifiche funzionano! Ti avviseremo quando c'è qualcosa da fare in giardino.",
+      url: "/calendario",
+    });
+    let mail = false;
+    if (req.body?.email && req.user.email_verified_at) {
+      mail = await sendMail(
+        req.user.email,
+        "Prova delle notifiche",
+        emailLayout({ title: "Le email funzionano", intro: "Riceverai qui il riepilogo settimanale e gli avvisi meteo importanti." }),
+      );
+    }
+    res.json({ pushes, mail });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ---- GDPR: accesso/portabilità e cancellazione ----
+
+router.get("/export", async (req, res, next) => {
+  try {
+    const { rows: projects } = await query("SELECT id, name, data, created_at, updated_at FROM projects WHERE owner_key = $1", [
+      `user:${req.user.id}`,
+    ]);
+    const { rows: devices } = await query("SELECT created_at FROM push_subscriptions WHERE user_id = $1", [req.user.id]);
+    const u = req.user;
+    res.setHeader("Content-Disposition", 'attachment; filename="aiuolalab-dati.json"');
+    res.json({
+      exportedAt: new Date().toISOString(),
+      account: {
+        email: u.email,
+        createdAt: u.created_at,
+        emailVerifiedAt: u.email_verified_at,
+        privacyVersion: u.privacy_version,
+        privacyAcceptedAt: u.privacy_accepted_at,
+        marketingConsent: u.marketing_consent,
+        marketingConsentAt: u.marketing_consent_at,
+      },
+      settings: userSettings(u),
+      projects,
+      pushDevices: devices.length,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete("/", async (req, res, next) => {
+  const body = z.object({ password: z.string().max(200) }).safeParse(req.body);
+  if (!body.success) return res.status(400).json({ error: "Inserisci la password per confermare" });
+  try {
+    if (!(await verifyPassword(body.data.password, req.user.password_hash))) {
+      return res.status(401).json({ error: "Password non corretta" });
+    }
+    await query("DELETE FROM projects WHERE owner_key = $1", [`user:${req.user.id}`]);
+    await query("DELETE FROM users WHERE id = $1", [req.user.id]); // sessioni, token, push e log in cascata
+    await destroySession(req, res);
+    res.json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
+export default router;

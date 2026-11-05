@@ -26,4 +26,38 @@ export const config = {
   },
   // Limite di richieste al consulente IA per IP all'ora (controllo costi).
   suggestRateLimitPerHour: Number(env.SUGGEST_RATE_LIMIT) || 20,
+
+  // Indirizzo pubblico dell'app (link nelle email, controllo di origine).
+  appUrl: (env.APP_URL || "http://localhost:5173").replace(/\/$/, ""),
+
+  // Email (SMTP: Brevo, Mailjet, Gmail, Aruba...). Senza SMTP_HOST le email
+  // sono disattivate e la registrazione non richiede la conferma.
+  mail: {
+    enabled: Boolean(env.SMTP_HOST),
+    host: env.SMTP_HOST,
+    port: Number(env.SMTP_PORT) || 587,
+    secure: env.SMTP_SECURE === "true",
+    user: env.SMTP_USER,
+    pass: env.SMTP_PASS,
+    from: env.MAIL_FROM || "AiuolaLab <noreply@example.com>",
+  },
+
+  // Notifiche push (Web Push). Genera le chiavi con: npx web-push generate-vapid-keys
+  push: {
+    enabled: Boolean(env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY),
+    publicKey: env.VAPID_PUBLIC_KEY,
+    privateKey: env.VAPID_PRIVATE_KEY,
+    subject: env.VAPID_SUBJECT || "mailto:admin@example.com",
+  },
+
+  // Meteo MET Norway: i termini d'uso chiedono un contatto nello User-Agent.
+  weatherContact: env.WEATHER_CONTACT || (env.VAPID_SUBJECT || "").replace(/^mailto:/, ""),
+
+  // Ora (Europe/Rome) predefinita per le notifiche giornaliere.
+  notifyHour: Number(env.NOTIFY_HOUR) || 8,
+  // Pianificatore delle notifiche: SCHEDULER=off per disattivarlo.
+  schedulerEnabled: env.SCHEDULER !== "off",
 };
+
+// Versione dell'informativa privacy accettata alla registrazione.
+export const PRIVACY_VERSION = "2026-11";

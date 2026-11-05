@@ -1,6 +1,6 @@
-// Progetti salvati su Postgres. Ogni dispositivo ha una chiave anonima
-// (X-Owner-Key) generata dal browser: chi la possiede vede i suoi progetti.
-// Quando arriverà il login, owner_key diventerà l'id utente.
+// Progetti salvati su Postgres. Se l'utente ha fatto l'accesso i progetti
+// sono suoi (owner_key = "user:<id>"); altrimenti sono legati a una chiave
+// anonima del dispositivo (X-Owner-Key) generata dal browser.
 import { Router } from "express";
 import { z } from "zod";
 import { hasDatabase, query } from "../db.js";
@@ -10,15 +10,27 @@ const router = Router();
 const OwnerKey = z.string().uuid();
 const ProjectBody = z.object({
   name: z.string().trim().min(1).max(120),
-  data: z.object({ beds: z.array(z.any()).max(200) }).passthrough(),
+  data: z.object({ beds: z.array(z.any()).max(300) }).passthrough(),
 });
 const Id = z.string().uuid();
 
-router.use((req, res, next) => {
+router.use(async (req, res, next) => {
   if (!hasDatabase()) return res.status(503).json({ error: "Database non configurato" });
-  const owner = OwnerKey.safeParse(req.get("X-Owner-Key"));
-  if (!owner.success) return res.status(401).json({ error: "Chiave proprietario mancante" });
-  req.owner = owner.data;
+  const device = OwnerKey.safeParse(req.get("X-Owner-Key"));
+  if (req.user) {
+    req.owner = `user:${req.user.id}`;
+    // al primo accesso da un dispositivo i suoi progetti passano all'account
+    if (device.success) {
+      try {
+        await query("UPDATE projects SET owner_key = $1 WHERE owner_key = $2", [req.owner, device.data]);
+      } catch (err) {
+        return next(err);
+      }
+    }
+    return next();
+  }
+  if (!device.success) return res.status(401).json({ error: "Chiave proprietario mancante" });
+  req.owner = device.data;
   next();
 });
 

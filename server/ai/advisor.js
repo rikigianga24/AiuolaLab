@@ -4,6 +4,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
 import { config } from "../config.js";
 import { findByScientificName, getPlant, searchPlants } from "../plants/service.js";
+import { CROPS, cropAsPlant, monthsLabel } from "../../src/lib/crops.js";
 
 const client = config.anthropic.enabled ? new Anthropic() : null;
 
@@ -22,7 +23,7 @@ export const SuggestRequest = z.object({
       })
       .optional(),
   }),
-  environment: z.enum(["garden", "balcony"]).default("garden"),
+  environment: z.enum(["garden", "balcony", "vegetable"]).default("garden"),
   conditions: z.object({
     sunlight: z.enum(["full_sun", "part_shade", "full_shade"]),
     watering: z.enum(["minimum", "average", "frequent"]).optional(),
@@ -106,13 +107,18 @@ Regole:
 Vasi e balconi:
 - In un vaso scegli piante adatte al volume di terriccio indicato: poche specie (1-3 in un vaso singolo, 2-5 in una fioriera), con distanze di impianto più strette che in piena terra.
 - Nei vasi appesi e nelle fioriere da ringhiera privilegia piante ricadenti o compatte (per esempio surfinie, gerani edera, lobelia, bacopa, verbena ricadente, fragole, edera, dicondra) e usa il livello "copertura" o "bassa" per quelle che ricadono oltre il bordo.
+Orto:
+- Se l'ambiente è un orto proponi solo ortaggi e aromatiche dall'elenco delle candidate, adatti al periodo (semina, trapianto o colture che si possono mettere a dimora nei prossimi 1-2 mesi).
+- Rispetta le consociazioni (piante amiche vicine, mai pomodoro con patata o finocchio, legumi lontani da aglio e cipolla) e usa spacing_cm pari alla distanza sulla fila.
+- Nel campo reason indica quando seminare/trapiantare e quando si raccoglie.
 - In balcone considera vento, riflesso del calore delle pareti e vasi che si asciugano in fretta: indicalo nelle avvertenze se serve.`;
 
 function describeRequest(req, candidates) {
   const { bed, conditions, preferences } = req;
   const lines = [
     "## Dove",
-    `- Ambiente: ${req.environment === "balcony" ? "balcone/terrazzo in città" : "giardino in piena terra"}`,
+    `- Ambiente: ${{ balcony: "balcone/terrazzo in città", vegetable: "ORTO (ortaggi e aromatiche da coltivare e raccogliere)" }[req.environment] ?? "giardino in piena terra"}`,
+    req.environment === "vegetable" && `- Mese attuale: ${new Date().toLocaleDateString("it-IT", { month: "long" })}`,
     bed.container
       ? `- Contenitore: ${bed.container.type}, circa ${bed.container.volumeL} litri di terriccio, profondità ${bed.container.depthCm} cm${bed.container.hanging ? ", APPESO (vista dal basso e di lato)" : ""}`
       : "- Aiuola in piena terra",
@@ -154,10 +160,19 @@ function compact(p) {
     colori: p.flowerColors,
     fioritura: p.floweringSeasons,
     sempreverde: p.evergreen,
+    calendario: p.note,
   };
 }
 
+function cropCandidates() {
+  return CROPS.map((c) => ({
+    ...cropAsPlant(c),
+    note: `semenzaio ${monthsLabel(c.indoor)}, semina ${monthsLabel(c.direct)}, trapianto ${monthsLabel(c.transplant)}, raccolta ${monthsLabel(c.harvest)}; amiche: ${c.good.join(", ") || "-"}; nemiche: ${c.bad.join(", ") || "-"}`,
+  }));
+}
+
 async function loadCandidates(req) {
+  if (req.environment === "vegetable") return cropCandidates();
   const { sunlight, watering, ph, texture } = req.conditions;
   try {
     const res = await searchPlants({ sunlight, watering, ph, texture });
