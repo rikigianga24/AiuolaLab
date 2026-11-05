@@ -31,6 +31,8 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,svg,png,ico,woff2}"],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         navigateFallbackDenylist: [/^\/api\//],
+        // gestione delle notifiche push (public/push-sw.js)
+        importScripts: ["push-sw.js"],
         runtimeCaching: [
           {
             // Ricerche piante: rete prima, cache se offline.

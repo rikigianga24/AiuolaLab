@@ -1,0 +1,339 @@
+.calendar-page,
+.account-page,
+.legal-page {
+  padding-top: calc(var(--navbar-h) + 2rem);
+}
+
+.calendar-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.inline-select {
+  border: 1px solid rgba(47, 62, 47, 0.2);
+  border-radius: 6px;
+  background: #fff;
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.1rem 0.3rem;
+}
+
+.calendar-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.calendar-toolbar .tabs {
+  margin-bottom: 0;
+}
+
+.task-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.task-card {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+}
+
+.task-card.status-done,
+.task-card.status-snoozed {
+  opacity: 0.55;
+}
+
+.task-card.status-done .task-title {
+  text-decoration: line-through;
+}
+
+.task-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.task-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.task-title {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--green-dark);
+  text-align: left;
+  cursor: pointer;
+}
+
+.task-meta,
+.task-dates {
+  font-size: 0.8rem;
+  color: #6b766b;
+}
+
+.task-dates {
+  color: #8a6d3b;
+}
+
+.task-detail {
+  font-size: 0.85rem;
+  margin-top: 0.35rem;
+}
+
+.task-product {
+  margin-top: 0.3rem;
+  color: #4f7942;
+  font-weight: 600;
+}
+
+.task-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.month-block {
+  margin-bottom: 1.2rem;
+}
+
+.month-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #5f6f5f;
+  margin-bottom: 0.4rem;
+}
+
+.weather-box .title i {
+  color: var(--accent);
+}
+
+.forecast-row {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  margin: 0.5rem 0 0.8rem;
+}
+
+.forecast-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0.35rem 0;
+  border-radius: 8px;
+  background: #f4f7f0;
+  font-size: 0.72rem;
+}
+
+.forecast-day i {
+  font-size: 1rem;
+  color: #c47a2c;
+}
+
+.fd-name {
+  text-transform: capitalize;
+  color: #5f6f5f;
+}
+
+.fd-rain {
+  color: #2f80ed;
+  min-height: 1em;
+}
+
+.alert-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.alert-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  margin-bottom: 0.4rem;
+  font-size: 0.82rem;
+  border-left: 4px solid #e0a526;
+  background: #fff8e8;
+}
+
+.alert-item.sev-high {
+  border-left-color: #c0392b;
+  background: #fdecea;
+}
+
+.alert-item.sev-low {
+  border-left-color: #2f80ed;
+  background: #eef6fb;
+}
+
+.attribution {
+  font-size: 0.7rem;
+  color: #8a958a;
+  margin-top: 0.4rem;
+}
+
+.location-current {
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+}
+
+.location-form {
+  display: flex;
+  gap: 4px;
+}
+
+.location-results {
+  list-style: none;
+  margin: 0.4rem 0;
+  padding: 0;
+}
+
+.location-results button {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: #f4f7f0;
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  margin-bottom: 3px;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+/* ===== Account ===== */
+
+.auth-box {
+  max-width: 440px;
+}
+
+.account-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.account-grid .box {
+  margin-bottom: 0;
+}
+
+.consent-row {
+  display: block;
+  font-size: 0.88rem;
+  margin: 0.45rem 0;
+  line-height: 1.4;
+}
+
+.push-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.delete-box {
+  background: #fdecea;
+  border-radius: 8px;
+  padding: 0.6rem;
+  font-size: 0.85rem;
+}
+
+/* ===== Banner cookie ===== */
+
+.cookie-banner {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 60;
+  display: flex;
+  justify-content: center;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.cookie-inner {
+  max-width: 640px;
+  width: 100%;
+  background: #fff;
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  font-size: 0.88rem;
+}
+
+.cookie-inner h2 {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+  color: var(--green-dark);
+}
+
+.cookie-choices {
+  margin: 0.6rem 0;
+}
+
+.cookie-choice {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.cookie-choice span {
+  display: flex;
+  flex-direction: column;
+}
+
+.cookie-choice small {
+  color: #6b766b;
+}
+
+.cookie-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+
+.cookie-actions .button {
+  min-width: 120px;
+}
+
+@media (max-width: 600px) {
+  .forecast-day {
+    font-size: 0.65rem;
+  }
+  .task-card {
+    padding: 0.6rem;
+  }
+}

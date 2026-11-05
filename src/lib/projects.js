@@ -6,11 +6,12 @@ import { load, save } from "./storage.js";
 
 // Un progetto aperto per ciascun ambiente: giardino e balcone/terrazzo.
 const CURRENT_KEY = "aiuolalab.current";
-const currentKey = (type) => (type === "balcony" ? `${CURRENT_KEY}.balcony` : CURRENT_KEY);
+const currentKey = (type) => (type === "balcony" || type === "vegetable" ? `${CURRENT_KEY}.${type}` : CURRENT_KEY);
 
 export const ENVIRONMENTS = {
   garden: { label: "Giardino", icon: "fa-tree", defaultName: "Il mio giardino" },
-  balcony: { label: "Balcone / terrazzo", icon: "fa-building", defaultName: "Il mio terrazzo" },
+  balcony: { label: "Balcone / terrazzo", short: "Balcone", icon: "fa-building", defaultName: "Il mio terrazzo" },
+  vegetable: { label: "Orto", icon: "fa-carrot", defaultName: "Il mio orto" },
 };
 const LOCAL_LIST_KEY = "aiuolalab.projects";
 const OWNER_KEY = "aiuolalab.ownerKey";
@@ -91,6 +92,14 @@ function remoteStore() {
       await api.remove(id);
     },
   };
+}
+
+// Con l'account attivo il progetto aperto viene salvato anche sul server
+// (serve alle notifiche). Restituisce il progetto con l'id remoto.
+export async function syncProject(project) {
+  const health = await getHealth();
+  if (!health.database) return project;
+  return remoteStore().save(project);
 }
 
 export async function getProjectStore() {

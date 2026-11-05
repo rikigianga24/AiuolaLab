@@ -111,6 +111,7 @@ export function cropAsPlant(crop) {
     spreadCm: { min: crop.spacing.plant, max: crop.spacing.plant },
     heightCm: null,
     flowerColors: [],
+    iconColors: crop.colors,
     detailsLoaded: true,
   };
 }

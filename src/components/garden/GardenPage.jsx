@@ -9,8 +9,11 @@ import { plantColor, plantSpreadM } from "../../lib/labels";
 import { toPlaced } from "../../lib/placed";
 import { flowerHexes, getIconUrl, iconTypeFor } from "../../lib/plantIcons";
 import { computeIrrigation } from "../../lib/irrigation";
-import { ENVIRONMENTS, emptyProject, lastEnvironment, loadCurrent, saveCurrent, saveLastEnvironment } from "../../lib/projects";
+import { useSession } from "../../lib/session";
+import { ENVIRONMENTS, syncProject, emptyProject, lastEnvironment, loadCurrent, saveCurrent, saveLastEnvironment } from "../../lib/projects";
 import { POT_TYPES, createPot, isFloor, isPot } from "../../lib/containers";
+import { CROP_BY_ID, cropAsPlant } from "../../lib/crops";
+import { fillRows } from "../../lib/rows";
 import "../../styles/garden.css";
 import ConfirmDialog from "../ConfirmDialog";
 import GardenStage from "./GardenStage";
@@ -81,11 +84,25 @@ export default function GardenPage() {
     return () => clearTimeout(t);
   }, [toast]);
 
-  // Salvataggio automatico del progetto aperto nel browser.
+  // Salvataggio automatico del progetto aperto nel browser e, con l'account,
+  // anche sul server.
+  const { user } = useSession();
+  const { patchAll } = history;
   useEffect(() => {
     const t = setTimeout(() => saveCurrent(project), 400);
     return () => clearTimeout(t);
   }, [project]);
+  useEffect(() => {
+    if (!user || (!project.beds.length && !project.remoteId)) return;
+    const t = setTimeout(() => {
+      syncProject(project)
+        .then((saved) => {
+          if (saved.remoteId && saved.remoteId !== project.remoteId) patchAll((p) => ({ ...p, remoteId: saved.remoteId }));
+        })
+        .catch(() => {});
+    }, 2500);
+    return () => clearTimeout(t);
+  }, [project, user, patchAll]);
 
   const irrigation = useMemo(() => computeIrrigation(project), [project]);
 
@@ -171,7 +188,21 @@ export default function GardenPage() {
     if (draft.length < 3) return notify("Servono almeno 3 vertici.", "warning");
     if (isSelfIntersecting(draft)) return notify("Chiudendo così i lati si incrocerebbero.", "warning");
     if (polygonArea(draft) < 0.05) return notify(balcony ? "Il terrazzo è troppo piccolo." : "L'aiuola è troppo piccola.", "warning");
-    const bed = balcony
+    const veg = environment === "vegetable";
+    const bed = veg
+      ? {
+          id: newId(),
+          kind: "veg",
+          name: `Orto ${project.beds.filter((b) => b.kind === "veg").length + 1}`,
+          points: draft,
+          conditions: { sunlight: "full_sun", texture: "loamy" },
+          viewedFrom: "all",
+          surface: "soil",
+          edging: "wood",
+          plants: [],
+          history: [],
+        }
+      : balcony
       ? {
           id: newId(),
           kind: "floor",
@@ -199,10 +230,41 @@ export default function GardenPage() {
     setTab("aiuola");
     if (isMobile) setSheetOpen(true);
     notify(
-      balcony
-        ? "Terrazzo creato. Ora aggiungi i vasi con «Aggiungi vaso»."
-        : "Aiuola creata. Imposta esposizione e terreno, poi scegli le piante.",
+      veg
+        ? "Aiuola dell'orto creata. Scegli un ortaggio e usa «Riempi a file»."
+        : balcony
+          ? "Terrazzo creato. Ora aggiungi i vasi con «Aggiungi vaso»."
+          : "Aiuola creata. Imposta esposizione e terreno, poi scegli le piante.",
     );
+    if (veg) setTab("piante");
+  };
+
+  // ---- orto ----
+
+  const fillBedRows = (bedId, crop) => {
+    const bed = project.beds.find((b) => b.id === bedId);
+    if (!bed) return;
+    const occupied = (bed.plants ?? []).map((p) => ({ x: p.x, y: p.y, r: p.spreadM / 2 }));
+    const spots = fillRows(bed.points, crop.spacing, { occupied, margin: bed.kind === "pot" ? 0.03 : undefined });
+    if (!spots.length) return notify("Non c'è più spazio libero in questa aiuola.", "warning");
+    const asPlant = cropAsPlant(crop);
+    const spreadM = Math.min(crop.spacing.row, crop.spacing.plant) / 100;
+    const plants = spots.map((s) => toPlaced(asPlant, s, { spreadM, row: s.row }));
+    updateBed(bedId, (b) => ({ ...b, plants: [...(b.plants ?? []), ...plants] }));
+    setSelection({ bedId, plantId: null });
+    if (isMobile) setSheetOpen(false);
+    const rows = new Set(spots.map((s) => s.row)).size;
+    notify(`${crop.name}: ${plants.length} piante su ${rows} ${rows === 1 ? "fila" : "file"}.`, "success");
+  };
+
+  const endSeason = (bedId, clear) => {
+    const year = new Date().getFullYear();
+    updateBed(bedId, (b) => {
+      const families = [...new Set((b.plants ?? []).map((p) => CROP_BY_ID[p.cropId]?.family).filter(Boolean))];
+      const history = [...(b.history ?? []).filter((h) => h.year !== year), { year, families }];
+      return { ...b, history, plants: clear ? [] : b.plants };
+    });
+    notify("Stagione registrata: l'anno prossimo ti avviserò se ripianti la stessa famiglia.", "success");
   };
 
   // ---- vasi ----
@@ -599,6 +661,8 @@ export default function GardenPage() {
         isMobile={isMobile}
         environment={environment}
         onEnvironmentChange={switchEnvironment}
+        onFillRows={fillBedRows}
+        onEndSeason={endSeason}
         open={sheetOpen}
         onOpenChange={setSheetOpen}
         tab={tab}

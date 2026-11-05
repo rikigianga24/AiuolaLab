@@ -1,9 +1,58 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { bbox, formatM, formatM2, perimeter, polygonArea } from "../../lib/geometry";
 import { SOIL_PH, SOIL_TEXTURE, SUNLIGHT, WATERING } from "../../lib/labels";
 import { getIconUrl, iconForPlaced } from "../../lib/plantIcons";
 import { EDGINGS, FLOORS, RAILINGS, SURFACES, floorPreview, surfacePreview } from "../../lib/textures";
 import { POT_MATERIALS, POT_TYPES, isFloor, isPot, potVolumeL, resizePot } from "../../lib/containers";
+import { companionReport, rotationWarnings } from "../../lib/crops";
+
+function VegetablePanel({ bed, onEndSeason }) {
+  const [confirming, setConfirming] = useState(false);
+  const report = companionReport(bed.plants ?? []);
+  const rotation = rotationWarnings(bed);
+  const year = new Date().getFullYear();
+  const last = (bed.history ?? []).filter((h) => h.year < year).sort((a, b) => b.year - a.year)[0];
+  return (
+    <>
+      <h3 className="gp-heading">Orto</h3>
+      {report.bad.map((b) => (
+        <p key={b.a + b.b} className="panel-warning">
+          <i className="fa-solid fa-triangle-exclamation" /> <strong>{b.a}</strong> e <strong>{b.b}</strong> non stanno bene vicini
+          (linea rossa sul disegno): allontanali o cambia una delle due colture.
+        </p>
+      ))}
+      {rotation.length > 0 && (
+        <p className="panel-warning">
+          <i className="fa-solid fa-rotate" /> Rotazione: l'anno scorso qui c'erano {rotation.join(", ").toLowerCase()}. Ripiantare la
+          stessa famiglia nello stesso posto favorisce malattie e impoverisce il terreno.
+        </p>
+      )}
+      {report.good.length > 0 && (
+        <p className="panel-note">
+          <i className="fa-solid fa-heart" style={{ color: "#4f7942" }} /> Buone consociazioni: {report.good.map((g) => `${g.a} + ${g.b}`).join(", ").toLowerCase()}.
+        </p>
+      )}
+      {last && <p className="panel-note">Nel {last.year}: {last.families.join(", ") || "nessuna coltura registrata"}.</p>}
+      {!confirming ? (
+        <button className="button is-small is-light" onClick={() => setConfirming(true)}>
+          <i className="fa-solid fa-flag-checkered" />&nbsp; Fine stagione
+        </button>
+      ) : (
+        <div className="delete-box">
+          <p>Registro le famiglie coltivate quest'anno per consigliarti la rotazione. Vuoi anche svuotare l'aiuola?</p>
+          <div className="buttons mt-2">
+            <button className="button is-small" onClick={() => (onEndSeason(bed.id, false), setConfirming(false))}>
+              Registra e basta
+            </button>
+            <button className="button is-small is-primary" onClick={() => (onEndSeason(bed.id, true), setConfirming(false))}>
+              Registra e svuota
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
 
 function SizeInput({ label, value, onChange }) {
   return (
@@ -46,7 +95,7 @@ function Choice({ label, value, options, onChange, allowEmpty = true }) {
   );
 }
 
-export default function BedInspector({ project, bed, selection, onSelect, onUpdate, onReplace, onDeletePlant, onDeleteBed, onRemovePlants, onGoTo }) {
+export default function BedInspector({ project, bed, selection, onSelect, onUpdate, onReplace, onDeletePlant, onDeleteBed, onRemovePlants, onGoTo, onEndSeason }) {
   const stats = useMemo(() => {
     if (!bed) return null;
     const b = bbox(bed.points);
@@ -56,7 +105,7 @@ export default function BedInspector({ project, bed, selection, onSelect, onUpda
   const groups = useMemo(() => {
     const map = new Map();
     for (const p of bed?.plants ?? []) {
-      const key = p.plantId ?? p.name;
+      const key = p.cropId ?? p.plantId ?? p.name;
       const g = map.get(key) ?? { key, name: p.name, icon: iconForPlaced(p), ids: [] };
       g.ids.push(p.id);
       map.set(key, g);
@@ -309,6 +358,8 @@ export default function BedInspector({ project, bed, selection, onSelect, onUpda
       </div>
         </>
       )}
+      {bed.kind === "veg" && <VegetablePanel bed={bed} onEndSeason={onEndSeason} />}
+
       <h3 className="gp-heading">
         Piante <small>({bed.plants?.length ?? 0})</small>
       </h3>

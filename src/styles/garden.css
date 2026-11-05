@@ -1228,3 +1228,48 @@ table.materials .qty {
 .is-mobile .env-switch {
   margin-top: 2px;
 }
+
+/* ===== Orto ===== */
+
+.crop-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.crop-badge {
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+}
+
+.year-strip {
+  margin: 0.3rem 0 0.6rem;
+  font-size: 0.68rem;
+}
+
+.ys-row {
+  display: grid;
+  grid-template-columns: 70px repeat(12, minmax(0, 1fr));
+  gap: 2px;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.ys-label {
+  color: #6b766b;
+}
+
+.ys-cell {
+  height: 10px;
+  border-radius: 2px;
+  background: #ebe8df;
+}
+
+.ys-month {
+  text-align: center;
+  color: #8a958a;
+}

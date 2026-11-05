@@ -15,7 +15,7 @@ export function toPlaced(plant, point, overrides = {}) {
     watering: plant.watering ?? null,
     color: plantColor(plant),
     icon: iconTypeFor(plant),
-    colors: flowerHexes(plant),
+    colors: plant.iconColors ?? flowerHexes(plant),
     x: point.x,
     y: point.y,
     ...overrides,

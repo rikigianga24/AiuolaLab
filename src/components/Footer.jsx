@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { reopenConsent } from "../lib/consent";
 
 export default function Footer() {
   return (
@@ -9,7 +10,11 @@ export default function Footer() {
         <div className="footer-links">
           <Link to="/">Home</Link>
           <Link to="/gardencanvas">Progetta</Link>
+          <Link to="/calendario">Calendario</Link>
           <Link to="/aboutme">Chi sono</Link>
+          <Link to="/privacy">Privacy</Link>
+          <Link to="/cookie">Cookie</Link>
+          <a onClick={reopenConsent} role="button">Preferenze cookie</a>
         </div>
         <p className="footer-copy">© {new Date().getFullYear()} AiuolaLab — progetto indipendente</p>
       </div>

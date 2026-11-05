@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
+import { useSession } from "../lib/session";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const { user, features } = useSession();
   const { pathname } = useLocation();
   const solid = pathname !== "/";
   const close = () => setOpen(false);
@@ -31,9 +33,18 @@ export default function Navbar() {
           <NavLink to="/gardencanvas" className="navbar-item" onClick={close}>
             Progetta
           </NavLink>
+          <NavLink to="/calendario" className="navbar-item" onClick={close}>
+            Calendario
+          </NavLink>
           <NavLink to="/aboutme" className="navbar-item" onClick={close}>
             Chi sono
           </NavLink>
+          {features.accounts && (
+            <NavLink to="/account" className="navbar-item" onClick={close}>
+              <i className={`fa-solid ${user ? "fa-circle-user" : "fa-right-to-bracket"}`} />
+              &nbsp;{user ? "Account" : "Accedi"}
+            </NavLink>
+          )}
         </div>
       </div>
     </nav>

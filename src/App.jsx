@@ -6,6 +6,11 @@ import Footer from "./components/Footer";
 import GardenPage from "./components/garden/GardenPage";
 import Home from "./components/Home";
 import Navbar from "./components/Navbar";
+import AccountPage from "./components/AccountPage";
+import CalendarPage from "./components/CalendarPage";
+import CookieBanner from "./components/CookieBanner";
+import { CookiePage, PrivacyPage } from "./components/LegalPages";
+import { SessionProvider } from "./lib/session";
 
 function Layout() {
   const { pathname } = useLocation();
@@ -18,10 +23,15 @@ function Layout() {
           <Route path="/" element={<Home />} />
           <Route path="/gardencanvas" element={<GardenPage />} />
           <Route path="/aboutme" element={<AboutMe />} />
+          <Route path="/calendario" element={<CalendarPage />} />
+          <Route path="/account" element={<AccountPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/cookie" element={<CookiePage />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </main>
       {!isApp && <Footer />}
+      <CookieBanner />
     </>
   );
 }
@@ -29,7 +39,9 @@ function Layout() {
 export default function App() {
   return (
     <BrowserRouter>
-      <Layout />
+      <SessionProvider>
+        <Layout />
+      </SessionProvider>
     </BrowserRouter>
   );
 }

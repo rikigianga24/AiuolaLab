@@ -34,3 +34,14 @@ test("in un vaso piccolo le piante entrano anche vicino al bordo", () => {
   const { placed } = autoLayout(pot, [{ key: "a", layer: "media", quantity: 3, spreadM: 0.2 }], { container: true });
   assert.equal(placed.length, 3);
 });
+
+test("orto: file parallele al lato lungo con le distanze dell'ortaggio", async () => {
+  const { fillRows } = await import("../src/lib/rows.js");
+  const bed = [{ x: 0, y: 0 }, { x: 3, y: 0 }, { x: 3, y: 1.2 }, { x: 0, y: 1.2 }];
+  const pts = fillRows(bed, { row: 40, plant: 30 });
+  const rows = new Set(pts.map((p) => p.row));
+  assert.equal(rows.size, 3, "1,2 m / 40 cm = 3 file");
+  assert.equal(pts.filter((p) => p.row === 0).length, 10, "3 m / 30 cm = 10 piante per fila");
+  const again = fillRows(bed, { row: 40, plant: 30 }, { occupied: pts.map((p) => ({ ...p, r: 0.15 })) });
+  assert.equal(again.length, 0, "non sovrappone le piante esistenti");
+});

@@ -5,6 +5,7 @@ import { ICON_FILL, getIconCanvas, iconForPlaced } from "../../lib/plantIcons";
 import { POT_TYPES, isFloor, isPot } from "../../lib/containers";
 import { cityTexture, lawnTexture } from "../../lib/textures";
 import { BedBase, HangingChains, PotGhost } from "./BedShapes";
+import { companionReport } from "../../lib/crops";
 
 export const PX_PER_M = 60;
 const MIN_ZOOM = 0.15;
@@ -409,6 +410,20 @@ export default function GardenStage({
                 );
               })}
               <HangingChains bed={bed} scale={scale} />
+              {bed.kind === "veg" &&
+                companionReport(bed.plants ?? []).bad.flatMap((pair, i) =>
+                  pair.segments.slice(0, 12).map(([a, b], j) => (
+                    <Line
+                      key={`bad-${i}-${j}`}
+                      points={[a.x, a.y, b.x, b.y]}
+                      stroke="#e53935"
+                      strokeWidth={2}
+                      dash={[5, 4]}
+                      strokeScaleEnabled={false}
+                      listening={false}
+                    />
+                  )),
+                )}
               {selected && !pot && <EdgeLabels points={bed.points} closed scale={scale} />}
               {selected &&
                 !pot &&

@@ -2,6 +2,7 @@
 // tavole di progetto dei paesaggisti. Ogni icona è generata una sola volta
 // per tipo + colori e poi riusata (sul canvas Konva e nelle liste).
 import { COLORS } from "./labels.js";
+import { CROP_BY_ID } from "./crops.js";
 
 export const ICON_TYPES = {
   flower: "Fiori a 5 petali",
@@ -34,6 +35,7 @@ const RULES = [
 const nonGreen = (codes = []) => codes.filter((c) => c && c !== "green");
 
 export function iconTypeFor(plant) {
+  if (plant?.cropId && CROP_BY_ID[plant.cropId]) return CROP_BY_ID[plant.cropId].icon;
   const text = [plant?.scientificName, plant?.commonName, plant?.name, ...(plant?.otherNames ?? [])]
     .filter(Boolean)
     .join(" ")
@@ -498,6 +500,262 @@ const DRAW = {
       }
     }
   },
+
+  // ---- ortaggi ----
+
+  leafy(ctx, rand, c, R, colors, name) {
+    const tint = colors[0];
+    const greens = /rucol|spinac|basilic/.test(name) ? ["#3f7a2f", "#4f8a3a", "#5f9a45"] : ["#7fb24f", "#93c35e", "#a9d273", "#6ea343"];
+    const layers = [[10, 0.95, 0.42], [8, 0.7, 0.36], [6, 0.45, 0.3]];
+    layers.forEach(([n, len, wid], li) => {
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2 + li * 0.4 + rand() * 0.3;
+        const color = tint && rand() > 0.35 ? shade(tint, -0.1 + li * 0.1) : shade(greens[(rand() * greens.length) | 0], li * 0.08);
+        ctx.save();
+        ctx.translate(c, c);
+        ctx.rotate(a);
+        const L = R * len, W = R * wid;
+        const g = ctx.createLinearGradient(0, 0, L, 0);
+        g.addColorStop(0, shade(color, -0.25));
+        g.addColorStop(1, shade(color, 0.15));
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        // bordo ondulato
+        for (let k = 0; k <= 10; k++) {
+          const t = k / 10;
+          const ang = -Math.PI / 2 + t * Math.PI;
+          const wob = 1 + Math.sin(k * 2.3) * 0.08;
+          ctx.lineTo(L * 0.55 + Math.sin(ang) * L * 0.45 * wob, Math.cos(ang) * W * wob * -1);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = "rgba(240, 255, 220, 0.45)";
+        ctx.lineWidth = R * 0.015;
+        ctx.beginPath();
+        ctx.moveTo(L * 0.05, 0);
+        ctx.lineTo(L * 0.9, 0);
+        ctx.stroke();
+        ctx.restore();
+      }
+    });
+  },
+
+  fruiting(ctx, rand, c, R, colors) {
+    foliageMound(ctx, rand, c, R, { count: 30, greens: ["#2f5a24", "#3b6a2c", "#467a33", "#2a4f20"] });
+    const n = 6 + ((rand() * 3) | 0);
+    for (let i = 0; i < n; i++) {
+      const a = rand() * Math.PI * 2, d = R * (0.15 + rand() * 0.5);
+      const x = c + Math.cos(a) * d, y = c + Math.sin(a) * d, r = R * (0.13 + rand() * 0.05);
+      const color = colors[i % colors.length] ?? "#d64545";
+      ctx.fillStyle = "rgba(0,0,0,0.3)";
+      ctx.beginPath();
+      ctx.arc(x + r * 0.15, y + r * 0.2, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = petalColor(ctx, x, y, r, color);
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,0.55)";
+      ctx.beginPath();
+      ctx.arc(x - r * 0.35, y - r * 0.35, r * 0.18, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#3d6b28";
+      ctx.lineWidth = r * 0.18;
+      ctx.beginPath();
+      for (let k = 0; k < 5; k++) {
+        const ka = (k / 5) * Math.PI * 2;
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + Math.cos(ka) * r * 0.35, y + Math.sin(ka) * r * 0.35);
+      }
+      ctx.stroke();
+    }
+  },
+
+  squash(ctx, rand, c, R, colors) {
+    for (let i = 0; i < 6; i++) {
+      const a = (i / 6) * Math.PI * 2 + rand() * 0.4, d = R * 0.42;
+      const x = c + Math.cos(a) * d, y = c + Math.sin(a) * d, r = R * (0.38 + rand() * 0.1);
+      const g = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
+      g.addColorStop(0, "#7fae55");
+      g.addColorStop(1, "#3c6b2a");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      for (let k = 0; k <= 5; k++) {
+        const ka = (k / 5) * Math.PI * 2 + a;
+        const lobe = r * (k % 2 ? 0.85 : 1);
+        ctx.lineTo(x + Math.cos(ka) * lobe, y + Math.sin(ka) * lobe);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = "rgba(220, 240, 200, 0.5)";
+      ctx.lineWidth = R * 0.012;
+      ctx.beginPath();
+      for (let k = 0; k < 5; k++) {
+        const ka = (k / 5) * Math.PI * 2 + a;
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + Math.cos(ka) * r * 0.8, y + Math.sin(ka) * r * 0.8);
+      }
+      ctx.stroke();
+    }
+    const flower = colors[0] ?? "#f2c94c";
+    for (let i = 0; i < 2; i++) {
+      const a = rand() * Math.PI * 2, d = R * 0.3;
+      const x = c + Math.cos(a) * d, y = c + Math.sin(a) * d, r = R * 0.16;
+      for (let k = 0; k < 5; k++) {
+        const ka = (k / 5) * Math.PI * 2;
+        ctx.fillStyle = petalColor(ctx, x, y, r, flower);
+        ctx.beginPath();
+        ctx.ellipse(x + Math.cos(ka) * r * 0.5, y + Math.sin(ka) * r * 0.5, r * 0.55, r * 0.35, ka, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.fillStyle = "#e08a1e";
+      ctx.beginPath();
+      ctx.arc(x, y, r * 0.22, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  },
+
+  feathery(ctx, rand, c, R) {
+    const n = 22;
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 + rand() * 0.2;
+      const len = R * (0.7 + rand() * 0.28);
+      ctx.strokeStyle = "#5d8c3a";
+      ctx.lineWidth = R * 0.02;
+      ctx.beginPath();
+      ctx.moveTo(c, c);
+      ctx.lineTo(c + Math.cos(a) * len, c + Math.sin(a) * len);
+      ctx.stroke();
+      for (let t = 0.25; t <= 1; t += 0.09) {
+        const bx = c + Math.cos(a) * len * t, by = c + Math.sin(a) * len * t;
+        const side = R * 0.09 * (1.1 - t);
+        for (const sgn of [-1, 1]) {
+          ctx.strokeStyle = ["#6fa046", "#7fb355", "#5a8f38"][(rand() * 3) | 0];
+          ctx.lineWidth = R * 0.016;
+          ctx.beginPath();
+          ctx.moveTo(bx, by);
+          ctx.lineTo(bx + Math.cos(a + sgn * 1.0) * side, by + Math.sin(a + sgn * 1.0) * side);
+          ctx.stroke();
+        }
+      }
+    }
+  },
+
+  allium(ctx, rand, c, R, colors, name) {
+    const n = /porro/.test(name) ? 10 : 14;
+    for (let i = 0; i < n; i++) {
+      const a = rand() * Math.PI * 2;
+      const len = R * (0.55 + rand() * 0.4);
+      ctx.strokeStyle = ["#6f9a8a", "#7fae9a", "#5f8c7a"][(rand() * 3) | 0];
+      ctx.lineWidth = R * (/porro/.test(name) ? 0.09 : 0.05);
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(c, c);
+      ctx.quadraticCurveTo(c + Math.cos(a + 0.3) * len * 0.5, c + Math.sin(a + 0.3) * len * 0.5, c + Math.cos(a) * len, c + Math.sin(a) * len);
+      ctx.stroke();
+    }
+    const bulb = /aglio/.test(name) ? "#efe8e0" : /rossa|tropea/.test(name) ? "#8e2a4a" : "#d9b77a";
+    ctx.fillStyle = petalColor(ctx, c, c, R * 0.2, bulb);
+    ctx.beginPath();
+    ctx.arc(c, c, R * 0.18, 0, Math.PI * 2);
+    ctx.fill();
+  },
+
+  legume(ctx, rand, c, R, colors) {
+    for (let i = 0; i < 16; i++) {
+      const a = rand() * Math.PI * 2, d = R * (0.2 + rand() * 0.55);
+      const x = c + Math.cos(a) * d, y = c + Math.sin(a) * d;
+      for (let k = 0; k < 3; k++) {
+        const ka = a + (k - 1) * 0.9;
+        leaf(ctx, x, y, ka, R * 0.22, R * 0.1, ["#5d9a45", "#6fab52", "#4f8a3a"][k], false);
+      }
+    }
+    // bacelli
+    ctx.strokeStyle = "#7fae4f";
+    ctx.lineWidth = R * 0.05;
+    ctx.lineCap = "round";
+    for (let i = 0; i < 5; i++) {
+      const a = rand() * Math.PI * 2, d = R * (0.2 + rand() * 0.4);
+      const x = c + Math.cos(a) * d, y = c + Math.sin(a) * d;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.quadraticCurveTo(x + R * 0.08, y + R * 0.1, x + R * 0.05, y + R * 0.22);
+      ctx.stroke();
+    }
+    const flower = colors[0] ?? "#f4f1ea";
+    for (let i = 0; i < 6; i++) {
+      const a = rand() * Math.PI * 2, d = R * (0.2 + rand() * 0.6);
+      ctx.fillStyle = petalColor(ctx, c + Math.cos(a) * d, c + Math.sin(a) * d, R * 0.06, flower);
+      ctx.beginPath();
+      ctx.arc(c + Math.cos(a) * d, c + Math.sin(a) * d, R * 0.055, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  },
+
+  brassica(ctx, rand, c, R, colors, name) {
+    for (let i = 0; i < 9; i++) {
+      const a = (i / 9) * Math.PI * 2 + rand() * 0.3;
+      const x = c + Math.cos(a) * R * 0.5, y = c + Math.sin(a) * R * 0.5, r = R * 0.38;
+      const g = ctx.createRadialGradient(x, y, r * 0.1, x, y, r);
+      g.addColorStop(0, "#9fbfa6");
+      g.addColorStop(1, "#5a7f6a");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(230, 245, 235, 0.55)";
+      ctx.lineWidth = R * 0.015;
+      ctx.beginPath();
+      ctx.moveTo(c, c);
+      ctx.lineTo(x + Math.cos(a) * r * 0.7, y + Math.sin(a) * r * 0.7);
+      ctx.stroke();
+    }
+    if (/broccol/.test(name)) {
+      for (let i = 0; i < 26; i++) {
+        const a = rand() * Math.PI * 2, d = Math.sqrt(rand()) * R * 0.33;
+        ctx.fillStyle = petalColor(ctx, c + Math.cos(a) * d, c + Math.sin(a) * d, R * 0.08, "#3f6b3a");
+        ctx.beginPath();
+        ctx.arc(c + Math.cos(a) * d, c + Math.sin(a) * d, R * 0.075, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else {
+      ctx.fillStyle = petalColor(ctx, c, c, R * 0.38, "#c9dcb8");
+      ctx.beginPath();
+      ctx.arc(c, c, R * 0.36, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(120, 150, 110, 0.6)";
+      ctx.lineWidth = R * 0.015;
+      for (let k = 1; k <= 3; k++) {
+        ctx.beginPath();
+        ctx.arc(c, c, R * 0.1 * k, rand() * 6, rand() * 6 + 4);
+        ctx.stroke();
+      }
+    }
+  },
+
+  berry(ctx, rand, c, R, colors) {
+    for (let i = 0; i < 9; i++) {
+      const a = (i / 9) * Math.PI * 2 + rand() * 0.3;
+      for (let k = 0; k < 3; k++) {
+        leaf(ctx, c + Math.cos(a) * R * 0.25, c + Math.sin(a) * R * 0.25, a + (k - 1) * 0.6, R * 0.6, R * 0.16, ["#3f7a30", "#4f8a3a", "#5a9645"][k]);
+      }
+    }
+    for (let i = 0; i < 4; i++) {
+      const a = rand() * Math.PI * 2, d = R * (0.25 + rand() * 0.45);
+      flower5(ctx, rand, c + Math.cos(a) * d, c + Math.sin(a) * d, R * 0.1, "#f4f1ea");
+    }
+    for (let i = 0; i < 5; i++) {
+      const a = rand() * Math.PI * 2, d = R * (0.3 + rand() * 0.5);
+      const x = c + Math.cos(a) * d, y = c + Math.sin(a) * d, r = R * 0.09;
+      ctx.fillStyle = petalColor(ctx, x, y, r, colors[0] ?? "#d64545");
+      ctx.beginPath();
+      ctx.moveTo(x, y - r);
+      ctx.quadraticCurveTo(x + r * 1.2, y - r * 0.6, x, y + r * 1.2);
+      ctx.quadraticCurveTo(x - r * 1.2, y - r * 0.6, x, y - r);
+      ctx.fill();
+    }
+  },
 };
 
 // Luce dall'alto a sinistra: dà volume all'icona.
@@ -527,9 +785,10 @@ const cache = new Map();
  */
 export function getIconCanvas(type, colors = [], size = 320, name = "") {
   const kind = DRAW[type] ? type : "flower";
-  const flowering = ["flower", "daisy", "rose", "spike", "cluster", "star", "cup"].includes(kind);
+  const flowering = ["flower", "daisy", "rose", "spike", "cluster", "star", "cup", "fruiting", "berry"].includes(kind);
   const palette = colors.length ? colors : flowering ? ["#e88fb4"] : [];
-  const key = `${kind}|${palette.join(",")}|${size}|${kind === "daisy" || kind === "star" ? name : ""}`;
+  const named = ["daisy", "star", "leafy", "allium", "brassica"].includes(kind);
+  const key = `${kind}|${palette.join(",")}|${size}|${named ? name : ""}`;
   if (cache.has(key)) return cache.get(key);
   const canvas = document.createElement("canvas");
   canvas.width = canvas.height = size;

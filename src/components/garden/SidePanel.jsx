@@ -4,6 +4,7 @@ import IrrigationPanel from "./IrrigationPanel";
 import PlantCatalog from "./PlantCatalog";
 import ProjectPanel from "./ProjectPanel";
 import { ENVIRONMENTS } from "../../lib/projects";
+import CropCatalog from "./CropCatalog";
 
 const TABS = [
   { id: "piante", label: "Piante", icon: "fa-seedling" },
@@ -40,12 +41,18 @@ export default function SidePanel({ isMobile, open, onOpenChange, tab, onTabChan
             className={environment === k ? "is-active" : ""}
             onClick={() => onEnvironmentChange(k)}
           >
-            <i className={`fa-solid ${v.icon}`} /> {v.label}
+            <i className={`fa-solid ${v.icon}`} /> {v.short ?? v.label}
           </button>
         ))}
       </div>
       <nav className="gp-tabs" role="tablist">
-        {TABS.map((t) => (t.id === "aiuola" && environment === "balcony" ? { ...t, label: "Vasi", icon: "fa-bucket" } : t)).map((t) => (
+        {TABS.map((t) =>
+          t.id === "aiuola" && environment === "balcony"
+            ? { ...t, label: "Vasi", icon: "fa-bucket" }
+            : t.id === "piante" && environment === "vegetable"
+              ? { ...t, label: "Ortaggi", icon: "fa-carrot" }
+              : t,
+        ).map((t) => (
           <button
             key={t.id}
             role="tab"
@@ -59,7 +66,12 @@ export default function SidePanel({ isMobile, open, onOpenChange, tab, onTabChan
         ))}
       </nav>
       <div className="panel-body" hidden={!expanded}>
-        {tab === "piante" && <PlantCatalog selectedBed={props.selectedBed} onPickPlant={props.onPickPlant} />}
+        {tab === "piante" &&
+          (environment === "vegetable" ? (
+            <CropCatalog selectedBed={props.selectedBed} onPickPlant={props.onPickPlant} onFillRows={props.onFillRows} />
+          ) : (
+            <PlantCatalog selectedBed={props.selectedBed} onPickPlant={props.onPickPlant} />
+          ))}
         {tab === "aiuola" && (
           <BedInspector
             project={props.project}
@@ -71,6 +83,7 @@ export default function SidePanel({ isMobile, open, onOpenChange, tab, onTabChan
             onDeletePlant={props.onDeleteSelection}
             onDeleteBed={props.onDeleteBed}
             onRemovePlants={props.onRemovePlants}
+            onEndSeason={props.onEndSeason}
             onGoTo={onTabChange}
           />
         )}

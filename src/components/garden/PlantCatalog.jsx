@@ -4,6 +4,7 @@ import { getHealth, getPlant, searchPlants } from "../../lib/api";
 import { COLORS, CYCLE, SEASONS, SOIL_PH, SUNLIGHT, WATERING } from "../../lib/labels";
 import { flowerHexes, getIconUrl, iconTypeFor } from "../../lib/plantIcons";
 import PlantFacts from "./PlantFacts";
+import { useConsent } from "../../lib/consent";
 
 const EMPTY = { q: "", sunlight: "", watering: "", ph: "", color: "", season: "" };
 
@@ -31,6 +32,7 @@ export default function PlantCatalog({ selectedBed, onPickPlant }) {
   const [details, setDetails] = useState({});
   const [source, setSource] = useState(null);
   const q = useDebounced(filters.q);
+  const consent = useConsent();
 
   useEffect(() => {
     getHealth().then((h) => setSource(h.plantSource));
@@ -159,7 +161,7 @@ export default function PlantCatalog({ selectedBed, onPickPlant }) {
               </button>
               {open && (
                 <div className="plant-detail">
-                  {full.image?.regular && <img className="plant-photo" src={full.image.regular} alt={full.commonName} loading="lazy" />}
+                  {full.image?.regular && consent?.external && <img className="plant-photo" src={full.image.regular} alt={full.commonName} loading="lazy" />}
                   <PlantFacts plant={full} />
                   <button className="button is-primary is-small is-fullwidth" onClick={() => onPickPlant(full)}>
                     <i className="fa-solid fa-hand-point-up" />&nbsp; Pianta nell'aiuola
