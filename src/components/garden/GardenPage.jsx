@@ -7,6 +7,7 @@ import { pointInPolygon, polygonArea, segmentsCross } from "../../lib/geometry";
 import { newId } from "../../lib/ids";
 import { plantColor, plantSpreadM } from "../../lib/labels";
 import { toPlaced } from "../../lib/placed";
+import { flowerHexes, getIconUrl, iconTypeFor } from "../../lib/plantIcons";
 import { emptyProject, loadCurrent, saveCurrent } from "../../lib/projects";
 import "../../styles/garden.css";
 import ConfirmDialog from "../ConfirmDialog";
@@ -51,6 +52,8 @@ export default function GardenPage() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [toast, setToast] = useState(null);
   const [confirm, setConfirm] = useState(null);
+  const [showGrid, setShowGrid] = useState(true);
+  const [showLabels, setShowLabels] = useState(true);
 
   const isMobile = useMediaQuery("(max-width: 900px)");
   const canvasRef = useRef(null);
@@ -105,7 +108,12 @@ export default function GardenPage() {
   }, []);
 
   const startPlacing = (plant) => {
-    setPlacing({ plant, spreadM: plantSpreadM(plant), color: plantColor(plant) });
+    setPlacing({
+      plant,
+      spreadM: plantSpreadM(plant),
+      color: plantColor(plant),
+      icon: { type: iconTypeFor(plant), colors: flowerHexes(plant) },
+    });
     setMode("place");
     setDraft([]);
     if (isMobile) setSheetOpen(false);
@@ -249,6 +257,8 @@ export default function GardenPage() {
         flowerColors: [],
       };
       const spreadM = Math.min(3, Math.max(0.1, (p.spacing_cm || 40) / 100));
+      const colorCodes = source.flowerColors?.length ? source.flowerColors : mapColorNames(p.flower_colors);
+      const iconSource = { ...source, commonName: p.common_name, scientificName: p.scientific_name, flowerColors: colorCodes };
       return {
         key: String(i),
         layer: p.layer,
@@ -257,7 +267,9 @@ export default function GardenPage() {
         source,
         name: p.common_name || source.commonName,
         heightCm: p.height_cm,
-        color: plantColor(source.flowerColors?.length ? source : { flowerColors: mapColorNames(p.flower_colors) }),
+        color: plantColor({ flowerColors: colorCodes }),
+        icon: iconTypeFor(iconSource),
+        colors: flowerHexes(iconSource),
       };
     });
     const others = replace ? [] : bed.plants;
@@ -266,7 +278,14 @@ export default function GardenPage() {
     const byKey = Object.fromEntries(groups.map((g) => [g.key, g]));
     const newPlants = placed.map(({ key, x, y }) => {
       const g = byKey[key];
-      return toPlaced(g.source, { x, y }, { name: g.name, spreadM: g.spreadM, heightCm: g.heightCm, color: g.color });
+      return toPlaced(g.source, { x, y }, {
+        name: g.name,
+        spreadM: g.spreadM,
+        heightCm: g.heightCm,
+        color: g.color,
+        icon: g.icon,
+        colors: g.colors,
+      });
     });
     updateBed(bedId, (b) => ({ ...b, plants: [...others, ...newPlants], suggestion: proposal.title }));
     setSelection({ bedId, plantId: null });
@@ -335,6 +354,8 @@ export default function GardenPage() {
             placing={placing}
             selection={selection}
             snapStep={SNAP_STEP}
+            showGrid={showGrid}
+            showLabels={showLabels}
             onDraftPoint={addDraftPoint}
             onDraftClose={closeDraft}
             onSelect={handleSelect}
@@ -360,7 +381,7 @@ export default function GardenPage() {
           ) : mode === "place" ? (
             <>
               <span className="tool-chip" title={placing?.plant.commonName}>
-                <span className="dot" style={{ background: placing?.color }} />
+                {placing && <img src={getIconUrl(placing.icon.type, placing.icon.colors, 64, placing.plant.commonName)} alt="" width="26" height="26" />}
                 {placing?.plant.commonName}
               </span>
               <button className="tool-btn is-primary" onClick={stopMode}>
@@ -395,6 +416,24 @@ export default function GardenPage() {
           </button>
           <button className="tool-btn icon" onClick={() => stageApi.current?.fit()} aria-label="Inquadra tutto" title="Inquadra tutto">
             <i className="fa-solid fa-expand" />
+          </button>
+          <button
+            className={`tool-btn icon ${showGrid ? "is-on" : ""}`}
+            onClick={() => setShowGrid((v) => !v)}
+            aria-pressed={showGrid}
+            aria-label="Griglia"
+            title="Griglia di 1 m"
+          >
+            <i className="fa-solid fa-border-all" />
+          </button>
+          <button
+            className={`tool-btn icon ${showLabels ? "is-on" : ""}`}
+            onClick={() => setShowLabels((v) => !v)}
+            aria-pressed={showLabels}
+            aria-label="Nomi delle piante"
+            title="Nomi delle piante"
+          >
+            <i className="fa-solid fa-tag" />
           </button>
         </div>
 

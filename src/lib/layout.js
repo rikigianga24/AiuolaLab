@@ -55,7 +55,8 @@ export function autoLayout(points, groups, { viewedFrom = "all", blocked = [] } 
         let bestScore = -Infinity;
         for (let i = 0; i < cells.length; i++) {
           const c = cells[i];
-          if (c.edge < r * 0.6) continue;
+          // non sopra la bordura (circa 6 cm verso l'interno)
+          if (c.edge < r * 0.6 + 0.06) continue;
           let ok = true;
           let nearSame = Infinity;
           for (const p of placed) {

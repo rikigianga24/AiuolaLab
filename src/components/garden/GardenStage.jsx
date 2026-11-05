@@ -1,6 +1,8 @@
 import { useEffect, useImperativeHandle, useRef, useState } from "react";
-import { Circle, Group, Layer, Line, Shape, Stage, Text } from "react-konva";
+import { Circle, Group, Image as KImage, Label, Layer, Line, Rect, Shape, Stage, Tag, Text } from "react-konva";
 import { bbox, dist, formatM, pointInPolygon, snap } from "../../lib/geometry";
+import { ICON_FILL, getIconCanvas, iconForPlaced } from "../../lib/plantIcons";
+import { lawnTexture, mulchTexture } from "../../lib/textures";
 
 export const PX_PER_M = 60;
 const MIN_ZOOM = 0.15;
@@ -8,16 +10,36 @@ const MAX_ZOOM = 6;
 const CLOSE_RADIUS_PX = 16;
 
 const COLORS = {
-  ground: "#e6eedc",
-  gridMinor: "rgba(80, 110, 60, 0.10)",
-  gridMajor: "rgba(80, 110, 60, 0.22)",
-  bedFill: "#a9c98f",
-  bedFillSelected: "#bcd8a2",
-  edge: "#6f4e37",
-  edgeSelected: "#c47a2c",
-  draft: "#44533a",
-  label: "#2f3e2f",
+  gridMinor: "rgba(255, 255, 255, 0.10)",
+  gridMajor: "rgba(255, 255, 255, 0.22)",
+  edgeJoint: "#4b443b",
+  edgeStone: "#cbc2b1",
+  edgeSelected: "#f2a23a",
+  draft: "#fdf8ec",
+  draftShadow: "rgba(30, 30, 20, 0.6)",
+  label: "#1f2a1a",
 };
+
+// Scala delle texture: lato della piastrella in metri.
+const LAWN_TILE_M = 2.5;
+const MULCH_TILE_M = 1.2;
+// Bordura in pietra: spessore e lunghezza dei blocchetti in metri.
+const EDGE_W = 0.12;
+const EDGE_STONE = [0.22, 0.025];
+
+// Rotazione stabile per ogni esemplare: le piante uguali non sembrano timbri.
+const rotationFor = (id) => {
+  let h = 0;
+  for (const ch of String(id)) h = (h * 31 + ch.charCodeAt(0)) | 0;
+  return Math.abs(h) % 360;
+};
+
+// Barra della scala con una lunghezza "tonda" tra 60 e 160 px.
+function scaleBar(scale) {
+  const steps = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50];
+  const m = steps.find((s) => s * scale >= 60) ?? 50;
+  return { m, px: m * scale, label: m < 1 ? `${Math.round(m * 100)} cm` : `${m} m` };
+}
 
 const clampZoom = (z) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, z));
 
@@ -29,7 +51,7 @@ function Grid({ width, height, view }) {
       sceneFunc={(ctx) => {
         const x0 = -view.x / scale, y0 = -view.y / scale;
         const x1 = x0 + width / scale, y1 = y0 + height / scale;
-        const minorStep = scale > 40 ? 0.5 : scale > 12 ? 1 : 5;
+        const minorStep = scale > 90 ? 0.5 : scale > 12 ? 1 : 5;
         const majorStep = minorStep < 1 ? 1 : minorStep * 5;
         ctx.lineWidth = 1 / scale;
         for (const [step, color] of [[minorStep, COLORS.gridMinor], [majorStep, COLORS.gridMajor]]) {
@@ -52,7 +74,7 @@ function Grid({ width, height, view }) {
 
 function EdgeLabels({ points, closed, scale }) {
   const count = closed ? points.length : points.length - 1;
-  const fontSize = 12 / scale;
+  const fontSize = 12;
   return Array.from({ length: Math.max(0, count) }, (_, i) => {
     const a = points[i], b = points[(i + 1) % points.length];
     const len = dist(a, b);
@@ -63,12 +85,23 @@ function EdgeLabels({ points, closed, scale }) {
     if (angle > 90 || angle < -90) angle += 180;
     const width = text.length * fontSize * 0.62;
     return (
-      <Group key={i} x={(a.x + b.x) / 2} y={(a.y + b.y) / 2} rotation={angle} listening={false}>
+      <Group
+        key={i}
+        x={(a.x + b.x) / 2}
+        y={(a.y + b.y) / 2}
+        rotation={angle}
+        scaleX={1 / scale}
+        scaleY={1 / scale}
+        listening={false}
+      >
         <Text
           text={text}
           fontSize={fontSize}
           fontStyle="600"
-          fill={COLORS.label}
+          fill="#fff"
+          shadowColor="black"
+          shadowOpacity={0.9}
+          shadowBlur={3}
           width={width}
           align="center"
           offsetX={width / 2}
@@ -81,6 +114,8 @@ function EdgeLabels({ points, closed, scale }) {
 
 export default function GardenStage({
   ref,
+  showGrid = true,
+  showLabels = true,
   width,
   height,
   beds,
@@ -223,7 +258,10 @@ export default function GardenStage({
   const closing = mode === "draw" && hover && draft.length >= 3 && dist(hover, draft[0]) * scale < CLOSE_RADIUS_PX;
   const handleR = 7 / scale;
 
+  const bar = scaleBar(scale);
+
   return (
+    <>
     <Stage
       ref={stageRef}
       width={width}
@@ -245,7 +283,18 @@ export default function GardenStage({
       style={{ cursor: mode === "select" ? "grab" : "crosshair" }}
     >
       <Layer ref={layerRef}>
-        <Grid width={width} height={height} view={view} />
+        <Rect
+          x={-500}
+          y={-500}
+          width={1000}
+          height={1000}
+          fillPatternImage={lawnTexture()}
+          fillPatternScale={{ x: LAWN_TILE_M / 512, y: LAWN_TILE_M / 512 }}
+          fillPatternOffset={{ x: 0, y: 0 }}
+          listening={false}
+          perfectDrawEnabled={false}
+        />
+        {showGrid && <Grid width={width} height={height} view={view} />}
 
         {beds.map((bed) => {
           const selected = selection?.bedId === bed.id;
@@ -261,24 +310,65 @@ export default function GardenStage({
                 if (x || y) onBedMove(bed.id, { x: snap(x, snapStep), y: snap(y, snapStep) });
               }}
             >
+              {/* terra con pacciamatura */}
               <Line
                 kind="bed"
                 id={bed.id}
                 points={flat}
                 closed
-                fill={selected ? COLORS.bedFillSelected : COLORS.bedFill}
-                stroke={selected ? COLORS.edgeSelected : COLORS.edge}
-                strokeWidth={selected ? 5 : 4}
-                strokeScaleEnabled={false}
-                lineJoin="round"
-                shadowColor="black"
-                shadowOpacity={0.18}
-                shadowBlur={6}
-                shadowOffset={{ x: 0.04, y: 0.04 }}
+                fillPatternImage={mulchTexture()}
+                fillPatternScale={{ x: MULCH_TILE_M / 512, y: MULCH_TILE_M / 512 }}
+                perfectDrawEnabled={false}
               />
+              {/* ombra della bordura verso l'interno */}
+              <Line
+                points={flat}
+                closed
+                stroke="rgba(20, 12, 5, 0.45)"
+                strokeWidth={EDGE_W * 2.2}
+                lineJoin="round"
+                listening={false}
+                perfectDrawEnabled={false}
+              />
+              {/* bordura in pietra: fuga scura + blocchetti */}
+              <Line
+                points={flat}
+                closed
+                stroke={COLORS.edgeJoint}
+                strokeWidth={EDGE_W + 0.02}
+                lineJoin="round"
+                listening={false}
+                shadowColor="black"
+                shadowOpacity={0.35}
+                shadowBlur={4}
+                shadowOffset={{ x: 0.02, y: 0.03 }}
+              />
+              <Line
+                points={flat}
+                closed
+                stroke={COLORS.edgeStone}
+                strokeWidth={EDGE_W}
+                dash={EDGE_STONE}
+                lineJoin="round"
+                listening={false}
+                perfectDrawEnabled={false}
+              />
+              {selected && (
+                <Line
+                  points={flat}
+                  closed
+                  stroke={COLORS.edgeSelected}
+                  strokeWidth={2}
+                  dash={[10, 6]}
+                  strokeScaleEnabled={false}
+                  listening={false}
+                />
+              )}
               {(bed.plants || []).map((pl) => {
                 const isSel = selection?.plantId === pl.id;
                 const r = pl.spreadM / 2;
+                const size = pl.spreadM / ICON_FILL;
+                const icon = iconForPlaced(pl);
                 return (
                   <Group
                     key={pl.id}
@@ -297,28 +387,45 @@ export default function GardenStage({
                       onPlantDragEnd(bed.id, pl.id, e.target.position());
                     }}
                   >
-                    <Circle
-                      radius={r}
-                      fill={pl.color}
-                      opacity={0.85}
-                      stroke={isSel ? COLORS.edgeSelected : "rgba(40,60,30,0.55)"}
-                      strokeWidth={isSel ? 3 : 1}
-                      strokeScaleEnabled={false}
+                    <KImage
+                      image={getIconCanvas(icon.type, icon.colors, 320, pl.name)}
+                      width={size}
+                      height={size}
+                      offsetX={size / 2}
+                      offsetY={size / 2}
+                      rotation={rotationFor(pl.id)}
+                      listening={false}
+                      perfectDrawEnabled={false}
                     />
-                    <Circle radius={Math.min(r * 0.18, 0.05)} fill="rgba(40,60,30,0.6)" listening={false} />
-                    {r * scale > 22 && (
-                      <Text
-                        text={pl.name}
-                        fontSize={11 / scale}
-                        fill="#1f2a1a"
-                        width={r * 2}
-                        offsetX={r}
-                        offsetY={-r - 2 / scale}
-                        align="center"
+                    {/* area di tocco */}
+                    <Circle radius={Math.max(r, 14 / scale)} fill="rgba(0,0,0,0.001)" />
+                    {isSel && (
+                      <Circle
+                        radius={r * 1.06}
+                        stroke={COLORS.edgeSelected}
+                        strokeWidth={2.5}
+                        dash={[6, 4]}
+                        strokeScaleEnabled={false}
                         listening={false}
-                        wrap="none"
-                        ellipsis
                       />
+                    )}
+                    {(isSel || (showLabels && r * scale > 26)) && (
+                      // Etichetta in pixel: resta nitida a qualsiasi zoom.
+                      <Group y={r} scaleX={1 / scale} scaleY={1 / scale} listening={false}>
+                        <Label y={4}>
+                          <Tag
+                            fill="rgba(255, 255, 255, 0.9)"
+                            cornerRadius={4}
+                            pointerDirection="up"
+                            pointerWidth={8}
+                            pointerHeight={4}
+                            shadowColor="black"
+                            shadowOpacity={0.2}
+                            shadowBlur={3}
+                          />
+                          <Text text={pl.name} fontSize={11} fontStyle="600" fill={COLORS.label} padding={3} />
+                        </Label>
+                      </Group>
                     )}
                   </Group>
                 );
@@ -361,9 +468,12 @@ export default function GardenStage({
             <Line
               points={draft.flatMap((p) => [p.x, p.y])}
               stroke={COLORS.draft}
-              strokeWidth={4}
+              strokeWidth={3}
               strokeScaleEnabled={false}
               lineJoin="round"
+              shadowColor="black"
+              shadowOpacity={0.6}
+              shadowBlur={3}
               listening={false}
             />
             <EdgeLabels points={draft} closed={false} scale={scale} />
@@ -374,6 +484,9 @@ export default function GardenStage({
                   stroke={COLORS.draft}
                   strokeWidth={2}
                   dash={[8, 6]}
+                  shadowColor="black"
+                  shadowOpacity={0.5}
+                  shadowBlur={2}
                   strokeScaleEnabled={false}
                   listening={false}
                 />
@@ -381,9 +494,14 @@ export default function GardenStage({
                   <Text
                     x={hoverSnapped.x + 10 / scale}
                     y={hoverSnapped.y + 10 / scale}
+                    scaleX={1 / scale}
+                    scaleY={1 / scale}
                     text={formatM(dist(draftTail, hoverSnapped))}
-                    fontSize={12 / scale}
-                    fill={COLORS.label}
+                    fontSize={12}
+                    fill="#fff"
+                    shadowColor="black"
+                    shadowOpacity={0.9}
+                    shadowBlur={3}
                     listening={false}
                   />
                 )}
@@ -395,7 +513,7 @@ export default function GardenStage({
                 x={p.x}
                 y={p.y}
                 radius={(i === 0 && draft.length >= 3 ? 9 : 6) / scale}
-                fill={i === 0 && closing ? COLORS.edgeSelected : COLORS.draft}
+                fill={i === 0 && closing ? COLORS.edgeSelected : "#3b4a32"}
                 stroke="#fff"
                 strokeWidth={2}
                 strokeScaleEnabled={false}
@@ -407,20 +525,24 @@ export default function GardenStage({
 
         {/* Anteprima della pianta da posizionare */}
         {mode === "place" && placing && hover && (
-          <Circle
+          <KImage
+            image={getIconCanvas(placing.icon.type, placing.icon.colors, 320, placing.plant.commonName)}
             x={hover.x}
             y={hover.y}
-            radius={placing.spreadM / 2}
-            fill={placing.color}
-            opacity={0.5}
-            stroke="#1f2a1a"
-            dash={[6, 4]}
-            strokeWidth={1}
-            strokeScaleEnabled={false}
+            width={placing.spreadM / ICON_FILL}
+            height={placing.spreadM / ICON_FILL}
+            offsetX={placing.spreadM / ICON_FILL / 2}
+            offsetY={placing.spreadM / ICON_FILL / 2}
+            opacity={0.65}
             listening={false}
           />
         )}
       </Layer>
     </Stage>
+    <div className="scale-bar" aria-label={`Scala: ${bar.label}`}>
+      <span className="scale-bar-ruler" style={{ width: bar.px }} />
+      <span>{bar.label}</span>
+    </div>
+    </>
   );
 }

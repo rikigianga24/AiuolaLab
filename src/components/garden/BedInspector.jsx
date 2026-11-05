@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { bbox, formatM, formatM2, perimeter, polygonArea } from "../../lib/geometry";
 import { SOIL_PH, SOIL_TEXTURE, SUNLIGHT, WATERING } from "../../lib/labels";
+import { getIconUrl, iconForPlaced } from "../../lib/plantIcons";
 
 function Choice({ label, value, options, onChange, allowEmpty = true }) {
   return (
@@ -34,7 +35,7 @@ export default function BedInspector({ project, bed, selection, onSelect, onUpda
     const map = new Map();
     for (const p of bed?.plants ?? []) {
       const key = p.plantId ?? p.name;
-      const g = map.get(key) ?? { key, name: p.name, color: p.color, ids: [] };
+      const g = map.get(key) ?? { key, name: p.name, icon: iconForPlaced(p), ids: [] };
       g.ids.push(p.id);
       map.set(key, g);
     }
@@ -110,7 +111,11 @@ export default function BedInspector({ project, bed, selection, onSelect, onUpda
 
       {selectedPlant && (
         <div className="selected-plant">
-          <span className="dot" style={{ background: selectedPlant.color }} />
+          <img
+            className="legend-icon"
+            src={getIconUrl(iconForPlaced(selectedPlant).type, iconForPlaced(selectedPlant).colors, 64, selectedPlant.name)}
+            alt=""
+          />
           <div>
             <strong>{selectedPlant.name}</strong>
             <small>
@@ -144,7 +149,7 @@ export default function BedInspector({ project, bed, selection, onSelect, onUpda
         <ul className="group-list">
           {groups.map((g) => (
             <li key={g.key}>
-              <span className="dot" style={{ background: g.color }} />
+              <img className="legend-icon" src={getIconUrl(g.icon.type, g.icon.colors, 64, g.name)} alt="" />
               <span className="grow">{g.name}</span>
               <span className="count">× {g.ids.length}</span>
               <button className="icon-btn" onClick={() => onRemovePlants(bed.id, g.ids)} aria-label={`Rimuovi ${g.name}`}>

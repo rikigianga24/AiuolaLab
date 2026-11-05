@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useDebounced } from "../../hooks/useDebounced";
 import { getHealth, getPlant, searchPlants } from "../../lib/api";
 import { COLORS, CYCLE, SEASONS, SOIL_PH, SUNLIGHT, WATERING } from "../../lib/labels";
+import { flowerHexes, getIconUrl, iconTypeFor } from "../../lib/plantIcons";
 import PlantFacts from "./PlantFacts";
 
 const EMPTY = { q: "", sunlight: "", watering: "", ph: "", color: "", season: "" };
@@ -140,13 +141,11 @@ export default function PlantCatalog({ selectedBed, onPickPlant }) {
           return (
             <li key={plant.id} className={`plant-item ${open ? "is-open" : ""}`}>
               <button className="plant-row" onClick={() => toggle(plant)} aria-expanded={open}>
-                {plant.image?.thumb ? (
-                  <img src={plant.image.thumb} alt="" loading="lazy" />
-                ) : (
-                  <span className="plant-swatch" style={{ background: COLORS[plant.flowerColors?.[0]]?.hex ?? "#6f9a5b" }}>
-                    <i className="fa-solid fa-leaf" />
-                  </span>
-                )}
+                <img
+                  className="plant-icon"
+                  src={getIconUrl(iconTypeFor(plant), flowerHexes(plant), 96, plant.commonName)}
+                  alt=""
+                />
                 <span className="plant-names">
                   <strong>{plant.commonName}</strong>
                   <em>{plant.scientificName}</em>
@@ -160,6 +159,7 @@ export default function PlantCatalog({ selectedBed, onPickPlant }) {
               </button>
               {open && (
                 <div className="plant-detail">
+                  {full.image?.regular && <img className="plant-photo" src={full.image.regular} alt={full.commonName} loading="lazy" />}
                   <PlantFacts plant={full} />
                   <button className="button is-primary is-small is-fullwidth" onClick={() => onPickPlant(full)}>
                     <i className="fa-solid fa-hand-point-up" />&nbsp; Pianta nell'aiuola

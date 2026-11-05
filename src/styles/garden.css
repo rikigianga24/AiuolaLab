@@ -865,3 +865,69 @@
     padding: 0 0.6rem;
   }
 }
+
+/* ===== Grafica del disegno ===== */
+
+.garden-canvas {
+  background: #86a85e;
+}
+
+.scale-bar {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.85);
+  color: #2b2b2b;
+  font-size: 0.72rem;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.scale-bar-ruler {
+  display: inline-block;
+  height: 8px;
+  border: 2px solid #2b2b2b;
+  border-top: none;
+  background: repeating-linear-gradient(90deg, #2b2b2b 0 50%, #fff 50% 100%) bottom / 100% 3px no-repeat;
+}
+
+.tool-btn.is-on {
+  color: var(--green-primary);
+  box-shadow: inset 0 0 0 2px rgba(79, 121, 66, 0.35), 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.tool-chip img {
+  flex-shrink: 0;
+}
+
+.plant-row img.plant-icon {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  background: radial-gradient(circle, #e9efe0 0%, #dfe7d3 70%);
+  border-radius: 10px;
+}
+
+.plant-photo {
+  width: 100%;
+  max-height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.4rem;
+}
+
+.legend-icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.is-mobile .scale-bar {
+  bottom: 74px;
+}
