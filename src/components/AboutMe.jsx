@@ -39,7 +39,7 @@ const AboutMe = () => {
                   <li>• React & Canvas interattivo</li>
                   <li>• Gestione geometrie e distanze</li>
                   <li>• UI pulita, senza fronzoli</li>
-                  <li>• Evoluzione continua del progetto</li>
+                  <li>• Database botanico e consigli con IA</li>
                 </ul>
               </div>
             </div>
@@ -77,7 +77,7 @@ const AboutMe = () => {
               <div className="box">
                 <h4 className="title is-6">Direzione futura</h4>
                 <p>
-                  Integrazione API botaniche, suggerimenti automatici
+                  Account utente, preventivo dei materiali, vista 3D
                   e strumenti sempre più precisi.
                 </p>
               </div>

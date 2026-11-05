@@ -1,16 +1,59 @@
-# React + Vite
+# AiuolaLab
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+App web per progettare aiuole, che si usa sia dal browser sia dal telefono. Puoi installarla come app (PWA).
 
-Currently, two official plugins are available:
+- **Disegno in scala reale**: segni gli angoli dell'aiuola e l'app calcola lati, superficie e perimetro in metri. Gli angoli si possono trascinare per cambiare la forma, e l'aiuola si può spostare.
+- **Database piante**: cerchi le piante per nome, esposizione, acqua, pH del terreno, colore e periodo di fioritura. I dati vengono da [Perenual](https://perenual.com/docs/api), un database pubblico di circa 10.000 specie.
+- **Consigli con l'IA**: indichi condizioni e gusti, Claude propone le piante, le quantità e la disposizione, e l'app le posiziona nell'aiuola.
+- **Progetti**: vengono salvati su Postgres, oppure nel browser se il server non ha un database.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Avvio in locale
 
-## React Compiler
+Richiede Node.js 20 o superiore.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+cp .env.example .env   # poi inserisci le tue chiavi
+npm run dev            # frontend su http://localhost:5173, API su :3001
+```
 
-## Expanding the ESLint configuration
+Tutte le chiavi sono facoltative: senza chiavi l'app funziona lo stesso, con un catalogo di piante di esempio, i progetti salvati nel browser e il consulente IA disattivato.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+| Variabile | A cosa serve |
+|---|---|
+| `PERENUAL_API_KEY` | Database piante completo (chiave gratuita su perenual.com) |
+| `DATABASE_URL` | Postgres per salvare i progetti e tenere in cache le schede delle piante (Supabase, Neon, Railway…) |
+| `DATABASE_SSL` | `true` per i database in cloud |
+| `ANTHROPIC_API_KEY` | Consulente IA (console.anthropic.com) |
+| `SUGGEST_RATE_LIMIT` | Richieste massime all'IA per IP ogni ora (default 20) |
+
+Lo schema del database (`server/schema.sql`) viene creato da solo all'avvio.
+
+Dal telefono, sulla stessa rete Wi-Fi: avvia `npx vite --host` e apri l'indirizzo IP del computer indicato da Vite.
+
+## Produzione
+
+```bash
+npm run build
+npm start              # Express serve sia /api sia il frontend compilato
+```
+
+## Struttura
+
+```
+server/            API Express
+  plants/          adattatore Perenual, normalizzazione dati, cache, catalogo demo
+  ai/advisor.js    consulente IA (Claude, output JSON strutturato)
+  routes/          /api/plants, /api/projects, /api/suggest
+src/
+  components/garden/   editor: canvas Konva, pannelli, consulente
+  lib/             geometria in metri, disposizione automatica, archivio progetti
+test/              test (npm test)
+```
+
+## Comandi
+
+- `npm run dev`: frontend e API in sviluppo
+- `npm test`: test unitari
+- `npm run lint`: ESLint
+- `npm run build`: build di produzione, con service worker PWA

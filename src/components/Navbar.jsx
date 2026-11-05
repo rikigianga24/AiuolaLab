@@ -1,20 +1,41 @@
-const Navbar = () => {
-  return (
-    <nav className="navbar is-transparent navbar-overlay">
-      <div className="navbar-brand">
-        <a className="navbar-item has-text-white">
-          <strong>AiuolaLab</strong>
-        </a>
-      </div>
+import { useState } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
 
-      <div className="navbar-menu">
+export default function Navbar() {
+  const [open, setOpen] = useState(false);
+  const { pathname } = useLocation();
+  const solid = pathname !== "/";
+  const close = () => setOpen(false);
+
+  return (
+    <nav className={`navbar app-navbar ${solid ? "is-solid" : "is-transparent"}`} aria-label="Navigazione principale">
+      <div className="navbar-brand">
+        <Link to="/" className="navbar-item brand" onClick={close}>
+          <img src="/icons/icon.svg" alt="" width="28" height="28" />
+          <strong>AiuolaLab</strong>
+        </Link>
+        <button
+          className={`navbar-burger ${open ? "is-active" : ""}`}
+          aria-label="Menu"
+          aria-expanded={open}
+          onClick={() => setOpen((o) => !o)}
+        >
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
+        </button>
+      </div>
+      <div className={`navbar-menu ${open ? "is-active" : ""}`}>
         <div className="navbar-end">
-          <a href = "/Login" className="navbar-item has-text-white">Login</a>
-          <a href = "/AboutMe" className="navbar-item has-text-white">About me</a>
+          <NavLink to="/gardencanvas" className="navbar-item" onClick={close}>
+            Progetta
+          </NavLink>
+          <NavLink to="/aboutme" className="navbar-item" onClick={close}>
+            Chi sono
+          </NavLink>
         </div>
       </div>
     </nav>
   );
-};
-
-export default Navbar;
+}
