@@ -2,7 +2,12 @@
 // Si attivano solo se è impostata TEST_DATABASE_URL, per esempio:
 //   TEST_DATABASE_URL=postgresql://postgres@localhost:5432/postgres npm test
 import assert from "node:assert/strict";
+import crypto from "node:crypto";
 import { after, before, test } from "node:test";
+
+// Password generate a ogni esecuzione: nessuna credenziale scritta nel codice.
+const PASSWORD = crypto.randomBytes(12).toString("base64url");
+const WRONG = crypto.randomBytes(12).toString("base64url");
 
 const DB = process.env.TEST_DATABASE_URL;
 const skip = !DB && "TEST_DATABASE_URL non impostata";
@@ -48,17 +53,17 @@ test("registrazione, accesso, impostazioni, export e cancellazione", { skip }, a
   const api = client();
   const email = `mario${Date.now()}@test.aiuolalab`;
 
-  let r = await api("/api/auth/register", { method: "POST", body: { email, password: "corta", privacy: true } });
+  let r = await api("/api/auth/register", { method: "POST", body: { email, password: PASSWORD.slice(0, 4), privacy: true } });
   assert.equal(r.status, 400, "password troppo corta");
-  r = await api("/api/auth/register", { method: "POST", body: { email, password: "unapasswordlunga", privacy: false } });
+  r = await api("/api/auth/register", { method: "POST", body: { email, password: PASSWORD, privacy: false } });
   assert.equal(r.status, 400, "privacy obbligatoria");
-  r = await api("/api/auth/register", { method: "POST", body: { email, password: "unapasswordlunga", privacy: true } });
+  r = await api("/api/auth/register", { method: "POST", body: { email, password: PASSWORD, privacy: true } });
   assert.equal(r.status, 201);
   assert.equal(r.data.user.email, email);
   // senza SMTP l'email è considerata verificata
   assert.equal(r.data.user.emailVerified, true);
 
-  r = await api("/api/auth/register", { method: "POST", body: { email, password: "unapasswordlunga", privacy: true } });
+  r = await api("/api/auth/register", { method: "POST", body: { email, password: PASSWORD, privacy: true } });
   assert.equal(r.status, 409);
 
   r = await api("/api/auth/me");
@@ -91,14 +96,14 @@ test("registrazione, accesso, impostazioni, export e cancellazione", { skip }, a
   r = await api("/api/auth/me");
   assert.equal(r.data.user, null);
 
-  r = await api("/api/auth/login", { method: "POST", body: { email, password: "sbagliatasbagliata" } });
+  r = await api("/api/auth/login", { method: "POST", body: { email, password: WRONG } });
   assert.equal(r.status, 401);
-  r = await api("/api/auth/login", { method: "POST", body: { email, password: "unapasswordlunga" } });
+  r = await api("/api/auth/login", { method: "POST", body: { email, password: PASSWORD } });
   assert.equal(r.status, 200);
 
-  r = await api("/api/account", { method: "DELETE", body: { password: "sbagliata" } });
+  r = await api("/api/account", { method: "DELETE", body: { password: WRONG } });
   assert.equal(r.status, 401);
-  r = await api("/api/account", { method: "DELETE", body: { password: "unapasswordlunga" } });
+  r = await api("/api/account", { method: "DELETE", body: { password: PASSWORD } });
   assert.equal(r.status, 200);
   const { rows } = await pool.query("SELECT count(*)::int AS n FROM projects WHERE owner_key = $1", [`user:${userId}`]);
   assert.equal(rows[0].n, 0, "i progetti dell'utente cancellato sono eliminati");

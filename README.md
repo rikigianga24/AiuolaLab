@@ -42,11 +42,7 @@ Con [Supabase](https://supabase.com), piano gratuito:
 1. Crea un account e un nuovo progetto. Scegli una **regione europea** (es. Frankfurt): conta per il GDPR.
 2. Annota la **password del database** che scegli alla creazione.
 3. In *Project Settings → Database → Connection string* copia la stringa **URI**. Usa quella del *Session pooler* (porta 5432), che funziona anche da server senza IPv6.
-4. Nel `.env`:
-   ```
-   DATABASE_URL=postgresql://postgres.xxxx:LA_TUA_PASSWORD@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
-   DATABASE_SSL=true
-   ```
+4. Nel `.env` incolla quella stringa in `DATABASE_URL`, sostituendo il segnaposto della password con la tua, e imposta `DATABASE_SSL=true`.
 5. Avvia il server: le tabelle (`server/schema.sql`) vengono create da sole.
 
 Vanno bene anche Neon, Railway o un Postgres tuo: serve solo l'URL di connessione.
@@ -57,15 +53,12 @@ Con [Brevo](https://www.brevo.com), piano gratuito con un limite di email al gio
 
 1. Crea l'account. In *Senders, Domains & Dedicated IPs* **verifica il mittente**: un indirizzo email o, meglio, il tuo dominio, aggiungendo i record DNS che ti indicano.
 2. In *SMTP & API → SMTP* trovi server, porta, login e genera una **chiave SMTP**.
-3. Nel `.env`:
-   ```
-   SMTP_HOST=smtp-relay.brevo.com
-   SMTP_PORT=587
-   SMTP_USER=il-login-smtp@smtp-brevo.com
-   SMTP_PASS=la-chiave-smtp
-   MAIL_FROM="AiuolaLab <noreply@tuodominio.it>"
-   APP_URL=https://il-tuo-sito.it
-   ```
+3. Nel `.env` compila:
+   - `SMTP_HOST` e `SMTP_PORT` con server e porta indicati da Brevo (di solito porta 587);
+   - `SMTP_USER` con il login SMTP;
+   - `SMTP_PASS` con la chiave SMTP che hai generato;
+   - `MAIL_FROM` con il mittente verificato, per esempio `AiuolaLab <noreply@tuodominio.it>`;
+   - `APP_URL` con l'indirizzo pubblico del sito.
 
 Senza SMTP gli account funzionano lo stesso: l'email non viene confermata e il recupero password non è disponibile.
 
