@@ -8,6 +8,7 @@ import { newId } from "../../lib/ids";
 import { plantColor, plantSpreadM } from "../../lib/labels";
 import { toPlaced } from "../../lib/placed";
 import { flowerHexes, getIconUrl, iconTypeFor } from "../../lib/plantIcons";
+import { computeIrrigation } from "../../lib/irrigation";
 import { emptyProject, loadCurrent, saveCurrent } from "../../lib/projects";
 import "../../styles/garden.css";
 import ConfirmDialog from "../ConfirmDialog";
@@ -20,12 +21,14 @@ const HINTS_MOBILE = {
   select: "Un dito per spostarti · due dita per lo zoom",
   draw: "Tocca per i vertici · tocca il primo punto per chiudere",
   place: "Tocca dentro un'aiuola per piantare",
+  faucet: "Tocca dove si trova il rubinetto",
 };
 
 const HINTS = {
   select: "Trascina per spostarti · rotella o due dita per lo zoom · tocca un'aiuola per selezionarla",
   draw: "Tocca per aggiungere i vertici · tocca il primo punto (o «Chiudi») per completare l'aiuola",
   place: "Tocca dentro un'aiuola per piantare · «Fine» per smettere",
+  faucet: "Tocca il punto del disegno dove si trova il rubinetto",
 };
 
 function isSelfIntersecting(points) {
@@ -54,6 +57,7 @@ export default function GardenPage() {
   const [confirm, setConfirm] = useState(null);
   const [showGrid, setShowGrid] = useState(true);
   const [showLabels, setShowLabels] = useState(true);
+  const [showIrrigation, setShowIrrigation] = useState(true);
 
   const isMobile = useMediaQuery("(max-width: 900px)");
   const canvasRef = useRef(null);
@@ -75,6 +79,24 @@ export default function GardenPage() {
     const t = setTimeout(() => saveCurrent(project), 400);
     return () => clearTimeout(t);
   }, [project]);
+
+  const irrigation = useMemo(() => computeIrrigation(project), [project]);
+
+  const placeFaucet = (p) => {
+    setProject((pr) => ({ ...pr, faucet: p }));
+    setMode("select");
+    setShowIrrigation(true);
+    setTab("irrigazione");
+    notify("Rubinetto posizionato: impianto calcolato.", "success");
+  };
+
+  const startFaucet = () => {
+    setMode("faucet");
+    setDraft([]);
+    setPlacing(null);
+    setSelection(null);
+    if (isMobile) setSheetOpen(false);
+  };
 
   const selectedBed = useMemo(
     () => project.beds.find((b) => b.id === selection?.bedId) ?? null,
@@ -146,6 +168,8 @@ export default function GardenPage() {
       points: draft,
       conditions: { sunlight: "full_sun" },
       viewedFrom: "all",
+      surface: "bark",
+      edging: "stone",
       plants: [],
     };
     updateBeds((beds) => [...beds, bed]);
@@ -341,7 +365,7 @@ export default function GardenPage() {
   const canUndo = (mode === "draw" && draft.length > 0) || history.canUndo;
 
   return (
-    <div className={`garden-app ${isMobile ? "is-mobile" : ""}`}>
+    <div className={`garden-app ${isMobile ? "is-mobile" : ""} ${isMobile && sheetOpen ? "sheet-open" : ""}`}>
       <div className="garden-canvas" ref={canvasRef}>
         {size.width > 0 && (
           <GardenStage
@@ -356,6 +380,10 @@ export default function GardenPage() {
             snapStep={SNAP_STEP}
             showGrid={showGrid}
             showLabels={showLabels}
+            irrigation={showIrrigation ? irrigation : null}
+            faucet={project.faucet}
+            onPlaceFaucet={placeFaucet}
+            onFaucetMove={(p) => setProject((pr) => ({ ...pr, faucet: p }))}
             onDraftPoint={addDraftPoint}
             onDraftClose={closeDraft}
             onSelect={handleSelect}
@@ -376,6 +404,15 @@ export default function GardenPage() {
               </button>
               <button className="tool-btn" onClick={stopMode}>
                 <i className="fa-solid fa-xmark" /> <span>Annulla disegno</span>
+              </button>
+            </>
+          ) : mode === "faucet" ? (
+            <>
+              <span className="tool-chip">
+                <i className="fa-solid fa-faucet-drip" /> Posiziona il rubinetto
+              </span>
+              <button className="tool-btn" onClick={stopMode}>
+                <i className="fa-solid fa-xmark" /> <span>Annulla</span>
               </button>
             </>
           ) : mode === "place" ? (
@@ -408,10 +445,10 @@ export default function GardenPage() {
         </div>
 
         <div className="zoom-controls">
-          <button className="tool-btn icon" onClick={() => stageApi.current?.zoomIn()} aria-label="Ingrandisci">
+          <button className="tool-btn icon zoom-step" onClick={() => stageApi.current?.zoomIn()} aria-label="Ingrandisci">
             <i className="fa-solid fa-plus" />
           </button>
-          <button className="tool-btn icon" onClick={() => stageApi.current?.zoomOut()} aria-label="Riduci">
+          <button className="tool-btn icon zoom-step" onClick={() => stageApi.current?.zoomOut()} aria-label="Riduci">
             <i className="fa-solid fa-minus" />
           </button>
           <button className="tool-btn icon" onClick={() => stageApi.current?.fit()} aria-label="Inquadra tutto" title="Inquadra tutto">
@@ -435,6 +472,17 @@ export default function GardenPage() {
           >
             <i className="fa-solid fa-tag" />
           </button>
+          {project.faucet && (
+            <button
+              className={`tool-btn icon ${showIrrigation ? "is-on" : ""}`}
+              onClick={() => setShowIrrigation((v) => !v)}
+              aria-pressed={showIrrigation}
+              aria-label="Impianto di irrigazione"
+              title="Impianto di irrigazione"
+            >
+              <i className="fa-solid fa-droplet" />
+            </button>
+          )}
         </div>
 
         {!(isMobile && sheetOpen) && <div className="garden-hint">{(isMobile ? HINTS_MOBILE : HINTS)[mode]}</div>}
@@ -460,6 +508,13 @@ export default function GardenPage() {
         onUpdateBed={(bedId, patch) => updateBed(bedId, (b) => ({ ...b, ...patch }))}
         onDeleteSelection={deleteSelection}
         onDeleteBed={deleteBed}
+        irrigation={irrigation}
+        mode={mode}
+        onStartFaucet={startFaucet}
+        onRemoveFaucet={() => setProject((pr) => ({ ...pr, faucet: null }))}
+        onIrrigationSettings={(patch) => setProject((pr) => ({ ...pr, irrigation: { ...pr.irrigation, ...patch } }))}
+        showIrrigation={showIrrigation}
+        onToggleIrrigation={setShowIrrigation}
         onProjectSaved={(remoteId) => history.patchAll((p) => ({ ...p, remoteId }))}
         onRemovePlants={(bedId, plantIds) =>
           updateBed(bedId, (b) => ({ ...b, plants: b.plants.filter((p) => !plantIds.includes(p.id)) }))

@@ -1,5 +1,6 @@
 import AiAdvisor from "./AiAdvisor";
 import BedInspector from "./BedInspector";
+import IrrigationPanel from "./IrrigationPanel";
 import PlantCatalog from "./PlantCatalog";
 import ProjectPanel from "./ProjectPanel";
 
@@ -7,6 +8,7 @@ const TABS = [
   { id: "piante", label: "Piante", icon: "fa-seedling" },
   { id: "aiuola", label: "Aiuola", icon: "fa-vector-square" },
   { id: "ia", label: "Consigli IA", icon: "fa-wand-magic-sparkles" },
+  { id: "irrigazione", label: "Irrigazione", icon: "fa-faucet-drip" },
   { id: "progetto", label: "Progetto", icon: "fa-folder-open" },
 ];
 
@@ -59,6 +61,18 @@ export default function SidePanel({ isMobile, open, onOpenChange, tab, onTabChan
         )}
         {tab === "ia" && (
           <AiAdvisor key={props.selectedBed?.id ?? "none"} bed={props.selectedBed} onUpdateBed={props.onUpdateBed} onApply={props.onApplySuggestion} />
+        )}
+        {tab === "irrigazione" && (
+          <IrrigationPanel
+            project={props.project}
+            irrigation={props.irrigation}
+            mode={props.mode}
+            onStartFaucet={props.onStartFaucet}
+            onRemoveFaucet={props.onRemoveFaucet}
+            onSettings={props.onIrrigationSettings}
+            showOnCanvas={props.showIrrigation}
+            onToggleCanvas={props.onToggleIrrigation}
+          />
         )}
         {tab === "progetto" && (
           <ProjectPanel

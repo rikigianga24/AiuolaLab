@@ -931,3 +931,182 @@
 .is-mobile .scale-bar {
   bottom: 74px;
 }
+
+/* ===== Materiali ===== */
+
+.material-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 6px;
+}
+
+.material {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 5px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+  font-size: 0.72rem;
+  color: #3b4a3b;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.material img {
+  width: 100%;
+  aspect-ratio: 1.6;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.material.is-active {
+  border-color: var(--green-primary);
+}
+
+.edge-swatch {
+  display: inline-block;
+  width: 18px;
+  height: 8px;
+  border: 2px solid;
+  border-radius: 2px;
+}
+
+/* ===== Irrigazione ===== */
+
+.panel-warning {
+  font-size: 0.82rem;
+  color: #7a5200;
+  background: #fff4dc;
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  margin: 0.5rem 0;
+}
+
+.legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  font-size: 0.75rem;
+  color: #4d5a4d;
+  margin-bottom: 0.4rem;
+}
+
+.legend-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.legend-line {
+  display: inline-block;
+  width: 22px;
+  height: 0;
+  border-top: 4px solid #1d2b33;
+}
+
+.legend-line.drip {
+  border-top: 2px dashed #2b2b2b;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #38a6e8;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px #9cc;
+}
+
+.zone-card {
+  background: #fff;
+  border: 1px solid rgba(47, 62, 47, 0.1);
+  border-radius: 10px;
+  padding: 0.6rem 0.7rem;
+  margin-bottom: 0.6rem;
+}
+
+.zone-head {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.35rem;
+}
+
+.zone-head small {
+  color: #6b766b;
+  font-size: 0.75rem;
+}
+
+table.schedule,
+table.materials {
+  width: 100%;
+  font-size: 0.8rem;
+  border-collapse: collapse;
+}
+
+table.schedule th {
+  text-align: left;
+  font-weight: 600;
+  color: #6b766b;
+  font-size: 0.72rem;
+  padding: 0.2rem 0.3rem 0.2rem 0;
+}
+
+table.schedule td,
+table.materials td {
+  padding: 0.25rem 0.3rem 0.25rem 0;
+  border-top: 1px solid rgba(47, 62, 47, 0.08);
+  vertical-align: top;
+}
+
+table.schedule small,
+table.materials small {
+  color: #6b766b;
+}
+
+.muted-row td {
+  color: #8a958a;
+}
+
+table.materials .qty {
+  text-align: right;
+  white-space: nowrap;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.tips-box {
+  background: #eef6fb;
+  border: 1px solid #cfe6f3;
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.8rem;
+  margin: 0.6rem 0;
+}
+
+.tips-box p {
+  margin-top: 0.35rem;
+}
+
+.gp-tab span {
+  white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+  .gp-tab {
+    font-size: 0.66rem;
+  }
+}
+
+/* Telefono: lo zoom si fa con due dita, i pulsanti +/- non servono */
+.is-mobile .zoom-step {
+  display: none;
+}
+
+.is-mobile.sheet-open .scale-bar {
+  bottom: 22px;
+}

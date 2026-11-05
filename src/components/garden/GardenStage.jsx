@@ -2,7 +2,7 @@ import { useEffect, useImperativeHandle, useRef, useState } from "react";
 import { Circle, Group, Image as KImage, Label, Layer, Line, Rect, Shape, Stage, Tag, Text } from "react-konva";
 import { bbox, dist, formatM, pointInPolygon, snap } from "../../lib/geometry";
 import { ICON_FILL, getIconCanvas, iconForPlaced } from "../../lib/plantIcons";
-import { lawnTexture, mulchTexture } from "../../lib/textures";
+import { EDGINGS, lawnTexture, surfaceTexture } from "../../lib/textures";
 
 export const PX_PER_M = 60;
 const MIN_ZOOM = 0.15;
@@ -12,8 +12,10 @@ const CLOSE_RADIUS_PX = 16;
 const COLORS = {
   gridMinor: "rgba(255, 255, 255, 0.10)",
   gridMajor: "rgba(255, 255, 255, 0.22)",
-  edgeJoint: "#4b443b",
-  edgeStone: "#cbc2b1",
+  supply: "#1d2b33",
+  drip: "#2b2b2b",
+  dripper: "#38a6e8",
+  faucet: "#2f80ed",
   edgeSelected: "#f2a23a",
   draft: "#fdf8ec",
   draftShadow: "rgba(30, 30, 20, 0.6)",
@@ -22,10 +24,6 @@ const COLORS = {
 
 // Scala delle texture: lato della piastrella in metri.
 const LAWN_TILE_M = 2.5;
-const MULCH_TILE_M = 1.2;
-// Bordura in pietra: spessore e lunghezza dei blocchetti in metri.
-const EDGE_W = 0.12;
-const EDGE_STONE = [0.22, 0.025];
 
 // Rotazione stabile per ogni esemplare: le piante uguali non sembrano timbri.
 const rotationFor = (id) => {
@@ -133,6 +131,10 @@ export default function GardenStage({
   onVertexDrag,
   onVertexDragEnd,
   onBedMove,
+  irrigation,
+  faucet,
+  onPlaceFaucet,
+  onFaucetMove,
 }) {
   const stageRef = useRef(null);
   const layerRef = useRef(null);
@@ -195,6 +197,10 @@ export default function GardenStage({
         return;
       }
       onDraftPoint({ x: snap(p.x, snapStep), y: snap(p.y, snapStep) });
+      return;
+    }
+    if (mode === "faucet") {
+      onPlaceFaucet({ x: snap(p.x, snapStep), y: snap(p.y, snapStep) });
       return;
     }
     if (mode === "place") {
@@ -299,6 +305,8 @@ export default function GardenStage({
         {beds.map((bed) => {
           const selected = selection?.bedId === bed.id;
           const flat = bed.points.flatMap((p) => [p.x, p.y]);
+          const surface = surfaceTexture(bed.surface);
+          const edging = EDGINGS[bed.edging] ?? EDGINGS.stone;
           return (
             <Group
               key={bed.id}
@@ -310,49 +318,53 @@ export default function GardenStage({
                 if (x || y) onBedMove(bed.id, { x: snap(x, snapStep), y: snap(y, snapStep) });
               }}
             >
-              {/* terra con pacciamatura */}
+              {/* copertura: corteccia, ghiaia, ciottoli... */}
               <Line
                 kind="bed"
                 id={bed.id}
                 points={flat}
                 closed
-                fillPatternImage={mulchTexture()}
-                fillPatternScale={{ x: MULCH_TILE_M / 512, y: MULCH_TILE_M / 512 }}
+                fillPatternImage={surface.image}
+                fillPatternScale={{ x: surface.tileM / 512, y: surface.tileM / 512 }}
                 perfectDrawEnabled={false}
               />
-              {/* ombra della bordura verso l'interno */}
+              {/* ombra verso l'interno: dà profondità */}
               <Line
                 points={flat}
                 closed
-                stroke="rgba(20, 12, 5, 0.45)"
-                strokeWidth={EDGE_W * 2.2}
+                stroke="rgba(20, 12, 5, 0.4)"
+                strokeWidth={Math.max(edging.width, 0.05) * 2.2}
                 lineJoin="round"
                 listening={false}
                 perfectDrawEnabled={false}
               />
-              {/* bordura in pietra: fuga scura + blocchetti */}
-              <Line
-                points={flat}
-                closed
-                stroke={COLORS.edgeJoint}
-                strokeWidth={EDGE_W + 0.02}
-                lineJoin="round"
-                listening={false}
-                shadowColor="black"
-                shadowOpacity={0.35}
-                shadowBlur={4}
-                shadowOffset={{ x: 0.02, y: 0.03 }}
-              />
-              <Line
-                points={flat}
-                closed
-                stroke={COLORS.edgeStone}
-                strokeWidth={EDGE_W}
-                dash={EDGE_STONE}
-                lineJoin="round"
-                listening={false}
-                perfectDrawEnabled={false}
-              />
+              {edging.width > 0 && (
+                <>
+                  {/* bordura: fuga + elementi (blocchetti, mattoni, assi) */}
+                  <Line
+                    points={flat}
+                    closed
+                    stroke={edging.joint}
+                    strokeWidth={edging.width + 0.02}
+                    lineJoin={edging.dash ? "round" : "miter"}
+                    listening={false}
+                    shadowColor="black"
+                    shadowOpacity={0.35}
+                    shadowBlur={4}
+                    shadowOffset={{ x: 0.02, y: 0.03 }}
+                  />
+                  <Line
+                    points={flat}
+                    closed
+                    stroke={edging.color}
+                    strokeWidth={edging.width}
+                    dash={edging.dash ?? undefined}
+                    lineJoin={edging.dash ? "round" : "miter"}
+                    listening={false}
+                    perfectDrawEnabled={false}
+                  />
+                </>
+              )}
               {selected && (
                 <Line
                   points={flat}
@@ -461,6 +473,71 @@ export default function GardenStage({
             </Group>
           );
         })}
+
+        {/* Impianto a goccia */}
+        {irrigation?.ready && (
+          <Group listening={false}>
+            {irrigation.edges.map((e, i) => (
+              <Line
+                key={`e${i}`}
+                points={[e.a.x, e.a.y, e.b.x, e.b.y]}
+                stroke={e.kind === "supply" ? COLORS.supply : COLORS.drip}
+                strokeWidth={e.kind === "supply" ? 4 : 2.5}
+                dash={e.kind === "supply" ? undefined : [10, 4]}
+                lineCap="round"
+                strokeScaleEnabled={false}
+                shadowColor="white"
+                shadowOpacity={0.7}
+                shadowBlur={2}
+                opacity={0.9}
+              />
+            ))}
+            {irrigation.drippers.flatMap((d) =>
+              Array.from({ length: d.count }, (_, k) => {
+                const a = (k / d.count) * Math.PI * 2 + 0.6;
+                const off = d.count > 1 ? Math.min(d.r * 0.45, 0.25) : 0;
+                return (
+                  <Circle
+                    key={`${d.plantId}-${k}`}
+                    x={d.x + Math.cos(a) * off}
+                    y={d.y + Math.sin(a) * off}
+                    radius={4 / scale}
+                    fill={COLORS.dripper}
+                    stroke="#fff"
+                    strokeWidth={1.5}
+                    strokeScaleEnabled={false}
+                  />
+                );
+              }),
+            )}
+          </Group>
+        )}
+
+        {faucet && (
+          <Group
+            x={faucet.x}
+            y={faucet.y}
+            draggable={mode === "select"}
+            onDragEnd={(e) => {
+              e.cancelBubble = true;
+              onFaucetMove({ x: snap(e.target.x(), snapStep), y: snap(e.target.y(), snapStep) });
+            }}
+            onDragMove={(e) => (e.cancelBubble = true)}
+          >
+            <Group scaleX={1 / scale} scaleY={1 / scale}>
+              <Circle radius={13} fill={COLORS.faucet} stroke="#fff" strokeWidth={3} shadowColor="black" shadowOpacity={0.4} shadowBlur={4} />
+              {/* rubinetto stilizzato */}
+              <Line points={[-6, -2, 3, -2, 3, 5]} stroke="#fff" strokeWidth={3} lineCap="round" lineJoin="round" />
+              <Line points={[-2, -7, 2, -7]} stroke="#fff" strokeWidth={3} lineCap="round" />
+              <Line points={[0, -7, 0, -2]} stroke="#fff" strokeWidth={2} />
+              <Circle y={8} x={3} radius={1.6} fill="#bfe3ff" />
+              <Label y={16} listening={false}>
+                <Tag fill="rgba(255,255,255,0.9)" cornerRadius={4} pointerDirection="up" pointerWidth={8} pointerHeight={4} />
+                <Text text="Rubinetto" fontSize={11} fontStyle="600" fill={COLORS.label} padding={3} />
+              </Label>
+            </Group>
+          </Group>
+        )}
 
         {/* Aiuola in costruzione */}
         {draft.length > 0 && (

@@ -5,6 +5,8 @@ App web per progettare aiuole, che si usa sia dal browser sia dal telefono. Puoi
 - **Disegno in scala reale**: segni gli angoli dell'aiuola e l'app calcola lati, superficie e perimetro in metri. Gli angoli si possono trascinare per cambiare la forma, e l'aiuola si può spostare.
 - **Database piante**: cerchi le piante per nome, esposizione, acqua, pH del terreno, colore e periodo di fioritura. I dati vengono da [Perenual](https://perenual.com/docs/api), un database pubblico di circa 10.000 specie.
 - **Consigli con l'IA**: indichi condizioni e gusti, Claude propone le piante, le quantità e la disposizione, e l'app le posiziona nell'aiuola.
+- **Materiali**: per ogni aiuola scegli la copertura (corteccia, ghiaia bianca, ciottoli, lapillo, terra nuda) e la bordura (pietra, mattoni, legno, acciaio corten).
+- **Irrigazione a goccia**: dal rubinetto l'app calcola il percorso di tubo più corto per raggiungere tutte le piante (albero di copertura minimo). Dimensiona i gocciolatori sul fabbisogno di ogni pianta, compila la lista dei materiali e propone durata, frequenza e orario per stagione, in base al clima e al terreno.
 - **Progetti**: vengono salvati su Postgres, oppure nel browser se il server non ha un database.
 
 ## Avvio in locale

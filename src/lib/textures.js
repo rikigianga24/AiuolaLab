@@ -98,3 +98,126 @@ export function mulchTexture() {
   mulch = canvas;
   return canvas;
 }
+
+// ---- coperture dell'aiuola ----
+
+function stoneTexture({ seed, base, colors, count, minR, maxR, flat = 1, gloss = 0.25, shadow = 0.4 }) {
+  const size = 512;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  const rand = rng(seed);
+  ctx.fillStyle = base;
+  ctx.fillRect(0, 0, size, size);
+  for (let i = 0; i < count; i++) {
+    const x = rand() * size, y = rand() * size;
+    const rx = minR + rand() * (maxR - minR), ry = rx * (flat + rand() * (1 - flat)), a = rand() * Math.PI;
+    const color = colors[(rand() * colors.length) | 0];
+    wrapped(size, x, y, (px, py) => {
+      if (px < -maxR * 2 || py < -maxR * 2 || px > size + maxR * 2 || py > size + maxR * 2) return;
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.rotate(a);
+      ctx.fillStyle = `rgba(0, 0, 0, ${shadow})`;
+      ctx.beginPath();
+      ctx.ellipse(rx * 0.18, ry * 0.25, rx, ry, 0, 0, Math.PI * 2);
+      ctx.fill();
+      const g = ctx.createRadialGradient(-rx * 0.35, -ry * 0.4, 0, 0, 0, rx);
+      g.addColorStop(0, `rgba(255, 255, 255, ${gloss})`);
+      g.addColorStop(0.5, "rgba(255, 255, 255, 0)");
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = g;
+      ctx.fill();
+      ctx.restore();
+    });
+  }
+  return canvas;
+}
+
+function soilTexture() {
+  const size = 512;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  const rand = rng(99);
+  ctx.fillStyle = "#5b4030";
+  ctx.fillRect(0, 0, size, size);
+  for (let i = 0; i < 18000; i++) {
+    const x = rand() * size, y = rand() * size, r = 0.6 + rand() * 1.8;
+    ctx.fillStyle = rand() > 0.5 ? "rgba(140, 105, 75, 0.5)" : "rgba(40, 25, 15, 0.5)";
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  // zolle
+  for (let i = 0; i < 160; i++) {
+    const x = rand() * size, y = rand() * size, r = 4 + rand() * 9;
+    wrapped(size, x, y, (px, py) => {
+      const g = ctx.createRadialGradient(px - r * 0.3, py - r * 0.3, 0, px, py, r);
+      g.addColorStop(0, "rgba(150, 115, 85, 0.65)");
+      g.addColorStop(1, "rgba(60, 40, 25, 0)");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(px, py, r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+  return canvas;
+}
+
+// Coperture disponibili: etichetta, lato della piastrella in metri, generatore.
+export const SURFACES = {
+  bark: { label: "Corteccia", tileM: 1.2, make: () => mulchTexture() },
+  gravel: {
+    label: "Ghiaia bianca",
+    tileM: 0.9,
+    make: () =>
+      stoneTexture({ seed: 11, base: "#8d8a83", colors: ["#e9e6df", "#d8d4cb", "#f4f2ec", "#c9c4ba", "#bdb8ad"], count: 2600, minR: 4, maxR: 9, flat: 0.6 }),
+  },
+  pebbles: {
+    label: "Ciottoli di fiume",
+    tileM: 1.6,
+    make: () =>
+      stoneTexture({ seed: 23, base: "#4f4b45", colors: ["#8d8a84", "#a7a39b", "#6f6c66", "#b9b2a6", "#7d7468", "#5f5c58"], count: 900, minR: 9, maxR: 20, flat: 0.55, gloss: 0.35 }),
+  },
+  lapillo: {
+    label: "Lapillo vulcanico",
+    tileM: 0.8,
+    make: () =>
+      stoneTexture({ seed: 31, base: "#4a2418", colors: ["#8a3b24", "#a2482b", "#6e2d1c", "#b5583a", "#5a2618"], count: 3200, minR: 3, maxR: 8, flat: 0.5, gloss: 0.12, shadow: 0.5 }),
+  },
+  soil: { label: "Terra nuda", tileM: 1.2, make: soilTexture },
+};
+
+const surfaceCache = new Map();
+export function surfaceTexture(kind) {
+  const def = SURFACES[kind] ?? SURFACES.bark;
+  const key = SURFACES[kind] ? kind : "bark";
+  if (!surfaceCache.has(key)) surfaceCache.set(key, def.make());
+  return { image: surfaceCache.get(key), tileM: def.tileM };
+}
+
+// Bordure: spessore (m), blocchetti [pieno, fuga] (m), colori.
+export const EDGINGS = {
+  stone: { label: "Pietra", width: 0.12, dash: [0.22, 0.025], color: "#cbc2b1", joint: "#4b443b" },
+  brick: { label: "Mattoni", width: 0.11, dash: [0.24, 0.015], color: "#a9553b", joint: "#d8cfc0" },
+  wood: { label: "Legno", width: 0.08, dash: [0.9, 0.012], color: "#8c6a46", joint: "#4a3523" },
+  corten: { label: "Acciaio corten", width: 0.025, dash: null, color: "#8f4a22", joint: "#4b2410" },
+  none: { label: "Nessuna", width: 0, dash: null, color: null, joint: null },
+};
+
+const previewCache = new Map();
+// Piccola anteprima (data URL) di una copertura, per i pulsanti di scelta.
+export function surfacePreview(kind) {
+  if (!previewCache.has(kind)) {
+    const { image } = surfaceTexture(kind);
+    const c = document.createElement("canvas");
+    c.width = c.height = 64;
+    c.getContext("2d").drawImage(image, 0, 0, 160, 160, 0, 0, 64, 64);
+    previewCache.set(kind, c.toDataURL());
+  }
+  return previewCache.get(kind);
+}

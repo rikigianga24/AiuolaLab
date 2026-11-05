@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { bbox, formatM, formatM2, perimeter, polygonArea } from "../../lib/geometry";
 import { SOIL_PH, SOIL_TEXTURE, SUNLIGHT, WATERING } from "../../lib/labels";
 import { getIconUrl, iconForPlaced } from "../../lib/plantIcons";
+import { EDGINGS, SURFACES, surfacePreview } from "../../lib/textures";
 
 function Choice({ label, value, options, onChange, allowEmpty = true }) {
   return (
@@ -141,6 +142,42 @@ export default function BedInspector({ project, bed, selection, onSelect, onUpda
         onChange={(v) => onUpdate(bed.id, { viewedFrom: v })}
         allowEmpty={false}
       />
+
+      <h3 className="gp-heading">Materiali</h3>
+      <div className="gp-field">
+        <span className="gp-label">Copertura</span>
+        <div className="material-row">
+          {Object.entries(SURFACES).map(([k, v]) => (
+            <button
+              key={k}
+              type="button"
+              className={`material ${(bed.surface ?? "bark") === k ? "is-active" : ""}`}
+              onClick={() => onUpdate(bed.id, { surface: k })}
+              aria-pressed={(bed.surface ?? "bark") === k}
+            >
+              <img src={surfacePreview(k)} alt="" />
+              <span>{v.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="gp-field">
+        <span className="gp-label">Bordura</span>
+        <div className="choice-row">
+          {Object.entries(EDGINGS).map(([k, v]) => (
+            <button
+              key={k}
+              type="button"
+              className={`choice ${(bed.edging ?? "stone") === k ? "is-active" : ""}`}
+              onClick={() => onUpdate(bed.id, { edging: k })}
+              aria-pressed={(bed.edging ?? "stone") === k}
+            >
+              <span className="edge-swatch" style={{ background: v.color ?? "transparent", borderColor: v.joint ?? "#999" }} />
+              {v.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <h3 className="gp-heading">
         Piante <small>({bed.plants?.length ?? 0})</small>
