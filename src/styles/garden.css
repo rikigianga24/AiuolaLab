@@ -1273,3 +1273,116 @@ table.materials .qty {
   text-align: center;
   color: #8a958a;
 }
+
+/* ===== Sicurezza e fauna ===== */
+
+.facts-wide {
+  grid-column: 1 / -1;
+}
+
+.safety {
+  margin-top: 0.5rem;
+  border-top: 1px solid rgba(47, 62, 47, 0.1);
+  padding-top: 0.5rem;
+}
+
+.safety-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  font-size: 0.8rem;
+  margin-bottom: 0.35rem;
+  color: #3b4a3b;
+}
+
+.safety-row > i {
+  margin-top: 0.15rem;
+  width: 14px;
+  text-align: center;
+  color: #8a958a;
+}
+
+.safety-row.tox-low > i {
+  color: #c9962b;
+}
+
+.safety-row.tox-medium > i,
+.safety-row.tox-high > i,
+.safety-row.is-danger > i {
+  color: #c0392b;
+}
+
+.safety-row.is-mine {
+  background: #fdecea;
+  border-radius: 6px;
+  padding: 0.3rem 0.4rem;
+}
+
+.safety-row.is-good > i {
+  color: #4f7942;
+}
+
+.safety-disclaimer {
+  font-size: 0.7rem;
+  color: #8a958a;
+}
+
+/* ===== Guida ===== */
+
+.tour {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+}
+
+.tour-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 25, 18, 0.55);
+}
+
+.tour-spot {
+  position: fixed;
+  border-radius: 12px;
+  box-shadow: 0 0 0 9999px rgba(20, 25, 18, 0.55);
+  outline: 3px solid #f2c94c;
+  pointer-events: none;
+  transition: all 0.25s ease;
+}
+
+.tour-card {
+  position: fixed;
+  max-width: calc(100vw - 24px);
+  background: #fff;
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  font-size: 0.9rem;
+}
+
+.tour-card.is-centered {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(380px, calc(100vw - 24px));
+}
+
+.tour-card h2 {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--green-dark);
+  margin-bottom: 0.3rem;
+}
+
+.tour-step {
+  font-size: 0.72rem;
+  color: #8a958a;
+  margin-bottom: 0.2rem;
+}
+
+.tour-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.8rem;
+}

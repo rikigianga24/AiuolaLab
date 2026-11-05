@@ -5,6 +5,53 @@ import { getIconUrl, iconForPlaced } from "../../lib/plantIcons";
 import { EDGINGS, FLOORS, RAILINGS, SURFACES, floorPreview, surfacePreview } from "../../lib/textures";
 import { POT_MATERIALS, POT_TYPES, isFloor, isPot, potVolumeL, resizePot } from "../../lib/containers";
 import { companionReport, rotationWarnings } from "../../lib/crops";
+import { PETS, plantInfo, toxLevelLabel } from "../../lib/plantInfo";
+import { useSession } from "../../lib/session";
+
+// Riepilogo dei rischi dell'aiuola: piante tossiche e animali da cui difenderla.
+function BedRisks({ bed }) {
+  const { settings } = useSession();
+  const myPets = settings.pets ?? [];
+  const seen = new Map();
+  for (const p of bed.plants ?? []) {
+    const key = p.cropId ?? p.plantId ?? p.name;
+    if (!seen.has(key)) seen.set(key, { name: p.name, info: plantInfo(p, { climate: settings.climate }) });
+  }
+  const toxic = [...seen.values()].filter((s) => s.info.tox);
+  const wildlife = new Map();
+  for (const s of seen.values()) for (const w of s.info.wildlife) {
+    if (/evit/.test(w.note)) continue; // animali che la evitano: non è un rischio
+    const list = wildlife.get(w.who) ?? [];
+    list.push(s.name);
+    wildlife.set(w.who, list);
+  }
+  const invasive = [...seen.values()].filter((s) => s.info.invasive);
+  if (!toxic.length && !wildlife.size && !invasive.length) return null;
+  return (
+    <>
+      <h3 className="gp-heading">Rischi e fauna</h3>
+      {invasive.map((s) => (
+        <p key={s.name} className="panel-error">
+          <i className="fa-solid fa-ban" /> {s.info.invasive}
+        </p>
+      ))}
+      {toxic.map((s) => {
+        const mine = s.info.tox.to.filter((t) => myPets.includes(t));
+        return (
+          <p key={s.name} className={mine.length || s.info.tox.level === "high" ? "panel-warning" : "panel-note"}>
+            <i className="fa-solid fa-skull-crossbones" /> <strong>{s.name}</strong>: tossica per {s.info.tox.to.map((t) => PETS[t]).join(", ")} (rischio{" "}
+            {toxLevelLabel(s.info.tox.level)})
+          </p>
+        );
+      })}
+      {[...wildlife.entries()].map(([who, names]) => (
+        <p key={who} className="panel-note">
+          <i className="fa-solid fa-paw" /> <strong>{who[0].toUpperCase() + who.slice(1)}</strong>: {names.join(", ")}
+        </p>
+      ))}
+    </>
+  );
+}
 
 function VegetablePanel({ bed, onEndSeason }) {
   const [confirming, setConfirming] = useState(false);
@@ -379,6 +426,8 @@ export default function BedInspector({ project, bed, selection, onSelect, onUpda
       ) : (
         <p className="panel-note">Ancora nessuna pianta.</p>
       )}
+
+      <BedRisks bed={bed} />
 
       <div className="button-stack">
         <button className="button is-primary is-small" onClick={() => onGoTo("ia")}>

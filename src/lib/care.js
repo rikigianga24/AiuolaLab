@@ -5,6 +5,7 @@
 // Usato sia dal browser (pagina Calendario) sia dal server (notifiche).
 import { CROP_BY_ID, FAMILIES } from "./crops.js";
 import { iconForPlaced } from "./plantIcons.js";
+import { boarRisk } from "./plantInfo.js";
 
 export const TASK_KINDS = {
   potatura: { label: "Potatura", icon: "fa-scissors", color: "#8a5a2b" },
@@ -75,6 +76,8 @@ const PLANT_RULES = [
     detail: "Dopo la fioritura non tagliare le foglie finché non sono gialle: nutrono il bulbo per l'anno prossimo." },
   { id: "bulb-plant", match: isType("cup", "star"), window: [10, 11], kind: "trapianto", title: "Periodo per piantare nuovi bulbi primaverili",
     detail: "Interra i bulbi a una profondità pari a 2–3 volte la loro altezza, con la punta verso l'alto.", product: "bulbi primaverili" },
+  { id: "bulb-voles", match: isType("cup"), window: [10, 11], kind: "trattamento", title: "Proteggi i bulbi dai roditori",
+    detail: "Arvicole e topi mangiano i bulbi dei tulipani: piantali in cestelli di rete metallica.", product: "cestelli per bulbi" },
   { id: "slugs", match: nameMatch(/hosta|lattuga|fragol|basilic/), window: [4, 5], kind: "trattamento", title: "Attenzione a lumache e chiocciole",
     detail: "Controlla la sera dopo la pioggia; usa esche a base di fosfato ferrico, ammesse in agricoltura biologica.", product: "esca per lumache al fosfato ferrico" },
   { id: "box-prune-1", match: nameMatch(/bosso|buxus/), window: [5, 6], kind: "potatura", title: "Prima potatura del bosso",
@@ -162,6 +165,11 @@ export function generateTasks(projects, { climate = "centro", years = [new Date(
               for (const window of runs(crop[field])) {
                 push({ id: `crop-${field}|${bed.id}|${crop.id}`, kind, title: `${label}: ${crop.name.toLowerCase()}`, detail: `${crop.name} (${FAMILIES[crop.family]}). Distanze: ${crop.spacing.row} cm tra le file, ${crop.spacing.plant} cm sulla fila.${crop.notes ? " " + crop.notes : ""}`, where: where(bed), env, plants: [crop.name] }, year, window);
               }
+            }
+            if (boarRisk({ name: crop.name, scientificName: crop.scientificName }) && crop.harvest?.length) {
+              const from = Math.max(1, Math.min(...crop.harvest) - 1);
+              const to = Math.max(...crop.harvest);
+              push({ id: `boar|${bed.id}|${crop.id}`, kind: "trattamento", title: `Difendi ${crop.name.toLowerCase()} da cinghiali e istrici`, detail: "Nel periodo di maturazione controlla la recinzione: per i cinghiali serve una rete robusta interrata o un recinto elettrificato a 20–40 cm da terra.", product: "recinzione elettrica per cinghiali", where: where(bed), env, plants: [crop.name] }, year, [from, to]);
             }
             for (const rule of CROP_RULES) {
               if (rule.match(crop)) push({ id: `${rule.id}|${bed.id}|${crop.id}`, kind: rule.kind, title: rule.title.toLowerCase().includes(crop.name.toLowerCase().slice(0, 6)) ? rule.title : `${rule.title}: ${crop.name.toLowerCase()}`, detail: rule.detail, product: rule.product, where: where(bed), env, plants: [crop.name] }, year, rule.window);

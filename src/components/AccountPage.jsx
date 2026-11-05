@@ -5,6 +5,7 @@ import { CLIMATES } from "../lib/irrigation";
 import { currentSubscription, disablePush, enablePush, pushSupported } from "../lib/push";
 import { useSession } from "../lib/session";
 import LocationPicker from "./LocationPicker";
+import { PETS } from "../lib/plantInfo";
 
 function Notice({ kind = "info", children }) {
   return <div className={`notification is-${kind} is-light`}>{children}</div>;
@@ -172,6 +173,25 @@ function PushToggle() {
   );
 }
 
+export function PetsChooser() {
+  const { settings, updateSettings } = useSession();
+  const pets = settings.pets ?? [];
+  const toggle = (k) => updateSettings({ pets: pets.includes(k) ? pets.filter((p) => p !== k) : [...pets, k] });
+  return (
+    <div className="mt-4">
+      <span className="gp-label">In giardino ci sono anche</span>
+      <div className="choice-row">
+        {Object.entries(PETS).map(([k, v]) => (
+          <button key={k} type="button" className={`choice ${pets.includes(k) ? "is-active" : ""}`} onClick={() => toggle(k)} aria-pressed={pets.includes(k)}>
+            {v}
+          </button>
+        ))}
+      </div>
+      <p className="panel-note">Le piante pericolose per loro vengono evidenziate e l'IA le evita.</p>
+    </div>
+  );
+}
+
 function AccountSettings() {
   const { user, settings, updateSettings, logout, refresh, features } = useSession();
   const [marketing, setMarketing] = useState(user.marketingConsent);
@@ -258,6 +278,7 @@ function AccountSettings() {
         <div className="mt-3">
           <LocationPicker value={settings.location} onChange={(location) => updateSettings({ location })} />
         </div>
+        <PetsChooser />
       </div>
 
       <div className="box">

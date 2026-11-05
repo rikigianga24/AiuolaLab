@@ -12,6 +12,7 @@ const DEFAULT_SETTINGS = {
   location: null,
   notify: { push: false, emailWeekly: true, emailWeather: true, hour: 8 },
   taskState: {},
+  pets: [],
 };
 
 const merge = (a, b) => ({ ...a, ...b, notify: { ...a.notify, ...(b?.notify ?? {}) }, taskState: { ...a.taskState, ...(b?.taskState ?? {}) } });

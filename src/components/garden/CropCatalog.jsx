@@ -2,6 +2,7 @@ import { useState } from "react";
 import { CROPS, CROP_BY_ID, FAMILIES, MONTHS, cropActions, cropAsPlant } from "../../lib/crops";
 import { getIconUrl, iconTypeFor } from "../../lib/plantIcons";
 import { isFloor } from "../../lib/containers";
+import PlantSafety from "./PlantSafety";
 
 const ACTION_STYLE = {
   semenzaio: { label: "Semenzaio", color: "#b9a24a" },
@@ -112,6 +113,7 @@ export default function CropCatalog({ selectedBed, onPickPlant, onFillRows }) {
                       </>
                     )}
                   </dl>
+                  <PlantSafety plant={cropAsPlant(crop)} />
                   <div className="button-stack">
                     <button className="button is-primary is-small" disabled={!canFill} onClick={() => onFillRows(selectedBed.id, crop)}>
                       <i className="fa-solid fa-grip-lines" />&nbsp; {canFill ? `Riempi a file «${selectedBed.name}»` : "Riempi a file (seleziona un'aiuola)"}

@@ -5,6 +5,8 @@ import { COLORS, CYCLE, SEASONS, SOIL_PH, SUNLIGHT, WATERING } from "../../lib/l
 import { flowerHexes, getIconUrl, iconTypeFor } from "../../lib/plantIcons";
 import PlantFacts from "./PlantFacts";
 import { useConsent } from "../../lib/consent";
+import { plantInfo } from "../../lib/plantInfo";
+import { useSession } from "../../lib/session";
 
 const EMPTY = { q: "", sunlight: "", watering: "", ph: "", color: "", season: "" };
 
@@ -33,6 +35,10 @@ export default function PlantCatalog({ selectedBed, onPickPlant }) {
   const [source, setSource] = useState(null);
   const q = useDebounced(filters.q);
   const consent = useConsent();
+  const { settings } = useSession();
+  const [petSafe, setPetSafe] = useState(false);
+  const myPets = settings.pets?.length ? settings.pets : ["dog", "cat"];
+  const isSafe = (p) => !plantInfo(p).tox?.to.some((t) => myPets.includes(t));
 
   useEffect(() => {
     getHealth().then((h) => setSource(h.plantSource));
@@ -113,6 +119,10 @@ export default function PlantCatalog({ selectedBed, onPickPlant }) {
           <Select label="Colore fiore" value={filters.color} onChange={(v) => update("color", v)} options={COLORS} />
           <Select label="Fioritura" value={filters.season} onChange={(v) => update("season", v)} options={SEASONS} />
         </div>
+        <label className="checkbox-row">
+          <input type="checkbox" checked={petSafe} onChange={(e) => setPetSafe(e.target.checked)} /> Solo piante non tossiche per{" "}
+          {myPets.map((t) => ({ dog: "cani", cat: "gatti", horse: "cavalli", farm: "animali da cortile", people: "bambini" })[t]).join(", ")}
+        </label>
         <div className="filters-actions">
           {selectedBed && (
             <button className="link-btn" onClick={applyBedConditions}>
@@ -137,7 +147,7 @@ export default function PlantCatalog({ selectedBed, onPickPlant }) {
       {state.error && <p className="panel-error">{state.error}</p>}
 
       <ul className="plant-list">
-        {state.items.map((plant) => {
+        {state.items.filter((p) => !petSafe || isSafe(p)).map((plant) => {
           const full = details[plant.id] ?? plant;
           const open = openId === plant.id;
           return (

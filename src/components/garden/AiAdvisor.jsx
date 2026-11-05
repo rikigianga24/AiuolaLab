@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getHealth, suggestBed } from "../../lib/api";
 import { bbox, formatM2, polygonArea } from "../../lib/geometry";
 import { POT_TYPES, isFloor, isPot, potVolumeL } from "../../lib/containers";
+import { useSession } from "../../lib/session";
 import { COLORS, LAYERS, SEASONS, SOIL_PH, SOIL_TEXTURE, STYLES, SUNLIGHT, WATERING } from "../../lib/labels";
 
 const MAINTENANCE = { bassa: "Bassa", media: "Media", alta: "Curata" };
@@ -33,6 +34,8 @@ export default function AiAdvisor({ bed, environment, onUpdateBed, onApply }) {
   const [status, setStatus] = useState({ loading: false, error: null });
   const [proposal, setProposal] = useState(null);
   const [replace, setReplace] = useState(true);
+  const { settings } = useSession();
+  const [petSafe, setPetSafe] = useState(Boolean(settings.pets?.length));
 
   useEffect(() => {
     getHealth().then((h) => setAiEnabled(Boolean(h.ai)));
@@ -89,6 +92,7 @@ export default function AiAdvisor({ bed, environment, onUpdateBed, onApply }) {
           maintenance: prefs.maintenance || undefined,
           maxHeightCm: prefs.maxHeightCm ? Number(prefs.maxHeightCm) : undefined,
           notes: prefs.notes || undefined,
+          pets: petSafe ? (settings.pets?.length ? settings.pets : ["dog", "cat"]) : [],
         },
       });
       setProposal(res);
@@ -189,6 +193,10 @@ export default function AiAdvisor({ bed, environment, onUpdateBed, onApply }) {
           value={prefs.notes}
           onChange={(e) => set("notes", e.target.value)}
         />
+      </label>
+
+      <label className="checkbox-row">
+        <input type="checkbox" checked={petSafe} onChange={(e) => setPetSafe(e.target.checked)} /> Ho animali o bambini: evita le piante tossiche
       </label>
 
       <button className={`button is-primary is-fullwidth ${status.loading ? "is-loading" : ""}`} onClick={ask} disabled={status.loading || aiEnabled === false}>

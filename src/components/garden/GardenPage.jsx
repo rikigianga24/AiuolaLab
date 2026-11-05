@@ -18,6 +18,9 @@ import "../../styles/garden.css";
 import ConfirmDialog from "../ConfirmDialog";
 import GardenStage from "./GardenStage";
 import SidePanel from "./SidePanel";
+import Tour from "./Tour";
+import { tourDone } from "../../lib/tour";
+import { useConsent } from "../../lib/consent";
 
 const SNAP_STEP = 0.05; // 5 cm
 
@@ -65,6 +68,8 @@ export default function GardenPage() {
   const [showLabels, setShowLabels] = useState(true);
   const [showIrrigation, setShowIrrigation] = useState(true);
   const [placingPot, setPlacingPot] = useState(null);
+  const [tourOpen, setTourOpen] = useState(() => !tourDone());
+  const consent = useConsent();
   const [potMenu, setPotMenu] = useState(false);
   const environment = project.type ?? "garden";
   const balcony = environment === "balcony";
@@ -635,6 +640,9 @@ export default function GardenPage() {
           >
             <i className="fa-solid fa-tag" />
           </button>
+          <button className="tool-btn icon" onClick={() => setTourOpen(true)} aria-label="Guida" title="Guida">
+            <i className="fa-solid fa-question" />
+          </button>
           {project.faucet && (
             <button
               className={`tool-btn icon ${showIrrigation ? "is-on" : ""}`}
@@ -699,6 +707,9 @@ export default function GardenPage() {
         onRenameProject={renameProject}
         notify={notify}
       />
+
+      {/* la guida parte dopo la scelta sui cookie, per non sovrapporsi al banner */}
+      <Tour open={tourOpen && Boolean(consent)} onClose={() => setTourOpen(false)} />
 
       {confirm && (
         <ConfirmDialog

@@ -21,6 +21,7 @@ const Settings = z
       emailWeather: z.boolean(),
       hour: z.number().int().min(5).max(21),
     }).partial(),
+    pets: z.array(z.enum(["dog", "cat", "horse", "farm", "people"])).max(5),
     taskState: z.record(z.string().max(300), z.object({ done: z.string().max(10).optional(), snoozedUntil: z.string().max(10).optional() })),
   })
   .partial();
@@ -30,6 +31,7 @@ export const DEFAULT_SETTINGS = {
   location: null,
   notify: { push: false, emailWeekly: true, emailWeather: true, hour: config.notifyHour },
   taskState: {},
+  pets: [],
 };
 
 export const userSettings = (u) => ({

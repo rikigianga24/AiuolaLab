@@ -39,6 +39,7 @@ export const SuggestRequest = z.object({
       maintenance: z.enum(["bassa", "media", "alta"]).optional(),
       maxHeightCm: z.number().int().positive().max(1000).optional(),
       notes: z.string().max(500).optional(),
+      pets: z.array(z.enum(["dog", "cat", "horse", "farm", "people"])).max(5).default([]),
     })
     .default({}),
 });
@@ -103,6 +104,7 @@ Regole:
 - Usa i livelli: "alta" per piante strutturali (al centro se l'aiuola si vede da tutti i lati, sul fondo se si vede da un lato solo), "media" per il riempimento, "bassa" per la bordura, "copertura" per tappezzanti.
 - Ripeti poche specie in gruppi (da 3 a 7 specie per aiuole piccole) invece di metterne tante isolate.
 - Scrivi in italiano, in modo semplice e pratico.
+- Se una pianta proposta è tossica per animali o persone, o attira animali selvatici dannosi (cinghiali, caprioli, istrici), dillo nelle avvertenze.
 
 Vasi e balconi:
 - In un vaso scegli piante adatte al volume di terriccio indicato: poche specie (1-3 in un vaso singolo, 2-5 in una fioriera), con distanze di impianto più strette che in piena terra.
@@ -137,6 +139,8 @@ function describeRequest(req, candidates) {
     preferences.maintenance && `- Manutenzione: ${preferences.maintenance}`,
     preferences.maxHeightCm && `- Altezza massima: ${preferences.maxHeightCm} cm`,
     preferences.notes && `- Note: ${preferences.notes}`,
+    preferences.pets?.length &&
+      `- In giardino ci sono: ${preferences.pets.map((p) => ({ dog: "cani", cat: "gatti", horse: "cavalli", farm: "animali da cortile", people: "bambini piccoli" })[p]).join(", ")}. NON proporre piante tossiche per loro (per esempio oleandro, digitale, rododendro, ortensia, gigli ed emerocallidi per i gatti, cipolla e aglio per cani e gatti).`,
     "## Piante candidate dal database",
     candidates.length
       ? candidates.map((p) => `- ${JSON.stringify(compact(p))}`).join("\n")

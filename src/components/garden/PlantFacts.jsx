@@ -1,3 +1,4 @@
+import PlantSafety from "./PlantSafety";
 import { COLORS, CYCLE, SEASONS, SOIL_PH, SOIL_TEXTURE, SUNLIGHT, WATERING, formatRangeCm } from "../../lib/labels";
 
 const list = (values, dict) =>
@@ -51,6 +52,9 @@ export default function PlantFacts({ plant }) {
         </>
       )}
       {!plant.detailsLoaded && <dd className="facts-note">Scheda completa in caricamento…</dd>}
+      <dd className="facts-wide">
+        <PlantSafety plant={plant} />
+      </dd>
     </dl>
   );
 }
