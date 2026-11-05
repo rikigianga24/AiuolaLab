@@ -221,3 +221,111 @@ export function surfacePreview(kind) {
   }
   return previewCache.get(kind);
 }
+
+// ---- pavimenti del terrazzo ----
+
+function tileTexture({ seed, cols, rows, colors, grout, groutW, noise = 0.15, plank = false }) {
+  const size = 512;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  const rand = rng(seed);
+  ctx.fillStyle = grout;
+  ctx.fillRect(0, 0, size, size);
+  const tw = size / cols, th = size / rows;
+  for (let r = 0; r < rows; r++) {
+    // le assi del legno hanno giunte sfalsate
+    const segments = plank ? [[0, 0.35 + rand() * 0.3], [0, 1]] : [[0, 1]];
+    let start = 0;
+    for (const [, end] of segments) {
+      for (let c = 0; c < cols; c++) {
+        const x0 = plank ? start * size : c * tw;
+        const w = plank ? (end - start) * size : tw;
+        if (plank && c > 0) break;
+        const color = colors[(rand() * colors.length) | 0];
+        const x = x0 + groutW / 2, y = r * th + groutW / 2;
+        const g = ctx.createLinearGradient(x, y, x + w, y + th);
+        g.addColorStop(0, color);
+        g.addColorStop(1, color + "cc");
+        ctx.fillStyle = g;
+        ctx.fillRect(x, y, w - groutW, th - groutW);
+        // grana / venature
+        for (let k = 0; k < (plank ? 14 : 220); k++) {
+          ctx.fillStyle = rand() > 0.5 ? `rgba(255,255,255,${noise * rand()})` : `rgba(0,0,0,${noise * rand()})`;
+          if (plank) ctx.fillRect(x + rand() * w, y + rand() * th, 30 + rand() * 120, 1);
+          else ctx.fillRect(x + rand() * (w - groutW), y + rand() * (th - groutW), 2, 2);
+        }
+      }
+      start = end;
+    }
+  }
+  return canvas;
+}
+
+export const FLOORS = {
+  cotto: {
+    label: "Cotto",
+    tileM: 1.2, // 4 × 4 piastrelle da 30 cm
+    make: () => tileTexture({ seed: 5, cols: 4, rows: 4, colors: ["#b8613f", "#c26c47", "#a95a3a", "#c97a52"], grout: "#d9cbb6", groutW: 4 }),
+  },
+  gres: {
+    label: "Gres grigio",
+    tileM: 1.2, // 2 × 2 lastre da 60 cm
+    make: () => tileTexture({ seed: 8, cols: 2, rows: 2, colors: ["#a4a29d", "#9c9a95", "#adaba6"], grout: "#7f7d79", groutW: 3, noise: 0.08 }),
+  },
+  decking: {
+    label: "Legno (decking)",
+    tileM: 0.6, // 4 assi da 15 cm
+    make: () => tileTexture({ seed: 13, cols: 1, rows: 4, colors: ["#9b7048", "#8a6240", "#a87b52", "#93693f"], grout: "#3b2a1c", groutW: 5, plank: true, noise: 0.18 }),
+  },
+  cemento: {
+    label: "Cemento",
+    tileM: 1,
+    make: () => tileTexture({ seed: 21, cols: 1, rows: 1, colors: ["#b9b7b1"], grout: "#b9b7b1", groutW: 0, noise: 0.12 }),
+  },
+};
+
+const floorCache = new Map();
+export function floorTexture(kind) {
+  const key = FLOORS[kind] ? kind : "cotto";
+  if (!floorCache.has(key)) floorCache.set(key, FLOORS[key].make());
+  return { image: floorCache.get(key), tileM: FLOORS[key].tileM };
+}
+
+export function floorPreview(kind) {
+  const key = `floor:${kind}`;
+  if (!previewCache.has(key)) {
+    const { image } = floorTexture(kind);
+    const c = document.createElement("canvas");
+    c.width = c.height = 64;
+    c.getContext("2d").drawImage(image, 0, 0, 256, 256, 0, 0, 64, 64);
+    previewCache.set(key, c.toDataURL());
+  }
+  return previewCache.get(key);
+}
+
+// Parapetti del terrazzo: spessore (m), colore, montanti [pieno, vuoto].
+export const RAILINGS = {
+  metal: { label: "Ringhiera", width: 0.05, color: "#2e3236", posts: [0.02, 0.1], postWidth: 0.07 },
+  wall: { label: "Muretto", width: 0.18, color: "#e7e1d4", joint: "#b9b0a0" },
+  glass: { label: "Vetro", width: 0.03, color: "rgba(160, 200, 220, 0.75)", frame: "#7d8a93" },
+};
+
+let city = null;
+// Sfondo neutro per il terrazzo (quello che c'è oltre il parapetto).
+export function cityTexture() {
+  if (city) return city;
+  const size = 256;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  const rand = rng(77);
+  ctx.fillStyle = "#c7ccd1";
+  ctx.fillRect(0, 0, size, size);
+  for (let i = 0; i < 3000; i++) {
+    ctx.fillStyle = rand() > 0.5 ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.06)";
+    ctx.fillRect(rand() * size, rand() * size, 2, 2);
+  }
+  city = canvas;
+  return canvas;
+}

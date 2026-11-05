@@ -9,7 +9,8 @@ import { plantColor, plantSpreadM } from "../../lib/labels";
 import { toPlaced } from "../../lib/placed";
 import { flowerHexes, getIconUrl, iconTypeFor } from "../../lib/plantIcons";
 import { computeIrrigation } from "../../lib/irrigation";
-import { emptyProject, loadCurrent, saveCurrent } from "../../lib/projects";
+import { ENVIRONMENTS, emptyProject, lastEnvironment, loadCurrent, saveCurrent, saveLastEnvironment } from "../../lib/projects";
+import { POT_TYPES, createPot, isFloor, isPot } from "../../lib/containers";
 import "../../styles/garden.css";
 import ConfirmDialog from "../ConfirmDialog";
 import GardenStage from "./GardenStage";
@@ -22,6 +23,7 @@ const HINTS_MOBILE = {
   draw: "Tocca per i vertici · tocca il primo punto per chiudere",
   place: "Tocca dentro un'aiuola per piantare",
   faucet: "Tocca dove si trova il rubinetto",
+  pot: "Tocca dove mettere il vaso",
 };
 
 const HINTS = {
@@ -29,6 +31,7 @@ const HINTS = {
   draw: "Tocca per aggiungere i vertici · tocca il primo punto (o «Chiudi») per completare l'aiuola",
   place: "Tocca dentro un'aiuola per piantare · «Fine» per smettere",
   faucet: "Tocca il punto del disegno dove si trova il rubinetto",
+  pot: "Tocca il punto dove mettere il vaso (sul terrazzo o in giardino)",
 };
 
 function isSelfIntersecting(points) {
@@ -43,7 +46,7 @@ function isSelfIntersecting(points) {
 }
 
 export default function GardenPage() {
-  const history = useHistory(loadCurrent());
+  const history = useHistory(loadCurrent(lastEnvironment()));
   const project = history.state;
   const { set: setProject, commit, cancel } = history;
 
@@ -58,6 +61,10 @@ export default function GardenPage() {
   const [showGrid, setShowGrid] = useState(true);
   const [showLabels, setShowLabels] = useState(true);
   const [showIrrigation, setShowIrrigation] = useState(true);
+  const [placingPot, setPlacingPot] = useState(null);
+  const [potMenu, setPotMenu] = useState(false);
+  const environment = project.type ?? "garden";
+  const balcony = environment === "balcony";
 
   const isMobile = useMediaQuery("(max-width: 900px)");
   const canvasRef = useRef(null);
@@ -127,6 +134,8 @@ export default function GardenPage() {
     setMode("select");
     setDraft([]);
     setPlacing(null);
+    setPlacingPot(null);
+    setPotMenu(false);
   }, []);
 
   const startPlacing = (plant) => {
@@ -161,31 +170,76 @@ export default function GardenPage() {
   const closeDraft = () => {
     if (draft.length < 3) return notify("Servono almeno 3 vertici.", "warning");
     if (isSelfIntersecting(draft)) return notify("Chiudendo così i lati si incrocerebbero.", "warning");
-    if (polygonArea(draft) < 0.05) return notify("L'aiuola è troppo piccola.", "warning");
-    const bed = {
-      id: newId(),
-      name: `Aiuola ${project.beds.length + 1}`,
-      points: draft,
-      conditions: { sunlight: "full_sun" },
-      viewedFrom: "all",
-      surface: "bark",
-      edging: "stone",
-      plants: [],
-    };
+    if (polygonArea(draft) < 0.05) return notify(balcony ? "Il terrazzo è troppo piccolo." : "L'aiuola è troppo piccola.", "warning");
+    const bed = balcony
+      ? {
+          id: newId(),
+          kind: "floor",
+          name: `Terrazzo ${project.beds.filter(isFloor).length + 1}`,
+          points: draft,
+          floor: "cotto",
+          railing: "metal",
+          conditions: { sunlight: "full_sun" },
+          plants: [],
+        }
+      : {
+          id: newId(),
+          name: `Aiuola ${project.beds.length + 1}`,
+          points: draft,
+          conditions: { sunlight: "full_sun" },
+          viewedFrom: "all",
+          surface: "bark",
+          edging: "stone",
+          plants: [],
+        };
     updateBeds((beds) => [...beds, bed]);
     setDraft([]);
     setMode("select");
     setSelection({ bedId: bed.id, plantId: null });
     setTab("aiuola");
     if (isMobile) setSheetOpen(true);
-    notify("Aiuola creata. Imposta esposizione e terreno, poi scegli le piante.");
+    notify(
+      balcony
+        ? "Terrazzo creato. Ora aggiungi i vasi con «Aggiungi vaso»."
+        : "Aiuola creata. Imposta esposizione e terreno, poi scegli le piante.",
+    );
+  };
+
+  // ---- vasi ----
+
+  const startPot = (type) => {
+    setPotMenu(false);
+    setPlacingPot(type);
+    setMode("pot");
+    setDraft([]);
+    setPlacing(null);
+    setSelection(null);
+    if (isMobile) setSheetOpen(false);
+  };
+
+  const placePot = (point) => {
+    const count = project.beds.filter(isPot).length + 1;
+    // sul terrazzo il vaso prende l'esposizione del pavimento sotto
+    const floor = project.beds.find((b) => isFloor(b) && pointInPolygon(point, b.points));
+    const pot = createPot(placingPot, point, { id: newId(), name: `${POT_TYPES[placingPot].label} ${count}` });
+    if (floor?.conditions?.sunlight) pot.conditions = { ...pot.conditions, sunlight: floor.conditions.sunlight };
+    updateBeds((beds) => [...beds, pot]);
+    setMode("select");
+    setPlacingPot(null);
+    setSelection({ bedId: pot.id, plantId: null });
+    setTab("aiuola");
+    if (isMobile) setSheetOpen(true);
+    notify("Vaso aggiunto: scegli le piante dal catalogo o chiedi un consiglio all'IA.");
   };
 
   // ---- piante ----
 
   const placePlant = (bedId, point) => {
     if (!placing) return;
-    if (!bedId) return notify("Tocca dentro un'aiuola.", "warning");
+    if (!bedId) return notify(balcony ? "Tocca dentro un vaso." : "Tocca dentro un'aiuola o un vaso.", "warning");
+    if (isFloor(project.beds.find((b) => b.id === bedId))) {
+      return notify("Sul terrazzo le piante vanno nei vasi: aggiungi un vaso.", "warning");
+    }
     const placed = toPlaced(placing.plant, point);
     updateBed(bedId, (b) => ({ ...b, plants: [...(b.plants || []), placed] }));
   };
@@ -298,7 +352,11 @@ export default function GardenPage() {
     });
     const others = replace ? [] : bed.plants;
     const blocked = others.map((p) => ({ x: p.x, y: p.y, r: p.spreadM / 2 }));
-    const { placed, skipped } = autoLayout(bed.points, groups, { viewedFrom: bed.viewedFrom, blocked });
+    const { placed, skipped } = autoLayout(bed.points, groups, {
+      viewedFrom: bed.viewedFrom,
+      blocked,
+      container: isPot(bed),
+    });
     const byKey = Object.fromEntries(groups.map((g) => [g.key, g]));
     const newPlants = placed.map(({ key, x, y }) => {
       const g = byKey[key];
@@ -324,6 +382,15 @@ export default function GardenPage() {
 
   // ---- progetti ----
 
+  // Cambio ambiente: ogni ambiente ha il suo progetto aperto, niente si perde.
+  const switchEnvironment = (type) => {
+    if (type === environment) return;
+    saveCurrent(project);
+    saveLastEnvironment(type);
+    openProject(loadCurrent(type));
+    setTab(type === "balcony" ? "aiuola" : "piante");
+  };
+
   const openProject = (p) => {
     history.reset(p);
     setSelection(null);
@@ -336,7 +403,7 @@ export default function GardenPage() {
       title: "Nuovo progetto?",
       message: "Il progetto aperto resta salvato solo se l'hai salvato nell'archivio.",
       confirmLabel: "Nuovo progetto",
-      onConfirm: () => openProject(emptyProject()),
+      onConfirm: () => openProject(emptyProject(environment)),
     });
 
   const renameProject = (name) => setProject((p) => ({ ...p, name }));
@@ -383,6 +450,9 @@ export default function GardenPage() {
             irrigation={showIrrigation ? irrigation : null}
             faucet={project.faucet}
             onPlaceFaucet={placeFaucet}
+            environment={environment}
+            placingPot={placingPot}
+            onPlacePot={placePot}
             onFaucetMove={(p) => setProject((pr) => ({ ...pr, faucet: p }))}
             onDraftPoint={addDraftPoint}
             onDraftClose={closeDraft}
@@ -400,10 +470,19 @@ export default function GardenPage() {
           {mode === "draw" ? (
             <>
               <button className="tool-btn is-primary" onClick={closeDraft} disabled={draft.length < 3}>
-                <i className="fa-solid fa-check" /> <span>Chiudi aiuola</span>
+                <i className="fa-solid fa-check" /> <span>{balcony ? "Chiudi terrazzo" : "Chiudi aiuola"}</span>
               </button>
               <button className="tool-btn" onClick={stopMode}>
                 <i className="fa-solid fa-xmark" /> <span>Annulla disegno</span>
+              </button>
+            </>
+          ) : mode === "pot" ? (
+            <>
+              <span className="tool-chip">
+                <i className="fa-solid fa-bucket" /> {POT_TYPES[placingPot]?.label}
+              </span>
+              <button className="tool-btn" onClick={stopMode}>
+                <i className="fa-solid fa-xmark" /> <span>Annulla</span>
               </button>
             </>
           ) : mode === "faucet" ? (
@@ -426,9 +505,31 @@ export default function GardenPage() {
               </button>
             </>
           ) : (
-            <button className="tool-btn is-primary" onClick={startDraw}>
-              <i className="fa-solid fa-draw-polygon" /> <span>Disegna aiuola</span>
-            </button>
+            <>
+              <button className="tool-btn is-primary" onClick={startDraw}>
+                <i className="fa-solid fa-draw-polygon" /> <span>{balcony ? "Disegna terrazzo" : "Disegna aiuola"}</span>
+              </button>
+              <span className="pot-menu-wrap">
+                <button className="tool-btn" onClick={() => setPotMenu((v) => !v)} aria-expanded={potMenu}>
+                  <i className="fa-solid fa-bucket" /> <span>Aggiungi vaso</span>
+                </button>
+                {potMenu && (
+                  <div className="pot-menu" role="menu">
+                    {Object.entries(POT_TYPES).map(([k, v]) => (
+                      <button key={k} role="menuitem" onClick={() => startPot(k)}>
+                        <span className={`pot-glyph ${v.shape} ${k}`} />
+                        <span>
+                          {v.label}
+                          <small>
+                            {v.shape === "round" ? `Ø ${v.w * 100} cm` : `${v.w * 100} × ${v.d * 100} cm`}
+                          </small>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </span>
+            </>
           )}
           <span className="tool-sep" />
           <button className="tool-btn icon" onClick={handleUndo} disabled={!canUndo} title="Annulla (Ctrl+Z)" aria-label="Annulla">
@@ -496,6 +597,8 @@ export default function GardenPage() {
 
       <SidePanel
         isMobile={isMobile}
+        environment={environment}
+        onEnvironmentChange={switchEnvironment}
         open={sheetOpen}
         onOpenChange={setSheetOpen}
         tab={tab}
@@ -506,6 +609,13 @@ export default function GardenPage() {
         onSelect={handleSelect}
         onPickPlant={startPlacing}
         onUpdateBed={(bedId, patch) => updateBed(bedId, (b) => ({ ...b, ...patch }))}
+        onReplaceBed={(next) =>
+          updateBed(next.id, () => ({
+            ...next,
+            // le piante rimaste fuori dal vaso ridimensionato vengono tolte
+            plants: next.plants.filter((p) => pointInPolygon(p, next.points)),
+          }))
+        }
         onDeleteSelection={deleteSelection}
         onDeleteBed={deleteBed}
         irrigation={irrigation}

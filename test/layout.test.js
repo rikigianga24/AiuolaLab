@@ -28,3 +28,9 @@ test("quando lo spazio finisce segnala le piante non posizionate", () => {
   assert.ok(skipped > 0);
   assert.equal(placed.length + skipped, 50);
 });
+
+test("in un vaso piccolo le piante entrano anche vicino al bordo", () => {
+  const pot = Array.from({ length: 32 }, (_, i) => ({ x: Math.cos((i / 32) * 6.283) * 0.2, y: Math.sin((i / 32) * 6.283) * 0.2 }));
+  const { placed } = autoLayout(pot, [{ key: "a", layer: "media", quantity: 3, spreadM: 0.2 }], { container: true });
+  assert.equal(placed.length, 3);
+});

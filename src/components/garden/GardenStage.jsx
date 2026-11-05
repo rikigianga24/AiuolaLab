@@ -2,7 +2,9 @@ import { useEffect, useImperativeHandle, useRef, useState } from "react";
 import { Circle, Group, Image as KImage, Label, Layer, Line, Rect, Shape, Stage, Tag, Text } from "react-konva";
 import { bbox, dist, formatM, pointInPolygon, snap } from "../../lib/geometry";
 import { ICON_FILL, getIconCanvas, iconForPlaced } from "../../lib/plantIcons";
-import { EDGINGS, lawnTexture, surfaceTexture } from "../../lib/textures";
+import { POT_TYPES, isFloor, isPot } from "../../lib/containers";
+import { cityTexture, lawnTexture } from "../../lib/textures";
+import { BedBase, HangingChains, PotGhost } from "./BedShapes";
 
 export const PX_PER_M = 60;
 const MIN_ZOOM = 0.15;
@@ -113,6 +115,9 @@ function EdgeLabels({ points, closed, scale }) {
 export default function GardenStage({
   ref,
   showGrid = true,
+  environment = "garden",
+  placingPot,
+  onPlacePot,
   showLabels = true,
   width,
   height,
@@ -185,7 +190,9 @@ export default function GardenStage({
     return p ? { x: p.x, y: p.y } : null;
   };
 
-  const bedAt = (p) => [...beds].reverse().find((b) => pointInPolygon(p, b.points));
+  // Ordine di disegno: pavimenti, aiuole, vasi (i vasi stanno sopra).
+  const ordered = [...beds.filter(isFloor), ...beds.filter((b) => !isFloor(b) && !isPot(b)), ...beds.filter(isPot)];
+  const bedAt = (p) => [...ordered].reverse().find((b) => pointInPolygon(p, b.points));
 
   const handleTap = (e) => {
     if (pinch.current) return;
@@ -197,6 +204,10 @@ export default function GardenStage({
         return;
       }
       onDraftPoint({ x: snap(p.x, snapStep), y: snap(p.y, snapStep) });
+      return;
+    }
+    if (mode === "pot") {
+      onPlacePot({ x: snap(p.x, snapStep), y: snap(p.y, snapStep) });
       return;
     }
     if (mode === "faucet") {
@@ -294,19 +305,20 @@ export default function GardenStage({
           y={-500}
           width={1000}
           height={1000}
-          fillPatternImage={lawnTexture()}
-          fillPatternScale={{ x: LAWN_TILE_M / 512, y: LAWN_TILE_M / 512 }}
+          fillPatternImage={environment === "balcony" ? cityTexture() : lawnTexture()}
+          fillPatternScale={
+            environment === "balcony" ? { x: 2 / 256, y: 2 / 256 } : { x: LAWN_TILE_M / 512, y: LAWN_TILE_M / 512 }
+          }
           fillPatternOffset={{ x: 0, y: 0 }}
           listening={false}
           perfectDrawEnabled={false}
         />
         {showGrid && <Grid width={width} height={height} view={view} />}
 
-        {beds.map((bed) => {
+        {ordered.map((bed) => {
           const selected = selection?.bedId === bed.id;
           const flat = bed.points.flatMap((p) => [p.x, p.y]);
-          const surface = surfaceTexture(bed.surface);
-          const edging = EDGINGS[bed.edging] ?? EDGINGS.stone;
+          const pot = isPot(bed);
           return (
             <Group
               key={bed.id}
@@ -318,53 +330,7 @@ export default function GardenStage({
                 if (x || y) onBedMove(bed.id, { x: snap(x, snapStep), y: snap(y, snapStep) });
               }}
             >
-              {/* copertura: corteccia, ghiaia, ciottoli... */}
-              <Line
-                kind="bed"
-                id={bed.id}
-                points={flat}
-                closed
-                fillPatternImage={surface.image}
-                fillPatternScale={{ x: surface.tileM / 512, y: surface.tileM / 512 }}
-                perfectDrawEnabled={false}
-              />
-              {/* ombra verso l'interno: dà profondità */}
-              <Line
-                points={flat}
-                closed
-                stroke="rgba(20, 12, 5, 0.4)"
-                strokeWidth={Math.max(edging.width, 0.05) * 2.2}
-                lineJoin="round"
-                listening={false}
-                perfectDrawEnabled={false}
-              />
-              {edging.width > 0 && (
-                <>
-                  {/* bordura: fuga + elementi (blocchetti, mattoni, assi) */}
-                  <Line
-                    points={flat}
-                    closed
-                    stroke={edging.joint}
-                    strokeWidth={edging.width + 0.02}
-                    lineJoin={edging.dash ? "round" : "miter"}
-                    listening={false}
-                    shadowColor="black"
-                    shadowOpacity={0.35}
-                    shadowBlur={4}
-                    shadowOffset={{ x: 0.02, y: 0.03 }}
-                  />
-                  <Line
-                    points={flat}
-                    closed
-                    stroke={edging.color}
-                    strokeWidth={edging.width}
-                    dash={edging.dash ?? undefined}
-                    lineJoin={edging.dash ? "round" : "miter"}
-                    listening={false}
-                    perfectDrawEnabled={false}
-                  />
-                </>
-              )}
+              <BedBase bed={bed} />
               {selected && (
                 <Line
                   points={flat}
@@ -442,8 +408,10 @@ export default function GardenStage({
                   </Group>
                 );
               })}
-              {selected && <EdgeLabels points={bed.points} closed scale={scale} />}
+              <HangingChains bed={bed} scale={scale} />
+              {selected && !pot && <EdgeLabels points={bed.points} closed scale={scale} />}
               {selected &&
+                !pot &&
                 mode === "select" &&
                 !selection?.plantId &&
                 bed.points.map((p, i) => (
@@ -601,6 +569,7 @@ export default function GardenStage({
         )}
 
         {/* Anteprima della pianta da posizionare */}
+        {mode === "pot" && placingPot && hover && <PotGhost type={placingPot} def={POT_TYPES[placingPot]} at={hover} />}
         {mode === "place" && placing && hover && (
           <KImage
             image={getIconCanvas(placing.icon.type, placing.icon.colors, 320, placing.plant.commonName)}

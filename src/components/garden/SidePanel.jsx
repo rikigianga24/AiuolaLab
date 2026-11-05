@@ -3,6 +3,7 @@ import BedInspector from "./BedInspector";
 import IrrigationPanel from "./IrrigationPanel";
 import PlantCatalog from "./PlantCatalog";
 import ProjectPanel from "./ProjectPanel";
+import { ENVIRONMENTS } from "../../lib/projects";
 
 const TABS = [
   { id: "piante", label: "Piante", icon: "fa-seedling" },
@@ -12,7 +13,7 @@ const TABS = [
   { id: "progetto", label: "Progetto", icon: "fa-folder-open" },
 ];
 
-export default function SidePanel({ isMobile, open, onOpenChange, tab, onTabChange, ...props }) {
+export default function SidePanel({ isMobile, open, onOpenChange, tab, onTabChange, environment, onEnvironmentChange, ...props }) {
   const expanded = !isMobile || open;
 
   const selectTab = (id) => {
@@ -30,8 +31,21 @@ export default function SidePanel({ isMobile, open, onOpenChange, tab, onTabChan
           <span />
         </button>
       )}
+      <div className="env-switch" role="radiogroup" aria-label="Ambiente">
+        {Object.entries(ENVIRONMENTS).map(([k, v]) => (
+          <button
+            key={k}
+            role="radio"
+            aria-checked={environment === k}
+            className={environment === k ? "is-active" : ""}
+            onClick={() => onEnvironmentChange(k)}
+          >
+            <i className={`fa-solid ${v.icon}`} /> {v.label}
+          </button>
+        ))}
+      </div>
       <nav className="gp-tabs" role="tablist">
-        {TABS.map((t) => (
+        {TABS.map((t) => (t.id === "aiuola" && environment === "balcony" ? { ...t, label: "Vasi", icon: "fa-bucket" } : t)).map((t) => (
           <button
             key={t.id}
             role="tab"
@@ -53,6 +67,7 @@ export default function SidePanel({ isMobile, open, onOpenChange, tab, onTabChan
             selection={props.selection}
             onSelect={props.onSelect}
             onUpdate={props.onUpdateBed}
+            onReplace={props.onReplaceBed}
             onDeletePlant={props.onDeleteSelection}
             onDeleteBed={props.onDeleteBed}
             onRemovePlants={props.onRemovePlants}
@@ -60,7 +75,7 @@ export default function SidePanel({ isMobile, open, onOpenChange, tab, onTabChan
           />
         )}
         {tab === "ia" && (
-          <AiAdvisor key={props.selectedBed?.id ?? "none"} bed={props.selectedBed} onUpdateBed={props.onUpdateBed} onApply={props.onApplySuggestion} />
+          <AiAdvisor key={props.selectedBed?.id ?? "none"} bed={props.selectedBed} environment={environment} onUpdateBed={props.onUpdateBed} onApply={props.onApplySuggestion} />
         )}
         {tab === "irrigazione" && (
           <IrrigationPanel

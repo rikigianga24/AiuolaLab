@@ -23,7 +23,11 @@ function candidates(points) {
 
 // groups: [{ key, layer, quantity, spreadM }]; blocked: [{ x, y, r }] già occupati
 // Restituisce { placed: [{ key, x, y }], skipped: numero non posizionati }
-export function autoLayout(points, groups, { viewedFrom = "all", blocked = [] } = {}) {
+// Nei vasi le piante possono sporgere dal bordo e stare più fitte.
+export function autoLayout(points, groups, { viewedFrom = "all", blocked = [], container = false } = {}) {
+  const edgeFactor = container ? 0 : 0.6;
+  const edgeMargin = container ? 0.02 : 0.06;
+  const tolerances = container ? [0.95, 0.75, 0.55, 0.4] : [0.95, 0.75, 0.55];
   const cells = candidates(points);
   if (!cells.length) return { placed: [], skipped: groups.reduce((s, g) => s + g.quantity, 0) };
 
@@ -51,12 +55,12 @@ export function autoLayout(points, groups, { viewedFrom = "all", blocked = [] } 
     const spreadOut = g.layer === "bassa" || g.layer === "copertura";
     for (let n = 0; n < g.quantity; n++) {
       let best = null;
-      for (const tolerance of [0.95, 0.75, 0.55]) {
+      for (const tolerance of tolerances) {
         let bestScore = -Infinity;
         for (let i = 0; i < cells.length; i++) {
           const c = cells[i];
           // non sopra la bordura (circa 6 cm verso l'interno)
-          if (c.edge < r * 0.6 + 0.06) continue;
+          if (c.edge < r * edgeFactor + edgeMargin) continue;
           let ok = true;
           let nearSame = Infinity;
           for (const p of placed) {

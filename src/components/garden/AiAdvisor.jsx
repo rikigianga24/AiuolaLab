@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getHealth, suggestBed } from "../../lib/api";
 import { bbox, formatM2, polygonArea } from "../../lib/geometry";
+import { POT_TYPES, isFloor, isPot, potVolumeL } from "../../lib/containers";
 import { COLORS, LAYERS, SEASONS, SOIL_PH, SOIL_TEXTURE, STYLES, SUNLIGHT, WATERING } from "../../lib/labels";
 
 const MAINTENANCE = { bassa: "Bassa", media: "Media", alta: "Curata" };
@@ -26,7 +27,7 @@ function Chips({ options, values, onToggle }) {
 
 const toggleIn = (list, v) => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
 
-export default function AiAdvisor({ bed, onUpdateBed, onApply }) {
+export default function AiAdvisor({ bed, environment, onUpdateBed, onApply }) {
   const [aiEnabled, setAiEnabled] = useState(null);
   const [prefs, setPrefs] = useState({ colors: [], seasons: [], style: "", maintenance: "", maxHeightCm: "", region: "", notes: "" });
   const [status, setStatus] = useState({ loading: false, error: null });
@@ -36,6 +37,15 @@ export default function AiAdvisor({ bed, onUpdateBed, onApply }) {
   useEffect(() => {
     getHealth().then((h) => setAiEnabled(Boolean(h.ai)));
   }, []);
+
+  if (isFloor(bed)) {
+    return (
+      <div className="empty-state">
+        <i className="fa-solid fa-bucket" />
+        <p>Sul terrazzo l'IA progetta i vasi: seleziona un vaso o una fioriera (o aggiungine uno con «Aggiungi vaso»).</p>
+      </div>
+    );
+  }
 
   if (!bed) {
     return (
@@ -55,7 +65,16 @@ export default function AiAdvisor({ bed, onUpdateBed, onApply }) {
     setProposal(null);
     try {
       const res = await suggestBed({
-        bed: { areaM2: area, widthM: box.width, depthM: box.height, viewedFrom: bed.viewedFrom ?? "all" },
+        bed: {
+          areaM2: area,
+          widthM: box.width,
+          depthM: box.height,
+          viewedFrom: bed.viewedFrom ?? "all",
+          container: isPot(bed)
+            ? { type: POT_TYPES[bed.pot.type]?.label ?? "vaso", volumeL: potVolumeL(bed.pot), depthCm: Math.round(bed.pot.depth * 100), hanging: bed.pot.hanging }
+            : undefined,
+        },
+        environment: environment ?? "garden",
         conditions: {
           sunlight: c.sunlight ?? "full_sun",
           watering: c.watering,

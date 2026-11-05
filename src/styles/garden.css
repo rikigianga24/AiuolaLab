@@ -1110,3 +1110,121 @@ table.materials .qty {
 .is-mobile.sheet-open .scale-bar {
   bottom: 22px;
 }
+
+/* ===== Ambiente: giardino / balcone ===== */
+
+.env-switch {
+  display: flex;
+  gap: 4px;
+  margin: 8px 10px 4px;
+  padding: 3px;
+  border-radius: 10px;
+  background: #ebe8df;
+}
+
+.env-switch button {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 34px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #5f6f5f;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.env-switch button.is-active {
+  background: #fff;
+  color: var(--green-dark);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* ===== Menu vasi ===== */
+
+.pot-menu-wrap {
+  position: relative;
+}
+
+.pot-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 8;
+  width: 240px;
+  padding: 6px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+.pot-menu button {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  font: inherit;
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pot-menu button:hover {
+  background: #f1f5ec;
+}
+
+.pot-menu small {
+  display: block;
+  color: #6b766b;
+  font-size: 0.72rem;
+}
+
+.pot-glyph {
+  flex-shrink: 0;
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  background: radial-gradient(circle at 35% 35%, #d98a62, #b65a34);
+  box-shadow: inset 0 0 0 4px #c97a52, 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.pot-glyph.round {
+  border-radius: 50%;
+}
+
+.pot-glyph.rect {
+  border-radius: 3px;
+}
+
+.pot-glyph.planter {
+  height: 12px;
+}
+
+.pot-glyph.railing {
+  height: 8px;
+}
+
+.pot-glyph.hanging {
+  width: 22px;
+  height: 22px;
+  margin: 3px;
+  outline: 2px dashed #555;
+  outline-offset: 3px;
+}
+
+.rotate-btn {
+  align-self: end;
+}
+
+.is-mobile .env-switch {
+  margin-top: 2px;
+}

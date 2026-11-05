@@ -19,7 +19,7 @@ export const ICON_TYPES = {
 
 // Riconoscimento dal nome (scientifico o comune). L'ordine conta.
 const RULES = [
-  ["spike", /lavand|lupin|salvia|digital|verben|perovsk|veronic|delphin|speron|agastach|liatris|nepeta|kniphof|astilbe|lythrum|epilob|gaura|lobelia|antirrh|bocca di leone/],
+  ["spike", /lavand|lupin|salvia|digital|verben|perovsk|veronic|delphin|speron|agastach|liatris|nepeta|kniphof|astilbe|lythrum|epilob|gaura|antirrh|bocca di leone/],
   ["rose", /\brosa\b|\brose\b|camell|paeoni|peoni|ranuncul|gardenia|dahlia|dalia|garofan|dianthus|begonia/],
   ["daisy", /echinac|rudbeck|cosmo|coreops|leucanth|\baster\b|gaillard|helenium|tagete|zinnia|osteosp|gerber|bellis|margher|girasol|helianth|anthemis|erigeron|calendul|arnica|gazania/],
   ["cluster", /hydrang|ortensi|achille|agapant|allium|sedum|borracin|phlox|lantana|viburn|pieris|syringa|lillà|hortensia|ageratum|eupator/],

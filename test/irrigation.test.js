@@ -46,3 +46,12 @@ test("due aiuole: il collegamento tra aiuole è tubo di adduzione", () => {
   assert.ok(Math.abs(r.totals.supplyM - 10) < 1e-9);
   assert.equal(r.zones.length, 2);
 });
+
+test("i vasi si irrigano ogni giorno e quelli appesi più a lungo", () => {
+  const circle = (cx, cy, r) => Array.from({ length: 16 }, (_, i) => ({ x: cx + Math.cos((i / 16) * 6.283) * r, y: cy + Math.sin((i / 16) * 6.283) * r }));
+  const pot = (id, hanging) => ({ id, name: id, kind: "pot", pot: { hanging }, points: circle(id === "a" ? 1 : 3, 1, 0.2), plants: [plant(id + "p", id === "a" ? 1 : 3, 1, { spreadM: 0.3 })] });
+  const r = computeIrrigation({ beds: [pot("a", false), pot("b", true)], faucet: { x: 0, y: 0 } });
+  const summer = (i) => r.zones[i].seasons.find((s) => s.key === "summer");
+  assert.equal(summer(0).interval, 1);
+  assert.ok(summer(1).minutes >= summer(0).minutes);
+});

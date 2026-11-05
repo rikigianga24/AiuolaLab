@@ -117,7 +117,10 @@ export function computeIrrigation(project) {
   for (const bed of project.beds) {
     const list = plants.filter((p) => p.bed.id === bed.id);
     if (!list.length) continue;
-    const liters = list.map((p) => dailyLiters(p, climate.et0.summer));
+    // I vasi si asciugano prima della piena terra, quelli appesi ancora di più.
+    const isPot = bed.kind === "pot";
+    const potFactor = isPot ? (bed.pot?.hanging ? 1.5 : 1.25) : 1;
+    const liters = list.map((p) => dailyLiters(p, climate.et0.summer * potFactor));
     const sorted = [...liters].sort((a, b) => a - b);
     const median = sorted[Math.floor(sorted.length / 2)];
     const targetH = Math.min(1.5, Math.max(0.1, median / flow));
@@ -126,12 +129,12 @@ export function computeIrrigation(project) {
 
     // ore al giorno perché in media ogni pianta riceva il suo fabbisogno
     const hoursPerLiterRatio = (et0) => {
-      const need = list.reduce((s, p) => s + dailyLiters(p, et0), 0);
+      const need = list.reduce((s, p) => s + dailyLiters(p, et0 * potFactor), 0);
       const supplied = counts.reduce((s, c) => s + c * flow, 0); // l/h
       return need / supplied;
     };
-    const texture = bed.conditions?.texture ?? "loamy";
-    const baseInterval = INTERVAL[texture] ?? 2;
+    const texture = isPot ? "pot" : bed.conditions?.texture ?? "loamy";
+    const baseInterval = isPot ? 1 : INTERVAL[texture] ?? 2;
     const seasons = SEASONS.map(([key, label, endBy]) => {
       let interval = baseInterval;
       let minutes = hoursPerLiterRatio(climate.et0[key]) * 60 * interval;
@@ -233,4 +236,4 @@ export function computeIrrigation(project) {
   return result;
 }
 
-export const TEXTURE_LABEL = { sandy: "sabbioso", chalky: "calcareo", loamy: "franco", clay: "argilloso" };
+export const TEXTURE_LABEL = { sandy: "sabbioso", chalky: "calcareo", loamy: "franco", clay: "argilloso", pot: "terriccio in vaso" };

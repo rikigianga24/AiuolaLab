@@ -13,7 +13,16 @@ export const SuggestRequest = z.object({
     widthM: z.number().positive().max(1000),
     depthM: z.number().positive().max(1000),
     viewedFrom: z.enum(["all", "one"]).default("all"),
+    container: z
+      .object({
+        type: z.string().max(40),
+        volumeL: z.number().positive().max(5000),
+        depthCm: z.number().positive().max(300),
+        hanging: z.boolean().default(false),
+      })
+      .optional(),
   }),
+  environment: z.enum(["garden", "balcony"]).default("garden"),
   conditions: z.object({
     sunlight: z.enum(["full_sun", "part_shade", "full_shade"]),
     watering: z.enum(["minimum", "average", "frequent"]).optional(),
@@ -92,14 +101,23 @@ Regole:
 - Le quantità devono stare nell'area disponibile: usa la distanza di impianto (spacing_cm) per calcolarle. Lo spazio occupato da ogni esemplare è circa spacing_cm al quadrato.
 - Usa i livelli: "alta" per piante strutturali (al centro se l'aiuola si vede da tutti i lati, sul fondo se si vede da un lato solo), "media" per il riempimento, "bassa" per la bordura, "copertura" per tappezzanti.
 - Ripeti poche specie in gruppi (da 3 a 7 specie per aiuole piccole) invece di metterne tante isolate.
-- Scrivi in italiano, in modo semplice e pratico.`;
+- Scrivi in italiano, in modo semplice e pratico.
+
+Vasi e balconi:
+- In un vaso scegli piante adatte al volume di terriccio indicato: poche specie (1-3 in un vaso singolo, 2-5 in una fioriera), con distanze di impianto più strette che in piena terra.
+- Nei vasi appesi e nelle fioriere da ringhiera privilegia piante ricadenti o compatte (per esempio surfinie, gerani edera, lobelia, bacopa, verbena ricadente, fragole, edera, dicondra) e usa il livello "copertura" o "bassa" per quelle che ricadono oltre il bordo.
+- In balcone considera vento, riflesso del calore delle pareti e vasi che si asciugano in fretta: indicalo nelle avvertenze se serve.`;
 
 function describeRequest(req, candidates) {
   const { bed, conditions, preferences } = req;
   const lines = [
-    "## Aiuola",
-    `- Area: ${bed.areaM2.toFixed(1)} m², ingombro circa ${bed.widthM.toFixed(1)} × ${bed.depthM.toFixed(1)} m`,
-    `- Si vede da: ${bed.viewedFrom === "one" ? "un lato solo (es. contro un muro)" : "tutti i lati"}`,
+    "## Dove",
+    `- Ambiente: ${req.environment === "balcony" ? "balcone/terrazzo in città" : "giardino in piena terra"}`,
+    bed.container
+      ? `- Contenitore: ${bed.container.type}, circa ${bed.container.volumeL} litri di terriccio, profondità ${bed.container.depthCm} cm${bed.container.hanging ? ", APPESO (vista dal basso e di lato)" : ""}`
+      : "- Aiuola in piena terra",
+    `- Area: ${bed.areaM2.toFixed(2)} m², ingombro circa ${bed.widthM.toFixed(2)} × ${bed.depthM.toFixed(2)} m`,
+    !bed.container && `- Si vede da: ${bed.viewedFrom === "one" ? "un lato solo (es. contro un muro)" : "tutti i lati"}`,
     "## Condizioni",
     `- Esposizione: ${conditions.sunlight}`,
     conditions.watering && `- Irrigazione disponibile: ${conditions.watering}`,
