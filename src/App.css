@@ -1,33 +1,140 @@
 :root {
-  --green-primary: #4F7942	;
-  --green-soft: #CFE3D1;
-  --green-dark: #2F3E2F;
+  --green-primary: #4f7942;
+  --green-dark: #2f3e2f;
+  --green-soft: #cfe3d1;
+  --beige-cream: #f4efea;
+  --beige-warm: #e6d8c3;
+  --brown: #6f4e37;
+  --accent: #c47a2c;
+  --navbar-h: 3.25rem;
 
-  --beige-cream: #F4EFEA;
-  --beige-warm: #E6D8C3;
-  --brown-soft: #B8A48A;
+  /* Bulma: colore primario verde salvia */
+  --bulma-primary-h: 104deg;
+  --bulma-primary-s: 30%;
+  --bulma-primary-l: 37%;
+  --bulma-link-h: 160deg;
+  --bulma-link-s: 31%;
+  --bulma-link-l: 40%;
 }
 
-.navbar-overlay {
+html,
+body {
+  background: var(--beige-cream);
+  color: #2b2b2b;
+  color-scheme: light;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+/* ---------- Navbar ---------- */
+
+.app-navbar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-
-  background: rgba(0, 0, 0, 0.25); /* trasparente */
-  backdrop-filter: blur(6px);     /* effetto vetro */
-  
-  z-index: 1000;
+  z-index: 40;
+  min-height: var(--navbar-h);
+  padding-top: env(safe-area-inset-top);
 }
 
+.app-navbar.is-transparent {
+  background: rgba(47, 62, 47, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.app-navbar.is-solid {
+  background: var(--green-dark);
+}
+
+.app-navbar .navbar-item,
+.app-navbar .navbar-burger {
+  color: #fff;
+}
+
+.app-navbar .navbar-item:hover,
+.app-navbar .navbar-item.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.app-navbar .brand {
+  gap: 0.5rem;
+}
+
+.app-navbar .navbar-brand,
+.app-navbar .navbar-brand .navbar-item {
+  background: transparent;
+}
+
+.app-navbar .brand img {
+  max-height: 28px;
+}
+
+@media (max-width: 1023px) {
+  .app-navbar .navbar-menu {
+    background: var(--green-dark);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+  }
+}
+
+.site-main {
+  min-height: 100vh;
+}
+
+.app-main {
+  padding-top: calc(var(--navbar-h) + env(safe-area-inset-top));
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* ---------- Pagine statiche ---------- */
+
+.home-hero {
+  background-size: cover;
+  background-position: center;
+}
+
+.home-hero .title,
+.home-hero .subtitle {
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+}
+
+.green-dark {
+  background-color: var(--green-dark);
+  color: #fff;
+}
+
+.green-dark .title,
+.green-dark .subtitle {
+  color: #fff;
+}
+
+/* ---------- Footer ---------- */
+
 .garden-footer {
-  background: linear-gradient(
-    180deg,
-    #e4f0d9 0%,
-    #f5f1eb 100%
-  );
+  background: linear-gradient(180deg, #e4f0d9 0%, #f5f1eb 100%);
   padding: 3rem 1.5rem;
   border-top: 1px solid rgba(79, 121, 66, 0.25);
+}
+
+.footer-title {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--green-dark);
+}
+
+.footer-links {
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
 }
 
 .footer-copy {
@@ -35,43 +142,45 @@
   color: #7a7a7a;
 }
 
+/* ---------- Chi sono ---------- */
 
-.green-primary {
-  background-color: #9FC5A1;
+.about-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 1.5rem;
 }
 
-.green-soft {
-  background-color: #CFE3D1;
+.about-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--green-primary), var(--green-dark));
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
 }
 
-.green-dark {
-  background-color: #2F3E2F;
+.about-highlights {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
 }
 
-.beige-cream {
-  background-color: #F4EFEA;
+.about-highlights li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(47, 62, 47, 0.08);
 }
 
-.beige-warm {
-  background-color: #E6D8C3;
-}
-
-.brown-soft {
-  background-color: #B8A48A;
-}
-
-.text-green-dark {
-  color: #2F3E2F;
-}
-
-.text-muted {
-  color: #5F6F5F;
-}
-
-.text-dark {
-  color: #2B2B2B;
-}
-
-.text-white {
-  color: #FFFFFF;
+.about-highlights li:last-child {
+  border-bottom: none;
 }
