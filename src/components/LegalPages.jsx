@@ -1,16 +1,17 @@
 import { Link } from "react-router-dom";
 import { reopenConsent } from "../lib/consent";
 import { LEGAL } from "../lib/legal";
+import { PageHero } from "./decor";
+import "../styles/pages.css";
 
 function LegalLayout({ title, children }) {
   return (
-    <section className="section legal-page">
-      <div className="container content">
-        <h1 className="title is-3">{title}</h1>
-        <p className="has-text-grey">Ultimo aggiornamento: {LEGAL.updated}</p>
-        {children}
-      </div>
-    </section>
+    <div className="page legal-page">
+      <PageHero compact script="trasparenza" title={title} lead={`Ultimo aggiornamento: ${LEGAL.updated}`} />
+      <section className="page-body">
+        <div className="container content card-country legal-card">{children}</div>
+      </section>
+    </div>
   );
 }
 
