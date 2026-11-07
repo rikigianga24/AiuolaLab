@@ -68,6 +68,18 @@ CREATE TABLE IF NOT EXISTS notification_log (
   PRIMARY KEY (user_id, key)
 );
 
+-- Row Level Security: su Supabase le tabelle dello schema "public" sono
+-- esposte anche dalla sua API REST. Attivando RLS senza regole l'API non
+-- vede niente; il server di AiuolaLab si collega come proprietario delle
+-- tabelle e continua a leggerle e scriverle normalmente.
+ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
+ALTER TABLE plant_cache ENABLE ROW LEVEL SECURITY;
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE auth_tokens ENABLE ROW LEVEL SECURITY;
+ALTER TABLE push_subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notification_log ENABLE ROW LEVEL SECURITY;
+
 -- Pulizia periodica (eseguita all'avvio).
 DELETE FROM sessions WHERE expires_at < now();
 DELETE FROM auth_tokens WHERE expires_at < now();

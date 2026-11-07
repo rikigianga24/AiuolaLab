@@ -43,7 +43,11 @@ Con [Supabase](https://supabase.com), piano gratuito:
 2. Annota la **password del database** che scegli alla creazione.
 3. In *Project Settings → Database → Connection string* copia la stringa **URI**. Usa quella del *Session pooler* (porta 5432), che funziona anche da server senza IPv6.
 4. Nel `.env` incolla quella stringa in `DATABASE_URL`, sostituendo il segnaposto della password con la tua, e imposta `DATABASE_SSL=true`.
-5. Avvia il server: le tabelle (`server/schema.sql`) vengono create da sole.
+5. Crea le tabelle in uno dei due modi:
+   - **dal pannello di Supabase**: *SQL Editor → New query*, incolla tutto il contenuto di `server/schema.sql` e premi **Run**;
+   - **in automatico**: avvia il server, che applica lo stesso file a ogni avvio.
+
+   Il file si può eseguire più volte senza problemi e attiva la *Row Level Security* su tutte le tabelle, così l'API pubblica di Supabase non può leggerle. Il server si collega come proprietario delle tabelle e continua a funzionare normalmente.
 
 Vanno bene anche Neon, Railway o un Postgres tuo: serve solo l'URL di connessione.
 
