@@ -7,6 +7,8 @@ import { loadCurrent } from "../lib/projects";
 import { useSession } from "../lib/session";
 import { symbolInfo } from "../lib/weather";
 import LocationPicker from "./LocationPicker";
+import { PageHero } from "./decor";
+import "../styles/pages.css";
 import "../styles/calendar.css";
 
 const ENVS = { all: "Tutto", garden: "Giardino", balcony: "Balcone", vegetable: "Orto" };
@@ -85,9 +87,7 @@ function TaskCard({ task, status, onDone, onSnooze, onUndo }) {
           {task.where}
           {task.plants?.length > 0 && ` · ${task.plants.join(", ")}`}
         </span>
-        <span className="task-dates">
-          {status === "now" ? `entro il ${fmt(task.end)}` : `dal ${fmt(task.start)} al ${fmt(task.end)}`}
-        </span>
+        <span className="task-dates">{status === "now" ? `entro il ${fmt(task.end)}` : `dal ${fmt(task.start)} al ${fmt(task.end)}`}</span>
         {open && (
           <div className="task-detail">
             <p>{task.detail}</p>
@@ -127,10 +127,7 @@ export default function CalendarPage() {
   const year = Number(today.slice(0, 4));
 
   const projects = useMemo(() => ["garden", "balcony", "vegetable"].map((t) => loadCurrent(t)), []);
-  const tasks = useMemo(
-    () => generateTasks(projects, { climate: settings.climate, years: [year, year + 1] }),
-    [projects, settings.climate, year],
-  );
+  const tasks = useMemo(() => generateTasks(projects, { climate: settings.climate, years: [year, year + 1] }), [projects, settings.climate, year]);
   const context = useMemo(
     () => ({
       pots: projects.some((p) => p.beds.some((b) => b.kind === "pot")),
@@ -173,108 +170,115 @@ export default function CalendarPage() {
   );
 
   return (
-    <section className="section calendar-page">
-      <div className="container">
-        <div className="calendar-head">
-          <div>
-            <h1 className="title is-3">Il mio calendario</h1>
-            <p className="subtitle is-6">
-              Cosa fare per le piante dei tuoi progetti · {CLIMATES[settings.climate]?.label ?? "Centro Italia"}{" "}
-              <select className="inline-select" value={settings.climate} onChange={(e) => updateSettings({ climate: e.target.value })} aria-label="Zona climatica">
-                {Object.entries(CLIMATES).map(([k, v]) => (
-                  <option key={k} value={k}>
-                    {v.label}
-                  </option>
-                ))}
-              </select>
-            </p>
-          </div>
+    <div className="page calendar-page">
+      <PageHero
+        compact
+        script="ogni cosa a suo tempo"
+        title="Il mio calendario"
+        lead="Cosa fare per le piante dei tuoi progetti, con le date adattate alla tua zona e il meteo dei prossimi giorni."
+      >
+        <div className="hero-tools">
+          <label className="hero-select">
+            <i className="fa-solid fa-map" aria-hidden="true" />
+            <span>Zona</span>
+            <select value={settings.climate} onChange={(e) => updateSettings({ climate: e.target.value })} aria-label="Zona climatica">
+              {Object.entries(CLIMATES).map(([k, v]) => (
+                <option key={k} value={k}>
+                  {v.label}
+                </option>
+              ))}
+            </select>
+          </label>
           {!user && features.accounts && (
-            <Link to="/account" className="button is-primary is-small">
-              <i className="fa-solid fa-bell" />&nbsp; Ricevi i promemoria
+            <Link to="/registrati" className="btn-country is-primary is-small">
+              <i className="fa-solid fa-bell" /> Ricevi i promemoria
             </Link>
           )}
           {user && (
-            <Link to="/account" className="button is-small is-light">
-              <i className="fa-solid fa-bell" />&nbsp; Notifiche
+            <Link to="/account" className="btn-country is-light is-small">
+              <i className="fa-solid fa-bell" /> Notifiche
             </Link>
           )}
         </div>
+      </PageHero>
 
-        <div className="columns">
-          <div className="column is-8">
-            <div className="calendar-toolbar">
-              <div className="tabs is-toggle is-small">
-                <ul>
-                  {Object.entries(VIEWS).map(([k, v]) => (
-                    <li key={k} className={view === k ? "is-active" : ""}>
-                      <a onClick={() => setView(k)}>{v}</a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="choice-row">
-                {Object.entries(ENVS).map(([k, v]) => (
-                  <button key={k} className={`choice ${env === k ? "is-active" : ""}`} onClick={() => setEnv(k)}>
-                    {v}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {!hasPlants ? (
-              <div className="box empty-state">
-                <i className="fa-solid fa-seedling" />
-                <p>
-                  Il calendario si riempie con le piante dei tuoi progetti. <Link to="/gardencanvas">Progetta un'aiuola, un balcone o un orto</Link>.
-                </p>
-              </div>
-            ) : view === "year" ? (
-              byMonth.map(([m, items]) =>
-                items.length ? (
-                  <div key={m} className="month-block">
-                    <h2 className="month-title">{m}</h2>
-                    <ul className="task-list">{items.map(card)}</ul>
-                  </div>
-                ) : null,
-              )
-            ) : visible.length ? (
-              <ul className="task-list">{visible.map(card)}</ul>
-            ) : view === "now" && upcoming.length ? (
-              <>
-                <p className="panel-note">Niente di urgente in questo periodo. Ecco le prossime attività:</p>
-                <ul className="task-list">{upcoming.map(card)}</ul>
-              </>
-            ) : (
-              <p className="panel-note">{view === "now" ? "Niente da fare in questo periodo: goditi il giardino!" : "Nessuna attività in programma."}</p>
-            )}
-          </div>
-
-          <div className="column is-4">
-            <div className="box weather-box">
-              <h2 className="title is-6">
-                <i className="fa-solid fa-cloud-sun" /> Meteo e avvisi
-              </h2>
-              {settings.location ? (
-                <>
-                  <p className="location-current">
-                    <i className="fa-solid fa-location-dot" /> {settings.location.name}{" "}
-                    <button className="link-btn" onClick={() => updateSettings({ location: null })}>
-                      cambia
+      <section className="page-body">
+        <div className="container">
+          <div className="columns">
+            <div className="column is-8">
+              <div className="calendar-toolbar">
+                <div className="tabs is-toggle is-small">
+                  <ul>
+                    {Object.entries(VIEWS).map(([k, v]) => (
+                      <li key={k} className={view === k ? "is-active" : ""}>
+                        <a onClick={() => setView(k)}>{v}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="choice-row">
+                  {Object.entries(ENVS).map(([k, v]) => (
+                    <button key={k} className={`choice ${env === k ? "is-active" : ""}`} onClick={() => setEnv(k)}>
+                      {v}
                     </button>
+                  ))}
+                </div>
+              </div>
+
+              {!hasPlants ? (
+                <div className="card-country empty-state">
+                  <i className="fa-solid fa-seedling" />
+                  <p>
+                    Il calendario si riempie con le piante dei tuoi progetti. <Link to="/gardencanvas">Progetta un'aiuola, un balcone o un orto</Link>.
                   </p>
-                  <Weather location={settings.location} context={context} />
+                </div>
+              ) : view === "year" ? (
+                byMonth.map(([m, items]) =>
+                  items.length ? (
+                    <div key={m} className="month-block">
+                      <h2 className="month-title">{m}</h2>
+                      <ul className="task-list">{items.map(card)}</ul>
+                    </div>
+                  ) : null,
+                )
+              ) : visible.length ? (
+                <ul className="task-list">{visible.map(card)}</ul>
+              ) : view === "now" && upcoming.length ? (
+                <>
+                  <p className="panel-note">Niente di urgente in questo periodo. Ecco le prossime attività:</p>
+                  <ul className="task-list">{upcoming.map(card)}</ul>
                 </>
               ) : (
-                <>
-                  <p className="panel-note">Scegli dove si trova il tuo giardino per ricevere avvisi di gelo, caldo, pioggia e vento.</p>
-                  <LocationPicker value={null} onChange={(location) => updateSettings({ location })} />
-                </>
+                <p className="panel-note">{view === "now" ? "Niente da fare in questo periodo: goditi il giardino!" : "Nessuna attività in programma."}</p>
               )}
+            </div>
+
+            <div className="column is-4">
+              <div className="card-country weather-box">
+                <h2 className="weather-title">
+                  <i className="fa-solid fa-cloud-sun" /> Meteo e avvisi
+                </h2>
+                {settings.location ? (
+                  <>
+                    <p className="location-current">
+                      <i className="fa-solid fa-location-dot" /> {settings.location.name}{" "}
+                      <button className="link-btn" onClick={() => updateSettings({ location: null })}>
+                        cambia
+                      </button>
+                    </p>
+                    <Weather location={settings.location} context={context} />
+                  </>
+                ) : (
+                  <>
+                    <p className="panel-note">Scegli dove si trova il tuo giardino per ricevere avvisi di gelo, caldo, pioggia e vento.</p>
+                    <LocationPicker value={null} onChange={(location) => updateSettings({ location })} />
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }

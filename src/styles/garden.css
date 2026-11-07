@@ -260,7 +260,7 @@
 
 .panel-note {
   font-size: 0.8rem;
-  color: #6b766b;
+  color: #4f5a52;
   margin: 0.6rem 0;
 }
 
@@ -317,7 +317,7 @@
 .icon-btn {
   border: none;
   background: none;
-  color: #7a857a;
+  color: #5c665e;
   min-width: 32px;
   min-height: 32px;
   border-radius: 8px;
@@ -435,7 +435,7 @@
 }
 
 .icon-input i {
-  color: #8a958a;
+  color: #5c665e;
 }
 
 .icon-input input {
@@ -554,7 +554,7 @@
 
 .plant-names em {
   font-size: 0.78rem;
-  color: #6b766b;
+  color: #4f5a52;
 }
 
 .plant-icons {
@@ -567,7 +567,7 @@
 }
 
 .plant-icons small {
-  color: #6b766b;
+  color: #4f5a52;
   font-size: 0.7rem;
 }
 
@@ -584,7 +584,7 @@
 }
 
 .plant-facts dt {
-  color: #6b766b;
+  color: #4f5a52;
 }
 
 .plant-facts dd {
@@ -606,7 +606,7 @@
 
 .facts-note {
   grid-column: 1 / -1;
-  color: #8a958a;
+  color: #5c665e;
 }
 
 /* ===== Ispettore aiuola ===== */
@@ -633,7 +633,7 @@
 
 .stats-row span {
   font-size: 0.68rem;
-  color: #6b766b;
+  color: #4f5a52;
 }
 
 .selected-plant {
@@ -654,7 +654,7 @@
 }
 
 .selected-plant small {
-  color: #6b766b;
+  color: #4f5a52;
 }
 
 .bed-list,
@@ -683,7 +683,7 @@
 
 .bed-list small {
   margin-left: auto;
-  color: #6b766b;
+  color: #4f5a52;
   font-size: 0.75rem;
 }
 
@@ -701,7 +701,7 @@
 }
 
 .count {
-  color: #6b766b;
+  color: #4f5a52;
   font-variant-numeric: tabular-nums;
 }
 
@@ -784,7 +784,7 @@
 .proposal-plants em,
 .proposal-plants small {
   font-size: 0.78rem;
-  color: #6b766b;
+  color: #4f5a52;
 }
 
 .proposal-plants .reason {
@@ -793,7 +793,7 @@
 }
 
 .proposal-plants .muted {
-  color: #a08a5b;
+  color: #7d6a3f;
 }
 
 .bullets {
@@ -834,7 +834,7 @@
 }
 
 .project-list small {
-  color: #6b766b;
+  color: #4f5a52;
   font-size: 0.75rem;
 }
 
@@ -1037,7 +1037,7 @@
 }
 
 .zone-head small {
-  color: #6b766b;
+  color: #4f5a52;
   font-size: 0.75rem;
 }
 
@@ -1051,7 +1051,7 @@ table.materials {
 table.schedule th {
   text-align: left;
   font-weight: 600;
-  color: #6b766b;
+  color: #4f5a52;
   font-size: 0.72rem;
   padding: 0.2rem 0.3rem 0.2rem 0;
 }
@@ -1065,11 +1065,11 @@ table.materials td {
 
 table.schedule small,
 table.materials small {
-  color: #6b766b;
+  color: #4f5a52;
 }
 
 .muted-row td {
-  color: #8a958a;
+  color: #5c665e;
 }
 
 table.materials .qty {
@@ -1184,7 +1184,7 @@ table.materials .qty {
 
 .pot-menu small {
   display: block;
-  color: #6b766b;
+  color: #4f5a52;
   font-size: 0.72rem;
 }
 
@@ -1260,7 +1260,7 @@ table.materials .qty {
 }
 
 .ys-label {
-  color: #6b766b;
+  color: #4f5a52;
 }
 
 .ys-cell {
@@ -1271,7 +1271,7 @@ table.materials .qty {
 
 .ys-month {
   text-align: center;
-  color: #8a958a;
+  color: #5c665e;
 }
 
 /* ===== Sicurezza e fauna ===== */
@@ -1299,7 +1299,7 @@ table.materials .qty {
   margin-top: 0.15rem;
   width: 14px;
   text-align: center;
-  color: #8a958a;
+  color: #5c665e;
 }
 
 .safety-row.tox-low > i {
@@ -1324,7 +1324,7 @@ table.materials .qty {
 
 .safety-disclaimer {
   font-size: 0.7rem;
-  color: #8a958a;
+  color: #5c665e;
 }
 
 /* ===== Guida ===== */
@@ -1376,7 +1376,7 @@ table.materials .qty {
 
 .tour-step {
   font-size: 0.72rem;
-  color: #8a958a;
+  color: #5c665e;
   margin-bottom: 0.2rem;
 }
 

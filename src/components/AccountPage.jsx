@@ -1,127 +1,16 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useLocation, useSearchParams } from "react-router-dom";
 import { accountApi, authApi } from "../lib/api";
 import { CLIMATES } from "../lib/irrigation";
 import { currentSubscription, disablePush, enablePush, pushSupported } from "../lib/push";
 import { useSession } from "../lib/session";
 import LocationPicker from "./LocationPicker";
 import { PETS } from "../lib/plantInfo";
+import { PageHero } from "./decor";
+import "../styles/pages.css";
 
 function Notice({ kind = "info", children }) {
   return <div className={`notification is-${kind} is-light`}>{children}</div>;
-}
-
-function AuthForms() {
-  const { login, register, features } = useSession();
-  const [params] = useSearchParams();
-  const resetToken = params.get("reset");
-  const [mode, setMode] = useState(resetToken ? "reset" : "login");
-  const [form, setForm] = useState({ email: "", password: "", privacy: false, marketing: false });
-  const [status, setStatus] = useState({ busy: false, error: null, info: null });
-  const navigate = useNavigate();
-  const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
-
-  const submit = async (e) => {
-    e.preventDefault();
-    setStatus({ busy: true, error: null, info: null });
-    try {
-      if (mode === "login") {
-        await login(form.email, form.password);
-        navigate("/calendario");
-      } else if (mode === "register") {
-        await register({ email: form.email, password: form.password, privacy: form.privacy, marketing: form.marketing });
-        setStatus({ busy: false, error: null, info: features.mail ? "Account creato! Ti abbiamo inviato un'email per confermare l'indirizzo." : "Account creato!" });
-        return;
-      } else if (mode === "forgot") {
-        await authApi.forgot(form.email);
-        setStatus({ busy: false, error: null, info: "Se l'indirizzo è registrato riceverai un'email con il link (valido 2 ore)." });
-        return;
-      } else if (mode === "reset") {
-        await authApi.reset(resetToken, form.password);
-        window.location.replace("/account");
-        return;
-      }
-      setStatus({ busy: false, error: null, info: null });
-    } catch (err) {
-      setStatus({ busy: false, error: err.message, info: null });
-    }
-  };
-
-  if (!features.accounts) {
-    return (
-      <Notice kind="warning">
-        Gli account non sono attivi: il server non ha un database. Puoi comunque usare l'app, i progetti restano in questo browser.
-      </Notice>
-    );
-  }
-
-  return (
-    <div className="box auth-box">
-      {mode !== "reset" && (
-        <div className="tabs is-centered is-fullwidth">
-          <ul>
-            <li className={mode === "login" ? "is-active" : ""}>
-              <a onClick={() => setMode("login")}>Accedi</a>
-            </li>
-            <li className={mode === "register" ? "is-active" : ""}>
-              <a onClick={() => setMode("register")}>Registrati</a>
-            </li>
-          </ul>
-        </div>
-      )}
-      <form onSubmit={submit}>
-        {mode !== "reset" && (
-          <div className="field">
-            <label className="label" htmlFor="email">Email</label>
-            <input id="email" className="input" type="email" autoComplete="email" required value={form.email} onChange={(e) => set("email", e.target.value)} />
-          </div>
-        )}
-        {mode !== "forgot" && (
-          <div className="field">
-            <label className="label" htmlFor="password">{mode === "reset" ? "Nuova password" : "Password"}</label>
-            <input
-              id="password"
-              className="input"
-              type="password"
-              autoComplete={mode === "login" ? "current-password" : "new-password"}
-              minLength={mode === "login" ? undefined : 10}
-              required
-              value={form.password}
-              onChange={(e) => set("password", e.target.value)}
-            />
-            {mode !== "login" && <p className="help">Almeno 10 caratteri.</p>}
-          </div>
-        )}
-        {mode === "register" && (
-          <>
-            <label className="checkbox consent-row">
-              <input type="checkbox" required checked={form.privacy} onChange={(e) => set("privacy", e.target.checked)} /> Ho letto l'
-              <Link to="/privacy" target="_blank">informativa privacy</Link> e ho almeno 14 anni (obbligatorio)
-            </label>
-            <label className="checkbox consent-row">
-              <input type="checkbox" checked={form.marketing} onChange={(e) => set("marketing", e.target.checked)} /> Voglio ricevere
-              offerte e novità su prodotti per il giardino (facoltativo, revocabile)
-            </label>
-          </>
-        )}
-        {status.error && <Notice kind="danger">{status.error}</Notice>}
-        {status.info && <Notice kind="success">{status.info}</Notice>}
-        <button className={`button is-primary is-fullwidth mt-3 ${status.busy ? "is-loading" : ""}`} type="submit">
-          {{ login: "Accedi", register: "Crea account", forgot: "Invia il link", reset: "Salva la nuova password" }[mode]}
-        </button>
-      </form>
-      {mode === "login" && features.mail && (
-        <p className="has-text-centered mt-3">
-          <a onClick={() => setMode("forgot")}>Password dimenticata?</a>
-        </p>
-      )}
-      {mode === "forgot" && (
-        <p className="has-text-centered mt-3">
-          <a onClick={() => setMode("login")}>Torna all'accesso</a>
-        </p>
-      )}
-    </div>
-  );
 }
 
 function PushToggle() {
@@ -211,8 +100,8 @@ function AccountSettings() {
 
   return (
     <div className="account-grid">
-      <div className="box">
-        <h2 className="title is-5">Il tuo account</h2>
+      <div className="card-country">
+        <h2 className="card-title">Il tuo account</h2>
         <p>
           <strong>{user.email}</strong>{" "}
           {user.emailVerified ? (
@@ -237,8 +126,8 @@ function AccountSettings() {
         </div>
       </div>
 
-      <div className="box">
-        <h2 className="title is-5">Notifiche</h2>
+      <div className="card-country">
+        <h2 className="card-title">Notifiche</h2>
         <PushToggle />
         <div className="mt-3">
           <label className="checkbox consent-row">
@@ -263,8 +152,8 @@ function AccountSettings() {
         </div>
       </div>
 
-      <div className="box">
-        <h2 className="title is-5">Zona e meteo</h2>
+      <div className="card-country">
+        <h2 className="card-title">Zona e meteo</h2>
         <label className="mini-select" style={{ maxWidth: 260 }}>
           <span>Zona climatica (sposta le date del calendario)</span>
           <select value={settings.climate} onChange={(e) => updateSettings({ climate: e.target.value })}>
@@ -281,8 +170,8 @@ function AccountSettings() {
         <PetsChooser />
       </div>
 
-      <div className="box">
-        <h2 className="title is-5">Privacy e dati</h2>
+      <div className="card-country">
+        <h2 className="card-title">Privacy e dati</h2>
         <label className="checkbox consent-row">
           <input
             type="checkbox"
@@ -329,6 +218,7 @@ function AccountSettings() {
 export default function AccountPage() {
   const { user, loading, refresh } = useSession();
   const [params, setParams] = useSearchParams();
+  const { search, state } = useLocation();
   const [verifyMsg, setVerifyMsg] = useState(null);
   const verifyToken = params.get("verifica");
 
@@ -344,14 +234,32 @@ export default function AccountPage() {
       .finally(() => setParams({}, { replace: true }));
   }, [verifyToken, refresh, setParams]);
 
+  // senza account si va alla pagina di accesso (anche per il link di reset)
+  if (!loading && !user && !verifyToken && !verifyMsg) return <Navigate to={`/accedi${search}`} replace state={{ from: "/account" }} />;
+
+  const welcome = state?.welcome;
   return (
-    <section className="section account-page">
-      <div className="container">
-        <h1 className="title is-3">{user ? "Account" : "Accedi ad AiuolaLab"}</h1>
-        {!user && <p className="subtitle is-6">Con l'account i progetti sono salvati online e ricevi promemoria e avvisi meteo.</p>}
-        {verifyMsg && <Notice kind={verifyMsg.kind}>{verifyMsg.text}</Notice>}
-        {loading ? <p>Caricamento…</p> : user ? <AccountSettings /> : <AuthForms />}
-      </div>
-    </section>
+    <div className="page account-page">
+      <PageHero compact script={user ? "il tuo angolo verde" : "account"} title={user ? "Il tuo account" : "Account"} lead={user ? "Notifiche, zona, animali di casa e privacy: tutto in un posto." : null} />
+      <section className="page-body">
+        <div className="container">
+          {welcome && (
+            <Notice kind="success">
+              Account creato, benvenuto! {welcome === "mail" && "Ti abbiamo inviato un'email per confermare l'indirizzo."}
+            </Notice>
+          )}
+          {verifyMsg && <Notice kind={verifyMsg.kind}>{verifyMsg.text}</Notice>}
+          {loading ? (
+            <p>Caricamento…</p>
+          ) : user ? (
+            <AccountSettings />
+          ) : (
+            <Link to="/accedi" className="btn-country is-primary">
+              Accedi
+            </Link>
+          )}
+        </div>
+      </section>
+    </div>
   );
 }
