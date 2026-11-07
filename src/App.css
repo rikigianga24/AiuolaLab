@@ -43,7 +43,7 @@ body {
 }
 
 .app-navbar.is-transparent {
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(47, 62, 47, 0.72);
   backdrop-filter: blur(6px);
 }
 
@@ -64,6 +64,11 @@ body {
 
 .app-navbar .brand {
   gap: 0.5rem;
+}
+
+.app-navbar .navbar-brand,
+.app-navbar .navbar-brand .navbar-item {
+  background: transparent;
 }
 
 .app-navbar .brand img {
