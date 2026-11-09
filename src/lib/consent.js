@@ -3,7 +3,7 @@
 // AiuolaLab usa solo strumenti tecnici (cookie di sessione per l'accesso,
 // memoria del browser per salvare i progetti), che non richiedono consenso.
 // L'unico contenuto di terze parti caricato dal browser sono le foto delle
-// piante del database Perenual: si mostrano solo se l'utente lo consente.
+// piante (iNaturalist e Perenual): si mostrano solo se l'utente lo consente.
 import { useSyncExternalStore } from "react";
 import { load, save } from "./storage.js";
 
@@ -18,7 +18,7 @@ export const CATEGORIES = {
   },
   external: {
     label: "Contenuti esterni",
-    description: "Foto delle piante caricate dai server di Perenual: il tuo browser si collega al loro servizio, che può vedere il tuo indirizzo IP.",
+    description: "Foto vere delle piante caricate dai server di iNaturalist e Perenual: il tuo browser si collega ai loro servizi, che possono vedere il tuo indirizzo IP.",
   },
 };
 

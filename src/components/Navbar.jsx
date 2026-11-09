@@ -3,9 +3,10 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useSession } from "../lib/session";
 
 const LINKS = [
+  { to: "/piante", label: "Scopri le piante", icon: "fa-heart" },
   { to: "/gardencanvas", label: "Progetta", icon: "fa-trowel" },
   { to: "/calendario", label: "Calendario", icon: "fa-calendar-days" },
-  { to: "/aboutme", label: "Chi sono", icon: "fa-leaf" },
+  { to: "/aboutme", label: "Chi sono", icon: "fa-user" },
 ];
 
 function UserMenu({ user, onNavigate }) {
@@ -63,6 +64,9 @@ function UserMenu({ user, onNavigate }) {
           </button>
           <button role="menuitem" onClick={() => go("/calendario")}>
             <i className="fa-solid fa-calendar-days" /> Il mio calendario
+          </button>
+          <button role="menuitem" onClick={() => go("/piante?tab=preferiti")}>
+            <i className="fa-solid fa-heart" /> Le mie piante preferite
           </button>
           <button role="menuitem" onClick={() => go("/gardencanvas")}>
             <i className="fa-solid fa-folder-open" /> I miei progetti

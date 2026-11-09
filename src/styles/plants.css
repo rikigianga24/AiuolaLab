@@ -1,0 +1,213 @@
+/* ===== Componenti delle piante usati in più pagine ===== */
+
+/* cuore "mi piace" */
+.fav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(111, 78, 55, 0.2);
+  background: rgba(255, 253, 247, 0.95);
+  color: #8a4a3a;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(80, 60, 30, 0.15);
+  transition: transform 0.15s ease, background 0.15s ease;
+  flex-shrink: 0;
+}
+
+.fav-btn:hover {
+  transform: scale(1.08);
+}
+
+.fav-btn:active {
+  transform: scale(0.94);
+}
+
+.fav-btn.is-active {
+  background: #c0643b;
+  border-color: #c0643b;
+  color: #fff;
+}
+
+.fav-btn.is-small {
+  width: 32px;
+  height: 32px;
+  font-size: 0.85rem;
+  box-shadow: none;
+}
+
+.fav-btn.has-label {
+  width: auto;
+  padding: 0 1rem;
+  border-radius: 999px;
+  height: 40px;
+}
+
+/* resistenza al freddo */
+.cold-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0.05rem 0.55rem;
+  background: #e5eef5;
+  color: #2c5470;
+}
+
+.cold-badge.cold-mild {
+  background: #fdf1dc;
+  color: #7a5200;
+}
+
+.cold-badge.cold-none {
+  background: #fbe3dc;
+  color: #8a3b22;
+}
+
+.cold-note {
+  display: block;
+  margin-top: 0.15rem;
+  color: #3f4a42;
+}
+
+/* galleria foto */
+.gallery {
+  margin-bottom: 0.8rem;
+}
+
+.gallery-main {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #e9efe0;
+}
+
+.gallery.is-compact .gallery-main {
+  aspect-ratio: 16 / 10;
+}
+
+.gallery-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.gallery-main.is-loading {
+  background: linear-gradient(90deg, #e9efe0 0%, #f4f6ee 50%, #e9efe0 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.gallery-count {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  background: rgba(30, 30, 20, 0.65);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+}
+
+.gallery-thumbs {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.gallery-thumbs button {
+  flex-shrink: 0;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  overflow: hidden;
+  background: none;
+  cursor: pointer;
+  opacity: 0.75;
+}
+
+.gallery-thumbs button.is-active {
+  border-color: #c0643b;
+  opacity: 1;
+}
+
+.gallery-thumbs img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-credit {
+  margin-top: 0.35rem;
+  font-size: 0.72rem;
+  color: #3f4a42;
+  line-height: 1.35;
+}
+
+.photo-credit a {
+  color: #3d5a2a;
+  text-decoration: underline;
+}
+
+.gallery-empty {
+  font-size: 0.82rem;
+  color: #3f4a42;
+  margin-bottom: 0.6rem;
+}
+
+/* richiesta di consenso per le foto */
+.photo-consent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.8rem;
+  border-radius: 14px;
+  background: #eef2e4;
+  border: 1px dashed rgba(86, 101, 59, 0.45);
+  color: #2f3a28;
+  font-size: 0.85rem;
+}
+
+.photo-consent > i {
+  color: #56653b;
+  font-size: 1.2rem;
+}
+
+.photo-consent p {
+  margin: 0;
+  color: #2f3a28 !important;
+}
+
+.photo-consent.is-compact {
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.photo-consent.is-compact p {
+  flex: 1;
+  min-width: 200px;
+}

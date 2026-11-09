@@ -40,6 +40,7 @@ export const SuggestRequest = z.object({
       maxHeightCm: z.number().int().positive().max(1000).optional(),
       notes: z.string().max(500).optional(),
       pets: z.array(z.enum(["dog", "cat", "horse", "farm", "people"])).max(5).default([]),
+      favorites: z.array(z.string().trim().max(120)).max(40).default([]),
     })
     .default({}),
 });
@@ -139,6 +140,8 @@ function describeRequest(req, candidates) {
     preferences.maintenance && `- Manutenzione: ${preferences.maintenance}`,
     preferences.maxHeightCm && `- Altezza massima: ${preferences.maxHeightCm} cm`,
     preferences.notes && `- Note: ${preferences.notes}`,
+    preferences.favorites?.length &&
+      `- Piante preferite dall'utente (scelte nella pagina Scopri): ${preferences.favorites.join(", ")}. Dagli la precedenza quando sono adatte a esposizione, terreno e spazio; se una non è adatta, non usarla e spiegalo brevemente.`,
     preferences.pets?.length &&
       `- In giardino ci sono: ${preferences.pets.map((p) => ({ dog: "cani", cat: "gatti", horse: "cavalli", farm: "animali da cortile", people: "bambini piccoli" })[p]).join(", ")}. NON proporre piante tossiche per loro (per esempio oleandro, digitale, rododendro, ortensia, gigli ed emerocallidi per i gatti, cipolla e aglio per cani e gatti).`,
     "## Piante candidate dal database",

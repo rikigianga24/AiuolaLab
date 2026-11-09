@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getHealth, suggestBed } from "../../lib/api";
+import { CROP_BY_ID } from "../../lib/crops";
 import { bbox, formatM2, polygonArea } from "../../lib/geometry";
 import { POT_TYPES, isFloor, isPot, potVolumeL } from "../../lib/containers";
 import { useSession } from "../../lib/session";
@@ -93,6 +94,10 @@ export default function AiAdvisor({ bed, environment, onUpdateBed, onApply }) {
           maxHeightCm: prefs.maxHeightCm ? Number(prefs.maxHeightCm) : undefined,
           notes: prefs.notes || undefined,
           pets: petSafe ? (settings.pets?.length ? settings.pets : ["dog", "cat"]) : [],
+          favorites: (settings.favorites ?? [])
+            .map((f) => (f.kind === "crop" ? CROP_BY_ID[f.cropId]?.name : f.plant && `${f.plant.commonName} (${f.plant.scientificName})`))
+            .filter(Boolean)
+            .slice(0, 40),
         },
       });
       setProposal(res);
