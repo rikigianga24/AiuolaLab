@@ -52,8 +52,15 @@ export default function CropCatalog({ selectedBed, onPickPlant, onFillRows }) {
   const [q, setQ] = useState("");
   const [onlyNow, setOnlyNow] = useState(true);
   const [openId, setOpenId] = useState(null);
+  const [varietyOf, setVarietyOf] = useState({});
 
-  const list = CROPS.filter((c) => !q || c.name.toLowerCase().includes(q.toLowerCase()) || c.scientificName.toLowerCase().includes(q.toLowerCase())).filter(
+  const needle = q.trim().toLowerCase();
+  const matches = (c) =>
+    !needle ||
+    c.name.toLowerCase().includes(needle) ||
+    c.scientificName.toLowerCase().includes(needle) ||
+    c.varieties.some((v) => v.name.toLowerCase().includes(needle));
+  const list = CROPS.filter(matches).filter(
     (c) => !onlyNow || cropActions(c, month).some((a) => a !== "raccolta"),
   );
   const canFill = selectedBed && !isFloor(selectedBed);
@@ -63,7 +70,7 @@ export default function CropCatalog({ selectedBed, onPickPlant, onFillRows }) {
       <div className="catalog-search">
         <span className="icon-input">
           <i className="fa-solid fa-magnifying-glass" />
-          <input type="search" placeholder="Cerca un ortaggio" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Cerca ortaggio" />
+          <input type="search" placeholder="Cerca un ortaggio o una varietà" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Cerca ortaggio" />
         </span>
       </div>
       <label className="checkbox-row">
@@ -76,6 +83,7 @@ export default function CropCatalog({ selectedBed, onPickPlant, onFillRows }) {
         {list.map((crop) => {
           const open = openId === crop.id;
           const now = cropActions(crop, month);
+          const variety = crop.varieties.find((v) => v.name === varietyOf[crop.id]) ?? null;
           return (
             <li key={crop.id} className={`plant-item ${open ? "is-open" : ""}`}>
               <button className="plant-row" onClick={() => setOpenId(open ? null : crop.id)} aria-expanded={open}>
@@ -94,6 +102,20 @@ export default function CropCatalog({ selectedBed, onPickPlant, onFillRows }) {
               </button>
               {open && (
                 <div className="plant-detail">
+                  {crop.varieties.length > 0 && (
+                    <label className="mini-select variety-select">
+                      <span>Varietà</span>
+                      <select value={variety?.name ?? ""} onChange={(e) => setVarietyOf((m) => ({ ...m, [crop.id]: e.target.value }))}>
+                        <option value="">Qualsiasi ({crop.varieties.length} varietà)</option>
+                        {crop.varieties.map((v) => (
+                          <option key={v.name} value={v.name}>
+                            {v.name}
+                          </option>
+                        ))}
+                      </select>
+                      {variety && <small className="variety-note">{variety.note}</small>}
+                    </label>
+                  )}
                   <YearStrip crop={crop} />
                   <dl className="plant-facts">
                     <dt>Distanze</dt>
@@ -115,10 +137,10 @@ export default function CropCatalog({ selectedBed, onPickPlant, onFillRows }) {
                   </dl>
                   <PlantSafety plant={cropAsPlant(crop)} />
                   <div className="button-stack">
-                    <button className="button is-primary is-small" disabled={!canFill} onClick={() => onFillRows(selectedBed.id, crop)}>
+                    <button className="button is-primary is-small" disabled={!canFill} onClick={() => onFillRows(selectedBed.id, crop, variety)}>
                       <i className="fa-solid fa-grip-lines" />&nbsp; {canFill ? `Riempi a file «${selectedBed.name}»` : "Riempi a file (seleziona un'aiuola)"}
                     </button>
-                    <button className="button is-small is-light" onClick={() => onPickPlant(cropAsPlant(crop))}>
+                    <button className="button is-small is-light" onClick={() => onPickPlant(cropAsPlant(crop, variety))}>
                       <i className="fa-solid fa-hand-point-up" />&nbsp; Pianta a mano
                     </button>
                   </div>

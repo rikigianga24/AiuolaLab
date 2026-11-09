@@ -1,5 +1,5 @@
 import PlantSafety from "./PlantSafety";
-import { COLORS, CYCLE, SEASONS, SOIL_PH, SOIL_TEXTURE, SUNLIGHT, WATERING, formatRangeCm } from "../../lib/labels";
+import { COLORS, CYCLE, GROUPS, SEASONS, SOIL_PH, SOIL_TEXTURE, SUNLIGHT, WATERING, formatRangeCm } from "../../lib/labels";
 
 const list = (values, dict) =>
   values?.length ? values.map((v) => (typeof dict[v] === "string" ? dict[v] : dict[v]?.label ?? v)).join(", ") : "n.d.";
@@ -7,6 +7,13 @@ const list = (values, dict) =>
 export default function PlantFacts({ plant }) {
   return (
     <dl className="plant-facts">
+      {plant.description && <dd className="facts-wide facts-note-text">{plant.description}</dd>}
+      {plant.group && GROUPS[plant.group] && (
+        <>
+          <dt>Tipo</dt>
+          <dd>{GROUPS[plant.group]}</dd>
+        </>
+      )}
       <dt>Esposizione</dt>
       <dd>{list(plant.sunlight, SUNLIGHT)}</dd>
       <dt>Acqua</dt>
