@@ -469,3 +469,28 @@
     font-size: 0.9rem;
   }
 }
+
+.style-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.25rem 0.4rem 0.25rem 0.8rem;
+}
+
+.style-select i {
+  color: var(--sage-dark);
+}
+
+.style-select select {
+  border: none;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--ink);
+  padding: 0.2rem 0.2rem;
+  cursor: pointer;
+  max-width: 62vw;
+}

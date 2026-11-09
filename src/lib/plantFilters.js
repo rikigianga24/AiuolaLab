@@ -1,3 +1,5 @@
+import { stylesFor } from "./gardenStyles.js";
+
 // Filtri del catalogo applicati in locale alle preferite.
 export function matchesLocal(plant, f) {
   const q = (f.q ?? "").trim().toLowerCase();
@@ -7,5 +9,6 @@ export function matchesLocal(plant, f) {
   if (f.ph && !plant.soil?.ph?.includes(f.ph)) return false;
   if (f.color && !plant.flowerColors?.includes(f.color)) return false;
   if (f.season && !plant.floweringSeasons?.includes(f.season)) return false;
+  if (f.style && !stylesFor(plant).includes(f.style)) return false;
   return true;
 }

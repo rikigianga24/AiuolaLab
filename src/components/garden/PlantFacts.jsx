@@ -1,4 +1,6 @@
+import { Link } from "react-router-dom";
 import PlantSafety from "./PlantSafety";
+import { STYLE_BY_ID, stylesFor } from "../../lib/gardenStyles";
 import { COLORS, CYCLE, GROUPS, SEASONS, SOIL_PH, SOIL_TEXTURE, SUNLIGHT, WATERING, formatRangeCm, hardinessInfo } from "../../lib/labels";
 
 const list = (values, dict) =>
@@ -6,6 +8,7 @@ const list = (values, dict) =>
 
 export default function PlantFacts({ plant }) {
   const cold = hardinessInfo(plant.hardiness);
+  const styles = plant.cropId ? [] : stylesFor(plant);
   return (
     <dl className="plant-facts">
       {plant.description && <dd className="facts-wide facts-note-text">{plant.description}</dd>}
@@ -58,6 +61,18 @@ export default function PlantFacts({ plant }) {
               <i className="fa-solid fa-snowflake" /> {cold.text}
             </span>
             <span className="cold-note">{cold.level.label}</span>
+          </dd>
+        </>
+      )}
+      {styles.length > 0 && (
+        <>
+          <dt>Stili</dt>
+          <dd className="style-tags">
+            {styles.map((id) => (
+              <Link key={id} to={`/stili#${id}`} title={STYLE_BY_ID[id].tagline}>
+                {STYLE_BY_ID[id].short}
+              </Link>
+            ))}
           </dd>
         </>
       )}

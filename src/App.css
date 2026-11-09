@@ -414,3 +414,22 @@ body {
   font-size: 0.85rem;
   color: #dfe4cf;
 }
+
+/* schermi medi: le voci della barra stanno su una riga */
+@media (min-width: 1024px) and (max-width: 1240px) {
+  .nav-links {
+    margin-left: 0.4rem;
+  }
+
+  .app-navbar .nav-link {
+    padding: 0.35rem 0.6rem;
+  }
+
+  .app-navbar .nav-link i {
+    display: none;
+  }
+
+  .app-navbar .nav-login {
+    padding: 0.35rem 0.6rem;
+  }
+}

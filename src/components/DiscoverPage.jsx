@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { getPlant, searchPlants } from "../lib/api";
 import { useConsent } from "../lib/consent";
 import { CROPS, CROP_BY_ID, FAMILIES, cropAsPlant, monthsLabel } from "../lib/crops";
+import { GARDEN_STYLES, STYLE_BY_ID } from "../lib/gardenStyles";
 import { favCrop, favPlant, useFavorites } from "../lib/favorites";
 import { COLORS, SEASONS, SUNLIGHT, WATERING, hardinessInfo } from "../lib/labels";
 import { useInView, usePlantPhotos } from "../lib/photos";
@@ -226,6 +227,7 @@ export default function DiscoverPage() {
   const tab = TABS.some((t) => t.id === params.get("tab")) ? params.get("tab") : "piante";
   const [q, setQ] = useState(params.get("q") ?? "");
   const [sunlight, setSunlight] = useState("");
+  const [style, setStyle] = useState(STYLE_BY_ID[params.get("stile")] ? params.get("stile") : "");
   const [color, setColor] = useState("");
   const [page, setPage] = useState(1);
   const [state, setState] = useState({ key: null, items: [], lastPage: 1, error: null });
@@ -242,7 +244,7 @@ export default function DiscoverPage() {
   };
 
   // catalogo piante (paginato dal server)
-  const queryKey = JSON.stringify({ q: debouncedQ, sunlight, color });
+  const queryKey = JSON.stringify({ q: debouncedQ, sunlight, color, style });
   const requestKey = `${queryKey}#${page}`;
   useEffect(() => {
     if (tab !== "piante") return;
@@ -309,6 +311,17 @@ export default function DiscoverPage() {
 
           {tab === "piante" && (
             <div className="discover-filters">
+              <label className="style-select">
+                <i className="fa-solid fa-book-open" aria-hidden="true" />
+                <select value={style} onChange={(e) => resetPage(setStyle)(e.target.value)} aria-label="Stile di giardino">
+                  <option value="">Tutti gli stili di giardino</option>
+                  {GARDEN_STYLES.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <div className="choice-row" role="group" aria-label="Esposizione">
                 {Object.entries(SUNLIGHT).map(([k, v]) => (
                   <button key={k} type="button" className={`choice ${sunlight === k ? "is-active" : ""}`} onClick={() => resetPage(setSunlight)(sunlight === k ? "" : k)}>

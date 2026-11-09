@@ -9,10 +9,12 @@ import { plantInfo } from "../../lib/plantInfo";
 import { useSession } from "../../lib/session";
 import { favPlant, useFavorites } from "../../lib/favorites";
 import { matchesLocal } from "../../lib/plantFilters";
+import { GARDEN_STYLES } from "../../lib/gardenStyles";
 import FavButton from "../plants/FavButton";
 import PlantGallery from "../plants/PlantGallery";
 
-const EMPTY = { q: "", group: "", sunlight: "", watering: "", ph: "", color: "", season: "" };
+const EMPTY = { q: "", style: "", group: "", sunlight: "", watering: "", ph: "", color: "", season: "" };
+const STYLE_OPTIONS = Object.fromEntries(GARDEN_STYLES.map((s) => [s.id, s.name]));
 
 function Select({ label, value, onChange, options, all = "Tutte" }) {
   return (
@@ -31,7 +33,9 @@ function Select({ label, value, onChange, options, all = "Tutte" }) {
 }
 
 export default function PlantCatalog({ selectedBed, onPickPlant }) {
-  const [filters, setFilters] = useState(EMPTY);
+  const [params] = useSearchParams();
+  // "Progetta in questo stile" dalla pagina degli stili: catalogo già filtrato
+  const [filters, setFilters] = useState(() => ({ ...EMPTY, style: STYLE_OPTIONS[params.get("stile")] ? params.get("stile") : "" }));
   const [page, setPage] = useState(1);
   const [state, setState] = useState({ key: null, items: [], error: null, lastPage: 1 });
   const [openId, setOpenId] = useState(null);
@@ -39,9 +43,8 @@ export default function PlantCatalog({ selectedBed, onPickPlant }) {
   const q = useDebounced(filters.q);
   const { settings } = useSession();
   const favs = useFavorites();
-  const [params] = useSearchParams();
   // con delle preferite si parte da quelle (o se si arriva da "Progetta con queste")
-  const [onlyFav, setOnlyFav] = useState(() => params.get("preferiti") === "1" || favs.plants.length > 0);
+  const [onlyFav, setOnlyFav] = useState(() => !params.get("stile") && (params.get("preferiti") === "1" || favs.plants.length > 0));
   const [petSafe, setPetSafe] = useState(false);
   const myPets = settings.pets?.length ? settings.pets : ["dog", "cat"];
   const isSafe = (p) => !plantInfo(p).tox?.to.some((t) => myPets.includes(t));
@@ -132,6 +135,7 @@ export default function PlantCatalog({ selectedBed, onPickPlant }) {
           <i className="fa-solid fa-sliders" /> Filtri {activeFilters > 0 && <span className="badge">{activeFilters}</span>}
         </summary>
         <div className="filters-grid">
+          <Select label="Stile di giardino" value={filters.style} onChange={(v) => update("style", v)} options={STYLE_OPTIONS} all="Tutti" />
           <Select label="Tipo" value={filters.group} onChange={(v) => update("group", v)} options={GROUPS} all="Tutti" />
           <Select label="Esposizione" value={filters.sunlight} onChange={(v) => update("sunlight", v)} options={SUNLIGHT} />
           <Select label="Acqua" value={filters.watering} onChange={(v) => update("watering", v)} options={WATERING} />

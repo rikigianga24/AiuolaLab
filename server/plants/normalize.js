@@ -1,3 +1,4 @@
+import { stylesFor } from "../../src/lib/gardenStyles.js";
 // Modello comune delle piante, indipendente dalla fonte dati.
 //
 // {
@@ -164,5 +165,6 @@ export function matchesFilters(plant, f = {}) {
   if (f.cycle && plant.cycle && plant.cycle !== f.cycle) return false;
   if (f.maxHeightCm && plant.heightCm && plant.heightCm.min > f.maxHeightCm) return false;
   if (f.group && plant.group && plant.group !== f.group) return false;
+  if (f.style && !stylesFor(plant).includes(f.style)) return false;
   return true;
 }

@@ -2,6 +2,7 @@ import "bulma/css/bulma.min.css";
 import "./styles/theme.css";
 import "./App.css";
 import "./styles/plants.css";
+import "./styles/gardenStyles.css";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import AboutMe from "./components/AboutMe";
 import Footer from "./components/Footer";
@@ -11,6 +12,7 @@ import Navbar from "./components/Navbar";
 import AccountPage from "./components/AccountPage";
 import AuthPage from "./components/AuthPage";
 import DiscoverPage from "./components/DiscoverPage";
+import StylesPage from "./components/StylesPage";
 import CalendarPage from "./components/CalendarPage";
 import CookieBanner from "./components/CookieBanner";
 import { CookiePage, PrivacyPage } from "./components/LegalPages";
@@ -32,6 +34,7 @@ function Layout() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/piante" element={<DiscoverPage />} />
+          <Route path="/stili" element={<StylesPage />} />
           <Route path="/gardencanvas" element={<GardenPage />} />
           <Route path="/aboutme" element={<AboutMe />} />
           <Route path="/calendario" element={<CalendarPage />} />

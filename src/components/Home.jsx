@@ -90,7 +90,7 @@ function FavoriteQuestion() {
             ))}
           </div>
           <p className="fq-browse">
-            Non sai ancora? <Link to="/piante">Sfoglia tutte le piante</Link>
+            Non sai ancora? <Link to="/piante">Sfoglia tutte le piante</Link> oppure <Link to="/stili">scopri gli stili di giardino</Link>
           </p>
         </div>
         <ol className="fq-steps">

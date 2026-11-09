@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { getPlantPhotos } from "../plants/photos.js";
+import { STYLE_IDS } from "../../src/lib/gardenStyles.js";
 import { getPlant, providerName, searchPlants } from "../plants/service.js";
 
 const router = Router();
@@ -16,6 +17,7 @@ const SearchQuery = z.object({
   season: z.enum(["spring", "summer", "autumn", "winter"]).optional(),
   group: z.enum(["rose", "perenni", "annuali", "bulbose", "arbusti", "rampicanti", "graminacee", "aromatiche", "balcone"]).optional(),
   page: z.coerce.number().int().min(1).max(500).optional(),
+  style: z.enum(STYLE_IDS).optional(),
 });
 
 router.get("/", async (req, res, next) => {

@@ -4,6 +4,7 @@ import { useSession } from "../lib/session";
 
 const LINKS = [
   { to: "/piante", label: "Scopri le piante", icon: "fa-heart" },
+  { to: "/stili", label: "Stili", icon: "fa-book-open" },
   { to: "/gardencanvas", label: "Progetta", icon: "fa-trowel" },
   { to: "/calendario", label: "Calendario", icon: "fa-calendar-days" },
   { to: "/aboutme", label: "Chi sono", icon: "fa-user" },
