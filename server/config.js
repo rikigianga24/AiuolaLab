@@ -58,6 +58,8 @@ export const config = {
   notifyHour: Number(env.NOTIFY_HOUR) || 8,
   // Pianificatore delle notifiche: SCHEDULER=off per disattivarlo.
   schedulerEnabled: env.SCHEDULER !== "off",
+  // PHOTO_WARMUP=off disattiva il download dei link delle foto all'avvio
+  photoWarmup: env.PHOTO_WARMUP !== "off",
 };
 
 // Versione dell'informativa privacy accettata alla registrazione.
