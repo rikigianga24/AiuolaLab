@@ -2,6 +2,9 @@
 // Ogni elemento viene disegnato anche sui bordi opposti, così la piastrella
 // si ripete senza giunture visibili.
 
+import { getArtStyle } from "./artStyle.js";
+import { BORDERS, GROUNDS, groundTile, lawnTile } from "./temperaGround.js";
+
 function rng(seed) {
   let s = seed;
   return () => {
@@ -16,6 +19,7 @@ function wrapped(size, x, y, draw) {
 
 let lawn = null;
 export function lawnTexture() {
+  if (getArtStyle() === "tempera") return lawnTile();
   if (lawn) return lawn;
   const size = 512;
   const canvas = document.createElement("canvas");
@@ -196,6 +200,7 @@ const surfaceCache = new Map();
 export function surfaceTexture(kind) {
   const def = SURFACES[kind] ?? SURFACES.bark;
   const key = SURFACES[kind] ? kind : "bark";
+  if (getArtStyle() === "tempera" && GROUNDS[key]) return { image: groundTile(key), tileM: def.tileM };
   if (!surfaceCache.has(key)) surfaceCache.set(key, def.make());
   return { image: surfaceCache.get(key), tileM: def.tileM };
 }
@@ -212,14 +217,15 @@ export const EDGINGS = {
 const previewCache = new Map();
 // Piccola anteprima (data URL) di una copertura, per i pulsanti di scelta.
 export function surfacePreview(kind) {
-  if (!previewCache.has(kind)) {
+  const pkey = `${getArtStyle()}|${kind}`;
+  if (!previewCache.has(pkey)) {
     const { image } = surfaceTexture(kind);
     const c = document.createElement("canvas");
     c.width = c.height = 64;
     c.getContext("2d").drawImage(image, 0, 0, 160, 160, 0, 0, 64, 64);
-    previewCache.set(kind, c.toDataURL());
+    previewCache.set(pkey, c.toDataURL());
   }
-  return previewCache.get(kind);
+  return previewCache.get(pkey);
 }
 
 // ---- pavimenti del terrazzo ----
@@ -329,3 +335,6 @@ export function cityTexture() {
   city = canvas;
   return canvas;
 }
+
+// Bordure dipinte (stile tempera): esiste una versione per ogni bordura?
+export const hasPaintedBorder = (kind) => getArtStyle() === "tempera" && Boolean(BORDERS[kind]);

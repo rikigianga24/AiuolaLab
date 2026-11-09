@@ -14,6 +14,7 @@ const DEFAULT_SETTINGS = {
   taskState: {},
   pets: [],
   favorites: [],
+  artStyle: "tempera",
 };
 
 const merge = (a, b) => ({ ...a, ...b, notify: { ...a.notify, ...(b?.notify ?? {}) }, taskState: { ...a.taskState, ...(b?.taskState ?? {}) } });

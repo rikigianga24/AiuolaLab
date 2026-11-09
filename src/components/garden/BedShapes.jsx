@@ -1,9 +1,16 @@
 // Disegno della base di un'aiuola, di un pavimento di terrazzo o di un vaso.
-import { Circle, Line, Rect } from "react-konva";
+import { Circle, Image as KImage, Line, Rect } from "react-konva";
 import { POT_MATERIALS, potCenter, potInner } from "../../lib/containers";
-import { EDGINGS, RAILINGS, floorTexture, surfaceTexture } from "../../lib/textures";
+import { EDGINGS, RAILINGS, floorTexture, hasPaintedBorder, surfaceTexture } from "../../lib/textures";
+import { borderImage } from "../../lib/temperaGround";
 
 const flatten = (pts) => pts.flatMap((p) => [p.x, p.y]);
+
+// Bordura dipinta a tempera: immagine pronta, appoggiata sopra la copertura.
+function PaintedBorder({ bed }) {
+  const b = borderImage(bed.points, bed.edging ?? "stone");
+  return <KImage image={b.image} x={b.x} y={b.y} width={b.width} height={b.height} listening={false} perfectDrawEnabled={false} />;
+}
 
 function GardenBed({ bed, flat }) {
   const surface = surfaceTexture(bed.surface);
@@ -30,7 +37,8 @@ function GardenBed({ bed, flat }) {
         listening={false}
         perfectDrawEnabled={false}
       />
-      {edging.width > 0 && (
+      {edging.width > 0 && hasPaintedBorder(bed.edging ?? "stone") && <PaintedBorder bed={bed} />}
+      {edging.width > 0 && !hasPaintedBorder(bed.edging ?? "stone") && (
         <>
           <Line
             points={flat}

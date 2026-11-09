@@ -34,6 +34,7 @@ const Settings = z
         }),
       )
       .max(300),
+    artStyle: z.enum(["tempera", "classico"]),
     taskState: z.record(z.string().max(300), z.object({ done: z.string().max(10).optional(), snoozedUntil: z.string().max(10).optional() })),
   })
   .partial();
@@ -45,6 +46,7 @@ export const DEFAULT_SETTINGS = {
   taskState: {},
   pets: [],
   favorites: [],
+  artStyle: "tempera",
 };
 
 export const userSettings = (u) => ({

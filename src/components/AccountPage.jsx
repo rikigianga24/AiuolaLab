@@ -7,6 +7,7 @@ import { useSession } from "../lib/session";
 import LocationPicker from "./LocationPicker";
 import { PETS } from "../lib/plantInfo";
 import { PageHero } from "./decor";
+import StylePicker from "./StylePicker";
 import "../styles/pages.css";
 
 function Notice({ kind = "info", children }) {
@@ -168,6 +169,12 @@ function AccountSettings() {
           <LocationPicker value={settings.location} onChange={(location) => updateSettings({ location })} />
         </div>
         <PetsChooser />
+      </div>
+
+      <div className="card-country">
+        <h2 className="card-title">Stile del disegno</h2>
+        <p className="panel-note">Come vengono disegnate piante, prato e bordure nei tuoi progetti.</p>
+        <StylePicker />
       </div>
 
       <div className="card-country">

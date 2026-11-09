@@ -19,6 +19,7 @@ import ConfirmDialog from "../ConfirmDialog";
 import GardenStage from "./GardenStage";
 import SidePanel from "./SidePanel";
 import Tour from "./Tour";
+import StylePicker from "../StylePicker";
 import { tourDone } from "../../lib/tour";
 import { useConsent } from "../../lib/consent";
 
@@ -66,6 +67,7 @@ export default function GardenPage() {
   const [confirm, setConfirm] = useState(null);
   const [showGrid, setShowGrid] = useState(true);
   const [showLabels, setShowLabels] = useState(true);
+  const [styleOpen, setStyleOpen] = useState(false);
   const [showIrrigation, setShowIrrigation] = useState(true);
   const [placingPot, setPlacingPot] = useState(null);
   const [tourOpen, setTourOpen] = useState(() => !tourDone());
@@ -640,6 +642,23 @@ export default function GardenPage() {
           >
             <i className="fa-solid fa-tag" />
           </button>
+          <div className="style-menu-wrap">
+            <button
+              className={`tool-btn icon ${styleOpen ? "is-on" : ""}`}
+              onClick={() => setStyleOpen((v) => !v)}
+              aria-expanded={styleOpen}
+              aria-label="Stile del disegno"
+              title="Stile del disegno"
+            >
+              <i className="fa-solid fa-palette" />
+            </button>
+            {styleOpen && (
+              <div className="style-pop">
+                <p className="style-pop-title">Stile del disegno</p>
+                <StylePicker onChange={() => setStyleOpen(false)} />
+              </div>
+            )}
+          </div>
           <button className="tool-btn icon" onClick={() => setTourOpen(true)} aria-label="Guida" title="Guida">
             <i className="fa-solid fa-question" />
           </button>

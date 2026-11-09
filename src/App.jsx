@@ -14,16 +14,21 @@ import DiscoverPage from "./components/DiscoverPage";
 import CalendarPage from "./components/CalendarPage";
 import CookieBanner from "./components/CookieBanner";
 import { CookiePage, PrivacyPage } from "./components/LegalPages";
-import { SessionProvider } from "./lib/session";
+import { SessionProvider, useSession } from "./lib/session";
+import { setArtStyle } from "./lib/artStyle";
 
 function Layout() {
   const { pathname } = useLocation();
+  const { settings } = useSession();
+  // lo stile del disegno vale per tutta l'app; cambiandolo le pagine si ridisegnano
+  setArtStyle(settings.artStyle);
+  const artStyle = settings.artStyle ?? "tempera";
   const isApp = pathname.startsWith("/gardencanvas");
   const isAuth = pathname === "/accedi" || pathname === "/registrati";
   return (
     <>
       <Navbar />
-      <main className={isApp ? "app-main" : "site-main"}>
+      <main key={artStyle} className={isApp ? "app-main" : "site-main"}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/piante" element={<DiscoverPage />} />

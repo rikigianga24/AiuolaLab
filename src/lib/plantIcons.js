@@ -2,6 +2,8 @@
 // tavole di progetto dei paesaggisti. Ogni icona è generata una sola volta
 // per tipo + colori e poi riusata (sul canvas Konva e nelle liste).
 import { COLORS } from "./labels.js";
+import { getArtStyle } from "./artStyle.js";
+import { paintTemperaIcon, tonesFrom } from "./tempera.js";
 import { CROP_BY_ID } from "./crops.js";
 
 export const ICON_TYPES = {
@@ -50,6 +52,9 @@ export function iconTypeFor(plant) {
 
 // Colori dei fiori in esadecimale (massimo 3).
 export function flowerHexes(plant) {
+  // tonalità precise scritte nella descrizione ("albicocca", "cremisi"...)
+  const tones = tonesFrom(plant?.description ?? "");
+  if (tones.length && nonGreen(plant?.flowerColors).length) return tones;
   return nonGreen(plant?.flowerColors)
     .map((c) => COLORS[c]?.hex)
     .filter(Boolean)
@@ -783,7 +788,8 @@ const cache = new Map();
  * @param {number} size  lato in pixel
  * @param {string} name  nome (per dettagli come il centro delle margherite)
  */
-export function getIconCanvas(type, colors = [], size = 320, name = "") {
+export function getIconCanvas(type, colors = [], size = 320, name = "", style = getArtStyle()) {
+  if (style === "tempera") return temperaCanvas(type, colors, size, name);
   const kind = DRAW[type] ? type : "flower";
   const flowering = ["flower", "daisy", "rose", "spike", "cluster", "star", "cup", "fruiting", "berry"].includes(kind);
   const palette = colors.length ? colors : flowering ? ["#e88fb4"] : [];
@@ -805,10 +811,21 @@ export function getIconCanvas(type, colors = [], size = 320, name = "") {
   return canvas;
 }
 
+// Stile tempera: ogni specie nota ha il suo disegno, quindi conta il nome.
+function temperaCanvas(type, colors, size, name) {
+  const key = `tempera|${type}|${colors.join(",")}|${size}|${name}`;
+  if (cache.has(key)) return cache.get(key);
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  paintTemperaIcon(canvas.getContext("2d"), size, { type, colors, name });
+  cache.set(key, canvas);
+  return canvas;
+}
+
 const urlCache = new Map();
-export function getIconUrl(type, colors = [], size = 96, name = "") {
-  const key = `${type}|${colors.join(",")}|${size}|${name}`;
-  if (!urlCache.has(key)) urlCache.set(key, getIconCanvas(type, colors, size, name).toDataURL("image/png"));
+export function getIconUrl(type, colors = [], size = 96, name = "", style = getArtStyle()) {
+  const key = `${style}|${type}|${colors.join(",")}|${size}|${name}`;
+  if (!urlCache.has(key)) urlCache.set(key, getIconCanvas(type, colors, size, name, style).toDataURL("image/png"));
   return urlCache.get(key);
 }
 
