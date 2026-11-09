@@ -20,15 +20,15 @@ export const ICON_TYPES = {
 
 // Riconoscimento dal nome (scientifico o comune). L'ordine conta.
 const RULES = [
-  ["spike", /lavand|lupin|salvia|digital|verben|perovsk|veronic|delphin|speron|agastach|liatris|nepeta|kniphof|astilbe|lythrum|epilob|gaura|antirrh|bocca di leone/],
-  ["rose", /\brosa\b|\brose\b|camell|paeoni|peoni|ranuncul|gardenia|dahlia|dalia|garofan|dianthus|begonia/],
+  ["spike", /lavand|lupin|salvia(?! rosmarinus)|digital|verben|perovsk|veronic|delphin|speron|consolida|agastach|liatris|nepeta|kniphof|astilbe|lythrum|epilob|gaura|antirrh|bocca di leone|verbasc|persicaria|sanguisorb|actaea|gladiol|penstemon|alcea|malvone|lobelia|celosia piumosa|amaranthus/],
+  ["rose", /^ros[ae]\b|camell|paeoni|peoni|ranuncul|gardenia|dahlia|dalia|garofan|dianthus|begonia/],
   ["daisy", /echinac|rudbeck|cosmo|coreops|leucanth|\baster\b|gaillard|helenium|tagete|zinnia|osteosp|gerber|bellis|margher|girasol|helianth|anthemis|erigeron|calendul|arnica|gazania/],
   ["cluster", /hydrang|ortensi|achille|agapant|allium|sedum|borracin|phlox|lantana|viburn|pieris|syringa|lillà|hortensia|ageratum|eupator/],
-  ["grass", /pennisetum|stipa|festuca|miscanth|carex|calamagr|panicum|imperata|graminac|grass|lino delle fate/],
+  ["grass", /pennisetum|stipa|festuca|miscanth|carex|calamagr|panicum|imperata|graminac|grass|lino delle fate|molinia|hakonechloa|briza|deschampsia|sesleria|muhlenberg|eragrostis|anemanthele|ophiopogon|liriope/],
   ["star", /narcis|hemerocall|emerocall|lilium|giglio|clemat|amaryll|hippeastr|ornithog/],
   ["cup", /tulip|crocus|colchic/],
   ["groundcover", /thymus|\btimo\b|vinca|pervinc|ajuga|bugola|\biva\b|erica|calluna|sagina|dichondra|lysimach|aubriet|arabis|cerastium|phyla|trifoli/],
-  ["foliage", /hosta|heuchera|fern|felce|helleb|elleb|bergenia|acanthus|brunnera|polystich|dryopter|athyr|coleus|caladium/],
+  ["foliage", /hosta|heuchera|fern|felce|helleb|elleb|bergenia|acanthus|brunnera|polystich|dryopter|athyr|coleus|caladium|osmunda|matteuccia|blechnum|asplenium|adiantum|ligularia|rodgersia|stachys byzantina|artemisia|senecio|helichrysum petiolare|plectranth/],
   ["shrub", /buxus|bosso|rhododendr|rododendr|azalea|rosmarin|pittospor|\bilex\b|agrifog|taxus|tasso|lonicera|abelia|spiraea|hebe|choisya|euonymus|ligustr|photinia|myrtus|mirto|laurus|alloro/],
 ];
 

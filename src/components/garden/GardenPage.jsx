@@ -246,20 +246,20 @@ export default function GardenPage() {
 
   // ---- orto ----
 
-  const fillBedRows = (bedId, crop) => {
+  const fillBedRows = (bedId, crop, variety = null) => {
     const bed = project.beds.find((b) => b.id === bedId);
     if (!bed) return;
     const occupied = (bed.plants ?? []).map((p) => ({ x: p.x, y: p.y, r: p.spreadM / 2 }));
     const spots = fillRows(bed.points, crop.spacing, { occupied, margin: bed.kind === "pot" ? 0.03 : undefined });
     if (!spots.length) return notify("Non c'è più spazio libero in questa aiuola.", "warning");
-    const asPlant = cropAsPlant(crop);
+    const asPlant = cropAsPlant(crop, variety);
     const spreadM = Math.min(crop.spacing.row, crop.spacing.plant) / 100;
     const plants = spots.map((s) => toPlaced(asPlant, s, { spreadM, row: s.row }));
     updateBed(bedId, (b) => ({ ...b, plants: [...(b.plants ?? []), ...plants] }));
     setSelection({ bedId, plantId: null });
     if (isMobile) setSheetOpen(false);
     const rows = new Set(spots.map((s) => s.row)).size;
-    notify(`${crop.name}: ${plants.length} piante su ${rows} ${rows === 1 ? "fila" : "file"}.`, "success");
+    notify(`${asPlant.commonName}: ${plants.length} piante su ${rows} ${rows === 1 ? "fila" : "file"}.`, "success");
   };
 
   const endSeason = (bedId, clear) => {

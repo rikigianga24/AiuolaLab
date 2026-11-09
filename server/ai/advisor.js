@@ -3,7 +3,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
 import { config } from "../config.js";
-import { findByScientificName, getPlant, searchPlants } from "../plants/service.js";
+import { candidatePlants, findByScientificName, getPlant } from "../plants/service.js";
 import { CROPS, cropAsPlant, monthsLabel } from "../../src/lib/crops.js";
 
 const client = config.anthropic.enabled ? new Anthropic() : null;
@@ -164,6 +164,8 @@ function compact(p) {
     colori: p.flowerColors,
     fioritura: p.floweringSeasons,
     sempreverde: p.evergreen,
+    tipo: p.group,
+    nota: p.description ?? undefined,
     calendario: p.note,
   };
 }
@@ -171,7 +173,7 @@ function compact(p) {
 function cropCandidates() {
   return CROPS.map((c) => ({
     ...cropAsPlant(c),
-    note: `semenzaio ${monthsLabel(c.indoor)}, semina ${monthsLabel(c.direct)}, trapianto ${monthsLabel(c.transplant)}, raccolta ${monthsLabel(c.harvest)}; amiche: ${c.good.join(", ") || "-"}; nemiche: ${c.bad.join(", ") || "-"}`,
+    note: `semenzaio ${monthsLabel(c.indoor)}, semina ${monthsLabel(c.direct)}, trapianto ${monthsLabel(c.transplant)}, raccolta ${monthsLabel(c.harvest)}; amiche: ${c.good.join(", ") || "-"}; nemiche: ${c.bad.join(", ") || "-"}${c.varieties.length ? `; varietà: ${c.varieties.map((v) => v.name).join(", ")}` : ""}`,
   }));
 }
 
@@ -179,8 +181,8 @@ async function loadCandidates(req) {
   if (req.environment === "vegetable") return cropCandidates();
   const { sunlight, watering, ph, texture } = req.conditions;
   try {
-    const res = await searchPlants({ sunlight, watering, ph, texture });
-    return res.items.slice(0, 40);
+    const groups = req.environment === "balcony" ? ["balcone", "aromatiche", "rose", "perenni", "annuali", "bulbose", "graminacee", "rampicanti"] : undefined;
+    return await candidatePlants({ sunlight, watering, ph, texture }, { limit: 60, groups });
   } catch (err) {
     console.warn("[ai] candidate non disponibili:", err.message);
     return [];

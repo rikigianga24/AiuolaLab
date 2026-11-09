@@ -13,6 +13,7 @@ const SearchQuery = z.object({
   texture: z.enum(["sandy", "loamy", "clay", "chalky"]).optional(),
   color: z.string().max(20).optional(),
   season: z.enum(["spring", "summer", "autumn", "winter"]).optional(),
+  group: z.enum(["rose", "perenni", "annuali", "bulbose", "arbusti", "rampicanti", "graminacee", "aromatiche", "balcone"]).optional(),
   page: z.coerce.number().int().min(1).max(500).optional(),
 });
 
