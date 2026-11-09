@@ -44,9 +44,13 @@ test("foto: ricerca su iNaturalist con galleria", async () => {
   assert.equal(res.taxon.commonName, "Lavanda vera");
   assert.deepEqual(res.photos.map((p) => p.id), [10, 11]);
   assert.match(calls[0], /q=Lavandula%20angustifolia/);
+  // solo 2 foto per la galleria: si prova anche Wikimedia (qui senza risultati)
+  assert.equal(res.fallbackTried, true);
+  assert.ok(calls.some((u) => u.includes("wikidata.org")));
   // seconda richiesta: dalla cache, nessuna nuova chiamata
+  const before = calls.length;
   await getPlantPhotos("Lavandula angustifolia", { full: true, fetchImpl: fakeFetch });
-  assert.equal(calls.length, 2);
+  assert.equal(calls.length, before);
 });
 
 test("preferite: filtri applicati in locale", () => {
@@ -66,14 +70,17 @@ test("foto: riempimento della cache in sottofondo", async () => {
   };
   const logs = [];
   const stats = await warmPhotoCache(["Salvia nemorosa 'Caradonna'", "Salvia nemorosa", "Lavandula angustifolia"], { fetchImpl: okFetch, log: (m) => logs.push(m) });
-  // le varietà si riducono alla specie: due nomi distinti, due richieste
+  // le varietà si riducono alla specie: due nomi distinti. La lavanda non
+  // ha risultati su iNaturalist (qui risponde sempre la salvia), quindi si
+  // prova anche Wikidata: 3 richieste in tutto.
   assert.equal(stats.total, 2);
   assert.equal(stats.fetched, 2);
-  assert.equal(asked.length, 2);
+  assert.equal(asked.length, 3);
+  assert.ok(asked[2].includes("wikidata.org"));
   // secondo giro: tutto già in cache, nessuna richiesta
   const again = await warmPhotoCache(["Salvia nemorosa", "Lavandula angustifolia"], { fetchImpl: okFetch, log: () => {} });
   assert.equal(again.cached, 2);
-  assert.equal(asked.length, 2);
+  assert.equal(asked.length, 3);
 
   // iNaturalist irraggiungibile: si ferma dopo 5 errori di fila
   const failing = async () => {
@@ -91,7 +98,8 @@ test("foto: le richieste degli utenti passano davanti al riempimento", async () 
   setRequestSpacing(20);
   const order = [];
   const fetchImpl = async (url) => {
-    order.push(decodeURIComponent(url).match(/q=([^&]+)/)[1]);
+    const q = decodeURIComponent(url).match(/[?&]q=([^&]+)/);
+    if (q) order.push(q[1]);
     return { ok: true, json: async () => ({ results: [] }) };
   };
   const low = ["Aaa uno", "Bbb due", "Ccc tre"].map((n) => getPlantPhotos(n, { fetchImpl, priority: "low" }));
@@ -100,5 +108,70 @@ test("foto: le richieste degli utenti passano davanti al riempimento", async () 
   // quella dell'utente parte prima delle altre in attesa
   assert.ok(order.indexOf("Zzz utente") <= 1, order.join(", "));
   assert.ok(order.indexOf("Zzz utente") < order.indexOf("Bbb due"));
+  setRequestSpacing(1000);
+});
+
+test("Wikimedia: solo licenze libere, autore e miniature", async () => {
+  const { commonsPhoto } = await import("../server/plants/wikimedia.js");
+  const page = (license, short, extra = {}) => ({
+    pageid: 7,
+    title: "File:Rosa.jpg",
+    imageinfo: [
+      {
+        mime: "image/jpeg",
+        thumburl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Rosa.jpg/500px-Rosa.jpg",
+        descriptionurl: "https://commons.wikimedia.org/wiki/File:Rosa.jpg",
+        extmetadata: { License: { value: license }, LicenseShortName: { value: short }, Artist: { value: '<a href="x">Anna Verdi</a>' }, LicenseUrl: { value: "https://cc.example" }, ...extra },
+      },
+    ],
+  });
+  const ok = commonsPhoto(page("cc-by-sa-4.0", "CC BY-SA 4.0"));
+  assert.equal(ok.attribution, "© Anna Verdi");
+  assert.equal(ok.license, "CC BY-SA 4.0");
+  assert.equal(ok.thumb, "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Rosa.jpg/240px-Rosa.jpg");
+  assert.equal(ok.large, "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Rosa.jpg/1024px-Rosa.jpg");
+  assert.equal(ok.source, "Wikimedia Commons");
+  assert.equal(commonsPhoto(page("pd", "Public domain", { Artist: undefined })).attribution, "Pubblico dominio");
+  assert.equal(commonsPhoto(page("cc-by-nc-2.0", "CC BY-NC 2.0")), null);
+  assert.equal(commonsPhoto(page("gfdl", "GFDL")), null);
+  const svg = page("cc0", "CC0");
+  svg.imageinfo[0].mime = "image/svg+xml";
+  assert.equal(commonsPhoto(svg), null);
+});
+
+test("foto: se iNaturalist non ha foto, si usa Wikimedia Commons", async () => {
+  const { getPlantPhotos, setRequestSpacing } = await import("../server/plants/photos.js");
+  setRequestSpacing(5);
+  const hosts = [];
+  const fetchImpl = async (url) => {
+    const u = new URL(url);
+    hosts.push(u.hostname);
+    const json = (body) => ({ ok: true, json: async () => body });
+    if (u.hostname === "api.inaturalist.org") return json({ results: [] });
+    if (u.hostname === "www.wikidata.org" && u.searchParams.get("list") === "search") {
+      assert.equal(u.searchParams.get("srsearch"), 'haswbstatement:"P225=Pianta rarissima"');
+      return json({ query: { search: [{ title: "Q123" }] } });
+    }
+    if (u.hostname === "www.wikidata.org")
+      return json({ entities: { Q123: { claims: { P18: [{ mainsnak: { datavalue: { value: "Rara.jpg" } } }], P373: [{ mainsnak: { datavalue: { value: "Pianta rarissima" } } }] } } } });
+    if (u.hostname === "commons.wikimedia.org")
+      return json({
+        query: {
+          pages: [
+            {
+              pageid: 1,
+              title: "File:Rara.jpg",
+              imageinfo: [{ mime: "image/jpeg", thumburl: "https://upload.wikimedia.org/x/500px-Rara.jpg", extmetadata: { License: { value: "cc-by-4.0" }, LicenseShortName: { value: "CC BY 4.0" }, Artist: { value: "Luca" } } }],
+            },
+          ],
+        },
+      });
+    throw new Error("host inatteso " + url);
+  };
+  const res = await getPlantPhotos("Pianta rarissima 'Bella'", { fetchImpl });
+  assert.equal(res.photos.length, 1);
+  assert.equal(res.photos[0].source, "Wikimedia Commons");
+  assert.equal(res.source, "Wikimedia Commons");
+  assert.deepEqual(hosts, ["api.inaturalist.org", "www.wikidata.org", "www.wikidata.org", "commons.wikimedia.org"]);
   setRequestSpacing(1000);
 });

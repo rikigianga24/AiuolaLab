@@ -85,9 +85,9 @@ Non serve nessuna chiave: MET Norway è gratuito anche per uso commerciale, con 
 
 ### Foto delle piante
 
-Arrivano da [iNaturalist](https://www.inaturalist.org): nessuna chiave da configurare. Vengono mostrate solo foto con licenza CC0, CC BY o CC BY-SA, sempre con l'autore, e solo a chi accetta i contenuti esterni.
+Arrivano da [iNaturalist](https://www.inaturalist.org) e, quando lì non ci sono foto libere, da [Wikimedia Commons](https://commons.wikimedia.org) tramite Wikidata: nessuna chiave da configurare. Vengono mostrate solo foto con licenza CC0, pubblico dominio, CC BY o CC BY-SA, sempre con l'autore, e solo a chi accetta i contenuti esterni.
 
-All'avvio il server cerca in sottofondo la foto principale di tutte le piante del catalogo e degli ortaggi, una richiesta al secondo come chiede iNaturalist. La prima volta servono circa 11 minuti. I link restano nel database per 60 giorni, il controllo si ripete ogni settimana e, se iNaturalist non risponde, il server riprova dopo un'ora. Per disattivarlo imposta `PHOTO_WARMUP=off`.
+All'avvio il server cerca in sottofondo la foto principale di tutte le piante del catalogo e degli ortaggi (prima su iNaturalist, poi su Wikimedia per quelle senza foto), una richiesta al secondo. La prima volta servono circa 11 minuti. I link restano nel database per 60 giorni, il controllo si ripete ogni settimana e, se iNaturalist non risponde, il server riprova dopo un'ora. Per disattivarlo imposta `PHOTO_WARMUP=off`.
 
 ### 5. Pagine legali
 

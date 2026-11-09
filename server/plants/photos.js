@@ -1,4 +1,5 @@
-// Foto delle piante da iNaturalist (https://www.inaturalist.org).
+// Foto delle piante da iNaturalist (https://www.inaturalist.org), con
+// Wikimedia Commons come riserva (vedi wikimedia.js).
 //
 // Non usiamo un motore di ricerca immagini: le foto trovate sul web sono
 // quasi sempre coperte da copyright. iNaturalist offre milioni di foto di
@@ -10,6 +11,7 @@
 // i link e le attribuzioni (tabella plant_cache, provider "inat").
 import { config } from "../config.js";
 import { hasDatabase, query } from "../db.js";
+import { findWikimediaPhotos } from "./wikimedia.js";
 
 const API = "https://api.inaturalist.org/v1";
 const PROVIDER = "inat";
@@ -104,11 +106,13 @@ async function pump() {
   pumping = false;
 }
 
-async function inat(path, fetchImpl) {
-  const r = await fetchImpl(`${API}${path}`, { headers: { "User-Agent": userAgent(), Accept: "application/json" }, signal: AbortSignal.timeout(10_000) });
-  if (!r.ok) throw new Error(`iNaturalist ${r.status}`);
+async function getJson(url, fetchImpl, label) {
+  const r = await fetchImpl(url, { headers: { "User-Agent": userAgent(), Accept: "application/json" }, signal: AbortSignal.timeout(10_000) });
+  if (!r.ok) throw new Error(`${label} ${r.status}`);
   return r.json();
 }
+
+const inat = (path, fetchImpl) => getJson(`${API}${path}`, fetchImpl, "iNaturalist");
 
 // "Geranium 'Rozanne'" -> "Geranium"; "Nepeta x faassenii" -> "Nepeta faassenii"
 export function cleanScientificName(name) {
@@ -140,7 +144,17 @@ export function toPhoto(p) {
     license: LICENSE_LABEL[license],
     licenseUrl: LICENSE_URL[license],
     sourceUrl: `https://www.inaturalist.org/photos/${p.id}`,
+    source: "iNaturalist",
   };
+}
+
+// Una voce in cache è valida se ha foto o se anche la riserva è stata
+// provata (le voci vuote salvate prima della ricerca di riserva si rifanno).
+const isComplete = (cached) => Boolean(cached && (cached.photos?.length || cached.fallbackTried));
+
+function dedupe(photos) {
+  const seen = new Set();
+  return photos.filter((p) => !seen.has(p.id) && seen.add(p.id));
 }
 
 function pickTaxon(results, name) {
@@ -155,33 +169,61 @@ function pickTaxon(results, name) {
 
 /**
  * Foto di una pianta dal nome scientifico.
- * full=false: solo la foto principale (per le schede in elenco, 1 richiesta).
- * full=true: galleria fino a 8 foto (2 richieste).
+ * full=false: solo la foto principale (per le schede in elenco).
+ * full=true: galleria fino a 8 foto.
+ * Prima iNaturalist; se non ha foto libere, Wikimedia Commons.
  */
 export async function getPlantPhotos(scientificName, { full = false, fetchImpl = fetch, priority = "high" } = {}) {
   const name = cleanScientificName(scientificName);
   if (!name) return { name, taxon: null, photos: [] };
   const key = `${full ? "full" : "main"}:${name.toLowerCase()}`;
   const cached = await cacheGet(key);
-  if (cached) return cached;
+  if (isComplete(cached)) return cached;
   if (inflight.has(key)) return inflight.get(key);
 
   const job = (async () => {
-    const search = await schedule(() => inat(`/taxa?q=${encodeURIComponent(name)}&is_active=true&per_page=5&locale=it`, fetchImpl), priority);
-    const taxon = pickTaxon(search.results ?? [], name);
-    let result = { name, taxon: null, photos: [], source: "iNaturalist" };
-    if (taxon) {
-      result.taxon = { id: taxon.id, name: taxon.name, commonName: taxon.preferred_common_name ?? null, url: `https://www.inaturalist.org/taxa/${taxon.id}` };
-      const main = toPhoto(taxon.default_photo);
-      result.photos = main ? [main] : [];
-      if (full) {
-        const detail = await schedule(() => inat(`/taxa/${taxon.id}?locale=it`, fetchImpl), priority);
-        const t = detail.results?.[0];
-        const photos = (t?.taxon_photos ?? []).map((tp) => toPhoto(tp.photo)).filter(Boolean);
-        const seen = new Set();
-        result.photos = [...result.photos, ...photos].filter((p) => !seen.has(p.id) && seen.add(p.id)).slice(0, MAX_PHOTOS);
+    const result = { name, taxon: null, photos: [], source: "iNaturalist" };
+    let inatError = null;
+    try {
+      const search = await schedule(() => inat(`/taxa?q=${encodeURIComponent(name)}&is_active=true&per_page=5&locale=it`, fetchImpl), priority);
+      const taxon = pickTaxon(search.results ?? [], name);
+      if (taxon) {
+        result.taxon = { id: taxon.id, name: taxon.name, commonName: taxon.preferred_common_name ?? null, url: `https://www.inaturalist.org/taxa/${taxon.id}` };
+        const main = toPhoto(taxon.default_photo);
+        result.photos = main ? [main] : [];
+        if (full) {
+          const detail = await schedule(() => inat(`/taxa/${taxon.id}?locale=it`, fetchImpl), priority);
+          const t = detail.results?.[0];
+          const photos = (t?.taxon_photos ?? []).map((tp) => toPhoto(tp.photo)).filter(Boolean);
+          result.photos = dedupe([...result.photos, ...photos]).slice(0, MAX_PHOTOS);
+        }
+      }
+    } catch (err) {
+      inatError = err;
+    }
+
+    // Riserva: Wikimedia Commons, se iNaturalist non ha foto libere
+    // (o, per la galleria, ne ha poche).
+    if (result.photos.length < (full ? 3 : 1)) {
+      try {
+        const get = (url) => schedule(() => getJson(url, fetchImpl, "Wikimedia"), priority);
+        const wm = await findWikimediaPhotos(name, get, { full, max: MAX_PHOTOS });
+        result.fallbackTried = true;
+        if (wm?.photos.length) {
+          result.photos = dedupe([...result.photos, ...wm.photos]).slice(0, full ? MAX_PHOTOS : 1);
+          result.wikidata = wm.item;
+          if (!result.photos.some((p) => p.source === "iNaturalist")) result.source = "Wikimedia Commons";
+        }
+      } catch (err) {
+        // entrambe le fonti irraggiungibili: niente cache, si riprova più avanti
+        if (inatError) throw inatError;
+        console.warn("[photos] Wikimedia:", err.message);
       }
     }
+    // iNaturalist irraggiungibile e nessuna foto di riserva: non si salva un
+    // risultato vuoto, si riprova più avanti
+    if (inatError && !result.photos.length) throw inatError;
+
     await cacheSet(key, result);
     return result;
   })().finally(() => inflight.delete(key));
@@ -209,7 +251,7 @@ export async function warmPhotoCache(scientificNames, { fetchImpl = fetch, log =
   try {
     log(`[photos] Riempimento cache foto: ${names.length} nomi`);
     for (const name of names) {
-      if (await cacheGet(`main:${name.toLowerCase()}`)) {
+      if (isComplete(await cacheGet(`main:${name.toLowerCase()}`))) {
         stats.cached++;
         continue;
       }

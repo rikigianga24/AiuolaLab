@@ -9,8 +9,8 @@ export function PhotoConsent({ compact = false }) {
     <div className={`photo-consent ${compact ? "is-compact" : ""}`}>
       <i className="fa-solid fa-camera" aria-hidden="true" />
       <p>
-        Le foto vere arrivano da <strong>iNaturalist</strong>, un archivio di foto libere scattate da appassionati. Per vederle il tuo browser
-        si collega ai loro server.
+        Le foto vere arrivano da <strong>iNaturalist</strong> e <strong>Wikimedia Commons</strong>, archivi di foto libere scattate da
+        appassionati. Per vederle il tuo browser si collega ai loro server.
       </p>
       <button type="button" className="btn-country is-sage is-small" onClick={() => setConsent({ external: true })}>
         <i className="fa-solid fa-image" /> Mostra le foto
@@ -23,12 +23,16 @@ export function PhotoCredit({ photo }) {
   return (
     <p className="photo-credit">
       Foto: {photo.attribution} ·{" "}
-      <a href={photo.licenseUrl} target="_blank" rel="noopener noreferrer">
-        {photo.license}
-      </a>{" "}
+      {photo.licenseUrl ? (
+        <a href={photo.licenseUrl} target="_blank" rel="noopener noreferrer">
+          {photo.license}
+        </a>
+      ) : (
+        photo.license
+      )}{" "}
       ·{" "}
       <a href={photo.sourceUrl} target="_blank" rel="noopener noreferrer">
-        iNaturalist
+        {photo.source ?? "iNaturalist"}
       </a>
     </p>
   );
