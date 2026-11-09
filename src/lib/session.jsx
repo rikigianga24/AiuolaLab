@@ -10,7 +10,7 @@ const SETTINGS_KEY = "aiuolalab.settings";
 const DEFAULT_SETTINGS = {
   climate: "centro",
   location: null,
-  notify: { push: false, emailWeekly: true, emailWeather: true, hour: 8 },
+  notify: { push: false, pushTasks: true, pushWeather: true, pushStreak: true, emailWeekly: true, emailWeather: true, hour: 8 },
   taskState: {},
   pets: [],
   favorites: [],
@@ -45,10 +45,11 @@ export function SessionProvider({ children }) {
       const { user: u } = await authApi.me();
       setUser(u);
       if (u) {
-        // le impostazioni del server prevalgono; le attività segnate fatte
-        // su questo dispositivo vengono unite
+        // le impostazioni del server prevalgono (anche per le attività segnate
+        // dai pulsanti delle notifiche); quelle solo su questo dispositivo si uniscono
         setSettings((local) => {
-          const next = merge(merge(DEFAULT_SETTINGS, u.settings ?? {}), { taskState: local.taskState });
+          const server = merge(DEFAULT_SETTINGS, u.settings ?? {});
+          const next = { ...server, taskState: { ...local.taskState, ...server.taskState } };
           save(SETTINGS_KEY, next);
           return next;
         });
@@ -62,6 +63,10 @@ export function SessionProvider({ children }) {
 
   useEffect(() => {
     refresh();
+    // tornando sull'app (es. dopo "Fatto" in una notifica) si riallinea col server
+    const onVisible = () => document.visibilityState === "visible" && !pending.current && refresh();
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
   }, [refresh]);
 
   const updateSettings = useCallback(

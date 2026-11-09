@@ -52,7 +52,7 @@ export const config = {
     enabled: Boolean(env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY),
     publicKey: env.VAPID_PUBLIC_KEY,
     privateKey: env.VAPID_PRIVATE_KEY,
-    subject: env.VAPID_SUBJECT || "mailto:admin@example.com",
+    subject: env.VAPID_SUBJECT || null,
   },
 
   // Meteo MET Norway: i termini d'uso chiedono un contatto nello User-Agent.

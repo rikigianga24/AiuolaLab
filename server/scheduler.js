@@ -7,6 +7,7 @@ import { hasDatabase, query } from "./db.js";
 import { emailLayout, mailEnabled, pushEnabled, sendMail, sendPush } from "./notify.js";
 import { userSettings } from "./routes/account.js";
 import { getForecast } from "./routes/weather.js";
+import { dailyMessage, streakWeeks } from "./pushMessages.js";
 
 const TZ = "Europe/Rome";
 const parts = (d = new Date()) =>
@@ -57,20 +58,32 @@ export async function runForUser(user, now = new Date()) {
     }
   }
 
-  // --- notifiche push: nuove attività e avvisi meteo
-  if (settings.notify.push && pushEnabled()) {
+  // --- notifica push del giorno: al massimo una, che riunisce promemoria,
+  //     avviso meteo e serie (il lunedì). I tipi si spengono dall'account.
+  let pushed = null;
+  const n = settings.notify;
+  if (n.push && pushEnabled() && !(await alreadySent(user.id, `daily:${today}`))) {
+    const nowTasks = n.pushTasks === false ? [] : open.filter((t) => t.start <= today && t.end >= today);
     const fresh = [];
-    for (const t of startingToday) if (!(await alreadySent(user.id, `task:${t.id}`))) fresh.push(t);
-    const freshAlerts = [];
-    for (const a of alerts.filter((a) => a.severity !== "low")) if (!(await alreadySent(user.id, `alert:${a.id}`))) freshAlerts.push(a);
-    for (const a of freshAlerts) await sendPush(user.id, { title: a.title, body: a.detail, url: "/calendario", tag: a.id });
-    if (fresh.length) {
-      await sendPush(user.id, {
-        title: fresh.length === 1 ? fresh[0].title : `${fresh.length} cose da fare in giardino`,
-        body: fresh.length === 1 ? `${fresh[0].where}. ${fresh[0].detail}` : fresh.slice(0, 3).map((t) => `• ${t.title}`).join("\n"),
-        url: "/calendario",
-        tag: `tasks-${today}`,
-      });
+    for (const t of nowTasks) if (!(await alreadySent(user.id, `task:${t.id}`))) fresh.push(t);
+    let alert = null;
+    if (n.pushWeather !== false) {
+      const order = { high: 0, medium: 1 };
+      for (const a of alerts.filter((x) => x.severity !== "low").sort((x, y) => order[x.severity] - order[y.severity])) {
+        if (!(await alreadySent(user.id, `alert:${a.id}`))) {
+          alert = a;
+          break;
+        }
+      }
+    }
+    const streak = n.pushStreak !== false && p.weekday === "Mon" ? streakWeeks(state, today) : 0;
+    const msg = dailyMessage({ tasks: fresh, alert, streak, seed: `${today}:${user.id}` });
+    if (msg) {
+      await sendPush(user.id, { ...msg, urgent: alert?.severity === "high" });
+      pushed = msg.title;
+    } else {
+      // niente da dire oggi: si libera la giornata per un eventuale avviso più tardi
+      await query("DELETE FROM notification_log WHERE user_id = $1 AND key = $2", [user.id, `daily:${today}`]);
     }
   }
 
@@ -112,7 +125,7 @@ export async function runForUser(user, now = new Date()) {
       );
     }
   }
-  return { tasksToday: startingToday.length, week: thisWeek.length, alerts: alerts.length };
+  return { tasksToday: startingToday.length, week: thisWeek.length, alerts: alerts.length, pushed };
 }
 
 export async function runScheduler(now = new Date()) {

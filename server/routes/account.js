@@ -5,6 +5,7 @@ import { destroySession, publicUser, requireUser, verifyPassword } from "../auth
 import { config } from "../config.js";
 import { query } from "../db.js";
 import { emailLayout, mailEnabled, pushEnabled, sendMail, sendPush } from "../notify.js";
+import { testMessage } from "../pushMessages.js";
 
 const router = Router();
 router.use(requireUser);
@@ -20,6 +21,9 @@ const Settings = z
       emailWeekly: z.boolean(),
       emailWeather: z.boolean(),
       hour: z.number().int().min(5).max(21),
+      pushTasks: z.boolean(),
+      pushWeather: z.boolean(),
+      pushStreak: z.boolean(),
     }).partial(),
     pets: z.array(z.enum(["dog", "cat", "horse", "farm", "people"])).max(5),
     // piante "mi piace": chiave, tipo e copia ridotta della scheda
@@ -42,7 +46,7 @@ const Settings = z
 export const DEFAULT_SETTINGS = {
   climate: "centro",
   location: null,
-  notify: { push: false, emailWeekly: true, emailWeather: true, hour: config.notifyHour },
+  notify: { push: false, pushTasks: true, pushWeather: true, pushStreak: true, emailWeekly: true, emailWeather: true, hour: config.notifyHour },
   taskState: {},
   pets: [],
   favorites: [],
@@ -119,13 +123,26 @@ router.delete("/push", async (req, res, next) => {
   }
 });
 
+// Pulsanti "Fatto" e "Tra una settimana" toccati direttamente nella notifica.
+router.post("/task-state", async (req, res, next) => {
+  const body = z.object({ id: z.string().max(300), action: z.enum(["done", "snooze", "undo"]) }).safeParse(req.body);
+  if (!body.success) return res.status(400).json({ error: "Richiesta non valida" });
+  try {
+    const current = userSettings(req.user);
+    const today = new Date().toISOString().slice(0, 10);
+    const later = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
+    const entry = body.data.action === "done" ? { done: today } : body.data.action === "snooze" ? { snoozedUntil: later } : {};
+    const next = { ...current, taskState: { ...current.taskState, [body.data.id]: entry } };
+    await query("UPDATE users SET settings = $2 WHERE id = $1", [req.user.id, JSON.stringify(next)]);
+    res.json({ ok: true, state: entry });
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.post("/test-notification", async (req, res, next) => {
   try {
-    const pushes = await sendPush(req.user.id, {
-      title: "AiuolaLab",
-      body: "Le notifiche funzionano! Ti avviseremo quando c'è qualcosa da fare in giardino.",
-      url: "/calendario",
-    });
+    const pushes = await sendPush(req.user.id, testMessage());
     let mail = false;
     if (req.body?.email && req.user.email_verified_at) {
       mail = await sendMail(

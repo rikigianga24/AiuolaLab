@@ -258,11 +258,36 @@
   line-height: 1.4;
 }
 
-.push-toggle {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  align-items: center;
+.push-setup .buttons {
+  margin-bottom: 0.4rem;
+}
+
+.push-setup .notification {
+  margin-top: 0.6rem;
+  padding: 0.7rem 1rem;
+  font-size: 0.88rem;
+}
+
+.push-kinds {
+  border-left: 3px solid var(--sage-soft, #cfe3d1);
+  padding-left: 0.7rem;
+  margin: 0.4rem 0 0.6rem;
+}
+
+.push-guide {
+  background: var(--cream-dark, #f4efea);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.6rem;
+}
+
+.push-guide ol {
+  margin: 0.5rem 0 0 1.2rem;
+}
+
+.push-guide li {
+  margin: 0.25rem 0;
 }
 
 .delete-box {
@@ -341,4 +366,15 @@
   .task-card {
     padding: 0.6rem;
   }
+}
+
+/* attività aperta da una notifica */
+.task-card.is-highlight {
+  box-shadow: 0 0 0 3px rgba(196, 122, 44, 0.55), 0 8px 20px rgba(80, 60, 30, 0.12);
+  animation: task-pulse 1.6s ease-out 2;
+}
+
+@keyframes task-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(196, 122, 44, 0.6); }
+  100% { box-shadow: 0 0 0 3px rgba(196, 122, 44, 0.55), 0 8px 20px rgba(80, 60, 30, 0.12); }
 }

@@ -2,7 +2,7 @@
 import nodemailer from "nodemailer";
 import webpush from "web-push";
 import { config } from "./config.js";
-import { query } from "./db.js";
+import { hasDatabase, query } from "./db.js";
 
 let transport = null;
 if (config.mail.brevoApiKey) {
@@ -22,9 +22,48 @@ if (config.mail.brevoApiKey) {
   console.log("[mail] Email non configurate: imposta BREVO_API_KEY (consigliato) oppure SMTP_HOST.");
 }
 
-if (config.push.enabled) {
-  webpush.setVapidDetails(config.push.subject, config.push.publicKey, config.push.privateKey);
+// Chi invia le notifiche: un contatto (mailto:) o l'indirizzo https del sito.
+function vapidSubject() {
+  if (config.push.subject) return config.push.subject;
+  if (/@/.test(config.weatherContact ?? "")) return `mailto:${config.weatherContact}`;
+  if (/^https:\/\//.test(config.appUrl)) return config.appUrl;
+  return "mailto:admin@example.com";
+}
+
+/**
+ * Attiva le notifiche push. Se le chiavi VAPID non sono nelle variabili
+ * d'ambiente, il server le genera una volta sola e le salva nel database:
+ * non vanno mai cambiate, altrimenti i telefoni iscritti smettono di
+ * riceverle.
+ */
+export async function initPush() {
+  let { publicKey, privateKey } = config.push;
+  if (!(publicKey && privateKey) && hasDatabase()) {
+    try {
+      const read = async () => (await query("SELECT value FROM app_settings WHERE key = 'vapid'")).rows[0]?.value;
+      let keys = await read();
+      if (!keys) {
+        const fresh = webpush.generateVAPIDKeys();
+        // ON CONFLICT: se due server partono insieme vince il primo
+        await query("INSERT INTO app_settings (key, value) VALUES ('vapid', $1) ON CONFLICT (key) DO NOTHING", [JSON.stringify(fresh)]);
+        keys = await read();
+        console.log("[push] Chiavi per le notifiche generate e salvate nel database.");
+      }
+      ({ publicKey, privateKey } = keys);
+    } catch (err) {
+      console.warn("[push] chiavi non disponibili:", err.message);
+    }
+  }
+  if (!(publicKey && privateKey)) {
+    console.log("[push] Notifiche push non attive (serve il database o le chiavi VAPID).");
+    return false;
+  }
+  config.push.publicKey = publicKey;
+  config.push.privateKey = privateKey;
+  config.push.enabled = true;
+  webpush.setVapidDetails(vapidSubject(), publicKey, privateKey);
   console.log("[push] Notifiche push attive.");
+  return true;
 }
 
 export const mailEnabled = () => Boolean(config.mail.brevoApiKey || transport);
@@ -116,7 +155,7 @@ export async function sendPush(userId, payload) {
   let sent = 0;
   for (const row of rows) {
     try {
-      await webpush.sendNotification({ endpoint: row.endpoint, keys: row.keys }, JSON.stringify(payload), { TTL: 6 * 3600 });
+      await webpush.sendNotification({ endpoint: row.endpoint, keys: row.keys }, JSON.stringify(payload), { TTL: 12 * 3600, urgency: payload.urgent ? "high" : "normal" });
       sent += 1;
     } catch (err) {
       if (err.statusCode === 404 || err.statusCode === 410) {

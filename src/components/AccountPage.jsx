@@ -14,23 +14,72 @@ function Notice({ kind = "info", children }) {
   return <div className={`notification is-${kind} is-light`}>{children}</div>;
 }
 
-function PushToggle() {
+// iPhone/iPad: le notifiche arrivano solo se l'app è aggiunta alla schermata Home
+const isIOS = () => typeof navigator !== "undefined" && (/iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
+const isStandalone = () =>
+  typeof window !== "undefined" && (window.matchMedia?.("(display-mode: standalone)").matches || window.navigator.standalone === true);
+
+function IosGuide() {
+  return (
+    <div className="push-guide">
+      <p>
+        <strong>Su iPhone le notifiche arrivano solo dall'app sulla schermata Home.</strong> Bastano tre tocchi:
+      </p>
+      <ol>
+        <li>
+          Tocca <i className="fa-solid fa-arrow-up-from-bracket" /> <strong>Condividi</strong> nella barra di Safari
+        </li>
+        <li>
+          Scegli <strong>Aggiungi alla schermata Home</strong> <i className="fa-regular fa-square-plus" />
+        </li>
+        <li>Apri AiuolaLab dall'icona nuova, entra nell'account e torna qui</li>
+      </ol>
+    </div>
+  );
+}
+
+function PushSetup() {
   const { features, settings, updateSettings } = useSession();
   const [active, setActive] = useState(false);
   const [msg, setMsg] = useState(null);
   const [busy, setBusy] = useState(false);
+  const n = settings.notify;
 
   useEffect(() => {
     currentSubscription().then((s) => setActive(Boolean(s)));
   }, []);
 
-  if (!features.push) return <p className="panel-note">Notifiche push non configurate sul server.</p>;
-  if (!pushSupported()) return <p className="panel-note">Questo browser non supporta le notifiche push. Su iPhone aggiungi l'app alla schermata Home e aprila da lì.</p>;
+  if (!features.push) return <p className="panel-note">Notifiche sul telefono non ancora attive sul server.</p>;
+  if (isIOS() && !isStandalone()) return <IosGuide />;
+  if (!pushSupported()) return <p className="panel-note">Questo browser non supporta le notifiche. Prova con Chrome, Edge, Firefox o Safari aggiornati.</p>;
+  if (typeof Notification !== "undefined" && Notification.permission === "denied") {
+    return (
+      <div className="push-guide">
+        <p>
+          <strong>Le notifiche sono bloccate per questo sito.</strong>
+        </p>
+        <p>
+          Sbloccale dalle impostazioni: su Android tieni premuta l'icona di AiuolaLab → <em>Info app</em> → <em>Notifiche</em>; sul computer tocca il lucchetto
+          accanto all'indirizzo → <em>Notifiche</em> → <em>Consenti</em>. Poi ricarica la pagina.
+        </p>
+      </div>
+    );
+  }
 
-  const toggle = async () => {
+  const run = async (fn) => {
     setBusy(true);
     setMsg(null);
     try {
+      await fn();
+    } catch (err) {
+      setMsg({ kind: "danger", text: err.message });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const toggle = () =>
+    run(async () => {
       if (active) {
         await disablePush();
         setActive(false);
@@ -39,26 +88,52 @@ function PushToggle() {
         await enablePush(features.vapidPublicKey);
         setActive(true);
         updateSettings({ notify: { push: true } });
+        setMsg({ kind: "success", text: "Fatto! Ti scriveremo al massimo una volta al giorno, solo quando serve 🌱" });
       }
-    } catch (err) {
-      setMsg(err.message);
-    } finally {
-      setBusy(false);
-    }
-  };
+    });
 
+  const test = () =>
+    run(async () => {
+      const r = await accountApi.testNotification(false);
+      setMsg(
+        r.pushes
+          ? { kind: "success", text: "Inviata! Dovrebbe arrivare tra pochi secondi." }
+          : { kind: "warning", text: "Nessun dispositivo raggiunto: disattiva e riattiva le notifiche qui sopra." },
+      );
+    });
+
+  const on = active && n.push;
   return (
-    <div className="push-toggle">
-      <button className={`button is-small ${active ? "is-light" : "is-primary"} ${busy ? "is-loading" : ""}`} onClick={toggle}>
-        <i className="fa-solid fa-bell" />
-        &nbsp; {active ? "Disattiva su questo dispositivo" : "Attiva le notifiche su questo dispositivo"}
-      </button>
-      {active && settings.notify.push && (
-        <button className="button is-small is-light" onClick={() => accountApi.testNotification(false).then((r) => setMsg(r.pushes ? "Notifica di prova inviata." : "Nessun dispositivo raggiunto."))}>
-          Prova
+    <div className="push-setup">
+      <div className="buttons">
+        <button className={`button is-small ${active ? "is-light" : "is-primary"} ${busy ? "is-loading" : ""}`} onClick={toggle} disabled={busy}>
+          <i className={`fa-solid ${active ? "fa-bell-slash" : "fa-bell"}`} />
+          &nbsp; {active ? "Disattiva su questo dispositivo" : "Attiva le notifiche su questo dispositivo"}
         </button>
+        {on && (
+          <button className="button is-small is-light" onClick={test} disabled={busy}>
+            <i className="fa-solid fa-paper-plane" />
+            &nbsp; Mandami una notifica di prova
+          </button>
+        )}
+      </div>
+      {on && (
+        <div className="push-kinds">
+          <label className="checkbox consent-row">
+            <input type="checkbox" checked={n.pushTasks !== false} onChange={(e) => updateSettings({ notify: { pushTasks: e.target.checked } })} /> 🌹 Promemoria dei
+            lavori (potature, concimi, semine…) con i pulsanti <em>Fatto</em> e <em>Tra una settimana</em>
+          </label>
+          <label className="checkbox consent-row">
+            <input type="checkbox" checked={n.pushWeather !== false} onChange={(e) => updateSettings({ notify: { pushWeather: e.target.checked } })} /> ❄️ Avvisi
+            meteo importanti (gelo, caldo intenso, nubifragi)
+          </label>
+          <label className="checkbox consent-row">
+            <input type="checkbox" checked={n.pushStreak !== false} onChange={(e) => updateSettings({ notify: { pushStreak: e.target.checked } })} /> 🔥 La tua
+            serie: il lunedì, quante settimane di fila hai curato il giardino
+          </label>
+        </div>
       )}
-      {msg && <p className="panel-note">{msg}</p>}
+      {msg && <Notice kind={msg.kind}>{msg.text}</Notice>}
     </div>
   );
 }
@@ -129,7 +204,8 @@ function AccountSettings() {
 
       <div className="card-country">
         <h2 className="card-title">Notifiche</h2>
-        <PushToggle />
+        <p className="panel-note">Sul telefono, come le app che usi ogni giorno: al massimo una al giorno, all'ora che scegli tu.</p>
+        <PushSetup />
         <div className="mt-3">
           <label className="checkbox consent-row">
             <input type="checkbox" checked={n.emailWeekly} disabled={!features.mail} onChange={(e) => updateSettings({ notify: { emailWeekly: e.target.checked } })} /> Riepilogo via

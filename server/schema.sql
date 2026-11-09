@@ -68,6 +68,13 @@ CREATE TABLE IF NOT EXISTS notification_log (
   PRIMARY KEY (user_id, key)
 );
 
+-- Impostazioni dell'app generate dal server (es. chiavi per le notifiche).
+CREATE TABLE IF NOT EXISTS app_settings (
+  key         TEXT PRIMARY KEY,
+  value       JSONB NOT NULL,
+  updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- Row Level Security: su Supabase le tabelle dello schema "public" sono
 -- esposte anche dalla sua API REST. Attivando RLS senza regole l'API non
 -- vede niente; il server di AiuolaLab si collega come proprietario delle
@@ -79,6 +86,7 @@ ALTER TABLE sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE auth_tokens ENABLE ROW LEVEL SECURITY;
 ALTER TABLE push_subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notification_log ENABLE ROW LEVEL SECURITY;
+ALTER TABLE app_settings ENABLE ROW LEVEL SECURITY;
 
 -- Pulizia periodica (eseguita all'avvio).
 DELETE FROM sessions WHERE expires_at < now();

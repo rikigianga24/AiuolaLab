@@ -129,3 +129,68 @@ test("pianificatore: attività di oggi per un utente", { skip }, async () => {
   await query("DELETE FROM projects WHERE owner_key = $1", [`user:${user.id}`]);
   await query("DELETE FROM users WHERE id = $1", [user.id]);
 });
+
+test("notifiche: chiavi generate una volta e salvate nel database", { skip }, async () => {
+  const { initPush, pushEnabled } = await import("../server/notify.js");
+  const { config } = await import("../server/config.js");
+  if (process.env.VAPID_PUBLIC_KEY) return; // chiavi fornite a mano: niente da generare
+  await pool.query("DELETE FROM app_settings WHERE key = 'vapid'");
+  config.push.publicKey = config.push.privateKey = null;
+  assert.equal(await initPush(), true);
+  assert.equal(pushEnabled(), true);
+  const first = config.push.publicKey;
+  const { rows } = await pool.query("SELECT value FROM app_settings WHERE key = 'vapid'");
+  assert.equal(rows[0].value.publicKey, first);
+  // al riavvio si riusano le stesse (altrimenti i telefoni iscritti non ricevono più niente)
+  config.push.publicKey = config.push.privateKey = null;
+  await initPush();
+  assert.equal(config.push.publicKey, first);
+  const r = await fetch(`${base}/api/health`).then((x) => x.json());
+  assert.equal(r.push, true);
+  assert.equal(r.vapidPublicKey, first);
+});
+
+test("notifiche: pulsanti Fatto e Rimanda e notifica del giorno", { skip }, async () => {
+  const api = client();
+  const email = `push${Date.now()}@test.aiuolalab`;
+  let r = await api("/api/auth/register", { method: "POST", body: { email, password: PASSWORD, privacy: true } });
+  assert.equal(r.status, 201);
+  const id = "g:potatura:rosa:2027";
+
+  r = await api("/api/account/task-state", { method: "POST", body: { id, action: "done" } });
+  assert.equal(r.status, 200);
+  assert.ok(r.data.state.done);
+  r = await api("/api/auth/me");
+  assert.ok(r.data.user.settings.taskState[id].done, "segnata fatta anche nel calendario");
+  r = await api("/api/account/task-state", { method: "POST", body: { id, action: "snooze" } });
+  assert.ok(r.data.state.snoozedUntil);
+  r = await api("/api/account/task-state", { method: "POST", body: { id, action: "boh" } });
+  assert.equal(r.status, 400);
+  r = await client()("/api/account/task-state", { method: "POST", body: { id, action: "done" } });
+  assert.equal(r.status, 401, "serve l'accesso");
+
+  r = await api("/api/account/settings", { method: "PUT", body: { notify: { pushStreak: false } } });
+  assert.equal(r.data.settings.notify.pushStreak, false);
+  assert.equal(r.data.settings.notify.pushTasks, true);
+
+  // notifica del giorno: una sola anche se il pianificatore gira più volte
+  const { runForUser } = await import("../server/scheduler.js");
+  const { initPush } = await import("../server/notify.js");
+  await initPush();
+  await pool.query("UPDATE users SET settings = jsonb_set(settings, '{notify,push}', 'true') WHERE email = $1", [email]);
+  const { rows } = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+  const user = rows[0];
+  const sq = [{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: 2, y: 2 }, { x: 0, y: 2 }];
+  await pool.query("INSERT INTO projects (owner_key, name, data) VALUES ($1, 'G', $2)", [
+    `user:${user.id}`,
+    JSON.stringify({ type: "garden", beds: [{ id: "b", name: "Aiuola", points: sq, plants: [{ id: "r", name: "Rosa", icon: "rose", x: 1, y: 1, spreadM: 0.6 }] }] }),
+  ]);
+  const when = new Date("2027-02-16T08:00:00Z");
+  const first = await runForUser(user, when);
+  assert.ok(first.pushed, "c'è qualcosa da dire");
+  const again = await runForUser(user, when);
+  assert.equal(again.pushed, null, "non si ripete nello stesso giorno");
+
+  await pool.query("DELETE FROM projects WHERE owner_key = $1", [`user:${user.id}`]);
+  await pool.query("DELETE FROM users WHERE id = $1", [user.id]);
+});

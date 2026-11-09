@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { weatherApi } from "../lib/api";
 import { TASK_KINDS, addDaysISO, generateTasks, taskStatus, todayISO } from "../lib/care";
 import { CLIMATES } from "../lib/irrigation";
@@ -71,11 +71,11 @@ function Weather({ location, context }) {
   );
 }
 
-function TaskCard({ task, status, onDone, onSnooze, onUndo }) {
+function TaskCard({ task, status, onDone, onSnooze, onUndo, highlight = false }) {
   const kind = TASK_KINDS[task.kind] ?? TASK_KINDS.cura;
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(highlight);
   return (
-    <li className={`task-card status-${status}`}>
+    <li className={`task-card status-${status} ${highlight ? "is-highlight" : ""}`} id={highlight ? "attivita-evidenziata" : undefined}>
       <span className="task-icon" style={{ background: kind.color }}>
         <i className={`fa-solid ${kind.icon}`} />
       </span>
@@ -137,6 +137,18 @@ export default function CalendarPage() {
     [projects],
   );
 
+  // aperta da una notifica: si evidenzia l'attività e si azzera il numero sull'icona
+  const [params] = useSearchParams();
+  const focusId = params.get("attivita");
+  useEffect(() => {
+    if ("clearAppBadge" in navigator) navigator.clearAppBadge().catch(() => {});
+  }, []);
+  useEffect(() => {
+    if (!focusId) return;
+    const t = setTimeout(() => document.getElementById("attivita-evidenziata")?.scrollIntoView({ behavior: "smooth", block: "center" }), 300);
+    return () => clearTimeout(t);
+  }, [focusId]);
+
   const state = settings.taskState ?? {};
   const setState = (id, value) => updateSettings({ taskState: { [id]: value } });
 
@@ -166,6 +178,7 @@ export default function CalendarPage() {
       onDone={() => setState(task.id, { done: today })}
       onSnooze={() => setState(task.id, { snoozedUntil: addDaysISO(today, 7) })}
       onUndo={() => setState(task.id, {})}
+      highlight={task.id === focusId}
     />
   );
 
