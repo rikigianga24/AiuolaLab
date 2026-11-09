@@ -66,16 +66,28 @@ export function emailLayout({ title, intro, sections = [], cta, footer }) {
 }
 
 // "AiuolaLab <noreply@sito.it>" -> { name: "AiuolaLab", email: "noreply@sito.it" }
+// Accetta anche le virgolette messe nel pannello di Render (lì non vengono tolte).
+const EMAIL_RE = /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/;
 export function parseSender(from) {
-  const m = String(from).match(/^\s*"?([^"<]*?)"?\s*<([^>]+)>\s*$/);
-  return m ? { ...(m[1] ? { name: m[1] } : {}), email: m[2].trim() } : { email: String(from).trim() };
+  let t = String(from ?? "").trim();
+  while (/^["'].*["']$/.test(t)) t = t.slice(1, -1).trim();
+  const m = t.match(/^(.*?)<\s*([^>]+?)\s*>\s*$/);
+  const name = m ? m[1].replace(/["']/g, "").trim() : "";
+  const email = (m ? m[2] : t).replace(/["']/g, "").trim();
+  return { ...(name ? { name } : {}), email, valid: EMAIL_RE.test(email) };
+}
+
+function senderForBrevo() {
+  const { valid, ...sender } = parseSender(config.mail.from);
+  if (!valid) throw new Error(`mittente non valido in MAIL_FROM («${config.mail.from}»): scrivi per esempio AiuolaLab <la-tua-email@dominio.it>, senza virgolette`);
+  return sender;
 }
 
 async function sendViaBrevo(to, subject, content, fetchImpl = fetch) {
   const r = await fetchImpl("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
     headers: { "api-key": config.mail.brevoApiKey, "content-type": "application/json", accept: "application/json" },
-    body: JSON.stringify({ sender: parseSender(config.mail.from), to: [{ email: to }], subject, htmlContent: content.html, textContent: content.text }),
+    body: JSON.stringify({ sender: senderForBrevo(), to: [{ email: to }], subject, htmlContent: content.html, textContent: content.text }),
     signal: AbortSignal.timeout(15_000),
   });
   if (!r.ok) {

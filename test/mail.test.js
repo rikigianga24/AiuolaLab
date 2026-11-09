@@ -9,9 +9,14 @@ delete process.env.SMTP_HOST;
 const { mailEnabled, parseSender, sendMail } = await import("../server/notify.js");
 
 test("email: mittente letto da MAIL_FROM", () => {
-  assert.deepEqual(parseSender("AiuolaLab <ciao@esempio.it>"), { name: "AiuolaLab", email: "ciao@esempio.it" });
-  assert.deepEqual(parseSender('"Riccardo" <r@esempio.it>'), { name: "Riccardo", email: "r@esempio.it" });
-  assert.deepEqual(parseSender("solo@esempio.it"), { email: "solo@esempio.it" });
+  assert.deepEqual(parseSender("AiuolaLab <ciao@esempio.it>"), { name: "AiuolaLab", email: "ciao@esempio.it", valid: true });
+  assert.deepEqual(parseSender('"Riccardo" <r@esempio.it>'), { name: "Riccardo", email: "r@esempio.it", valid: true });
+  assert.deepEqual(parseSender("solo@esempio.it"), { email: "solo@esempio.it", valid: true });
+  // come scritto nel pannello di Render, con le virgolette dell'esempio
+  assert.deepEqual(parseSender('"AiuolaLab <ciao@esempio.it>"'), { name: "AiuolaLab", email: "ciao@esempio.it", valid: true });
+  assert.deepEqual(parseSender(" 'AiuolaLab' < ciao@esempio.it > "), { name: "AiuolaLab", email: "ciao@esempio.it", valid: true });
+  assert.equal(parseSender("AiuolaLab").valid, false);
+  assert.equal(parseSender("").valid, false);
 });
 
 test("email: invio tramite l'API di Brevo (HTTPS, non bloccata da Render)", async () => {
