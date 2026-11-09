@@ -1,3 +1,4 @@
+import Konva from "konva";
 import { useEffect, useImperativeHandle, useRef, useState } from "react";
 import { Circle, Group, Image as KImage, Label, Layer, Line, Rect, Shape, Stage, Tag, Text } from "react-konva";
 import { bbox, dist, formatM, pointInPolygon, snap } from "../../lib/geometry";
@@ -11,7 +12,11 @@ import { sizeAt } from "../../lib/growth";
 export const PX_PER_M = 60;
 const MIN_ZOOM = 0.15;
 const MAX_ZOOM = 6;
-const CLOSE_RADIUS_PX = 16;
+// Schermi touch: il dito è meno preciso del mouse.
+const COARSE = typeof window !== "undefined" && window.matchMedia?.("(pointer: coarse)").matches;
+const CLOSE_RADIUS_PX = COARSE ? 30 : 16;
+// Un dito che trema di pochi pixel è un tocco, non un trascinamento.
+Konva.dragDistance = COARSE ? 8 : 3;
 
 const COLORS = {
   gridMinor: "rgba(255, 255, 255, 0.10)",
@@ -150,7 +155,10 @@ export default function GardenStage({
 }) {
   const stageRef = useRef(null);
   const layerRef = useRef(null);
-  const pinch = useRef(null);
+  // gesto a due dita in corso (o appena finito): i tocchi vanno ignorati
+  const gesture = useRef({ active: false, blockUntil: 0 });
+  const lastTap = useRef({ t: 0, x: 0, y: 0 });
+  const [panLocked, setPanLocked] = useState(false);
   const [view, setView] = useState({ x: 40, y: 40, zoom: 1 });
   const [hover, setHover] = useState(null);
   const scale = view.zoom * PX_PER_M;
@@ -202,7 +210,13 @@ export default function GardenStage({
   const bedAt = (p) => [...ordered].reverse().find((b) => pointInPolygon(p, b.points));
 
   const handleTap = (e) => {
-    if (pinch.current) return;
+    const now = performance.now();
+    if (gesture.current.active || now < gesture.current.blockUntil) return;
+    // sul telefono lo stesso tocco arriva sia come "tap" sia come "click":
+    // lo si conta una volta sola
+    const sp = stageRef.current?.getPointerPosition();
+    if (sp && now - lastTap.current.t < 450 && Math.hypot(sp.x - lastTap.current.x, sp.y - lastTap.current.y) < 14) return;
+    if (sp) lastTap.current = { t: now, x: sp.x, y: sp.y };
     const p = pointer();
     if (!p) return;
     if (mode === "draw") {
@@ -249,42 +263,85 @@ export default function GardenStage({
     zoomAt(factor, p);
   };
 
-  const handleTouchMove = (e) => {
-    const touches = e.evt.touches;
-    if (touches.length !== 2) {
-      if (!pinch.current) setHover(pointer());
-      return;
-    }
-    e.evt.preventDefault();
+  // Zoom e spostamento con due dita, seguendo ogni dito con i pointer
+  // events del browser (Konva da solo li leggerebbe come trascinamento).
+  const viewRef = useRef(view);
+  useEffect(() => {
+    viewRef.current = view;
+  }, [view]);
+  useEffect(() => {
     const stage = stageRef.current;
-    if (stage.isDragging()) stage.stopDrag();
-    const rect = stage.container().getBoundingClientRect();
-    const a = { x: touches[0].clientX - rect.left, y: touches[0].clientY - rect.top };
-    const b = { x: touches[1].clientX - rect.left, y: touches[1].clientY - rect.top };
-    const center = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
-    const d = dist(a, b);
-    const last = pinch.current;
-    pinch.current = { center, d };
-    if (!last) return;
-    setView((v) => {
-      const zoom = clampZoom(v.zoom * (d / last.d));
-      const s0 = v.zoom * PX_PER_M, s1 = zoom * PX_PER_M;
-      const wx = (last.center.x - v.x) / s0, wy = (last.center.y - v.y) / s0;
-      return { zoom, x: center.x - wx * s1, y: center.y - wy * s1 };
-    });
-  };
-
-  const handleTouchEnd = (e) => {
-    if (e.evt.touches.length < 2 && pinch.current) {
-      // Piccolo ritardo: evita che il rilascio del pinch venga letto come tap.
-      setTimeout(() => (pinch.current = null), 50);
-    }
-  };
+    if (!stage) return;
+    const el = stage.container();
+    const fingers = new Map();
+    let pinchStart = null;
+    const rel = (e) => {
+      const r = el.getBoundingClientRect();
+      return { x: e.clientX - r.left, y: e.clientY - r.top };
+    };
+    const two = () => {
+      const [a, b] = [...fingers.values()];
+      return { d: Math.max(1, Math.hypot(a.x - b.x, a.y - b.y)), c: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 } };
+    };
+    const onDown = (e) => {
+      if (e.pointerType !== "touch") return;
+      fingers.set(e.pointerId, rel(e));
+      if (fingers.size === 2) {
+        // ferma qualsiasi trascinamento iniziato dal primo dito
+        if (stage.isDragging()) stage.stopDrag();
+        stage.find((n) => n.isDragging?.()).forEach((n) => n.stopDrag());
+        const { d, c } = two();
+        pinchStart = { d, c, view: viewRef.current };
+        gesture.current.active = true;
+        setPanLocked(true);
+        setHover(null);
+      }
+    };
+    const onMove = (e) => {
+      if (!fingers.has(e.pointerId)) return;
+      fingers.set(e.pointerId, rel(e));
+      if (!pinchStart || fingers.size < 2) return;
+      e.preventDefault();
+      const { d, c } = two();
+      const v0 = pinchStart.view;
+      const zoom = clampZoom(v0.zoom * (d / pinchStart.d));
+      const s0 = v0.zoom * PX_PER_M, s1 = zoom * PX_PER_M;
+      // il punto del disegno sotto le dita resta sotto le dita
+      const wx = (pinchStart.c.x - v0.x) / s0, wy = (pinchStart.c.y - v0.y) / s0;
+      setView({ zoom, x: c.x - wx * s1, y: c.y - wy * s1 });
+    };
+    const onUp = (e) => {
+      if (!fingers.has(e.pointerId)) return;
+      fingers.delete(e.pointerId);
+      if (pinchStart && fingers.size < 2) {
+        pinchStart = null;
+        gesture.current.blockUntil = performance.now() + 350;
+      }
+      if (fingers.size === 0 && gesture.current.active) {
+        gesture.current.active = false;
+        setPanLocked(false);
+      }
+    };
+    // Safari su iPhone: niente zoom della pagina dentro il disegno
+    const noGesture = (e) => e.preventDefault();
+    el.addEventListener("pointerdown", onDown, true);
+    window.addEventListener("pointermove", onMove, { capture: true, passive: false });
+    window.addEventListener("pointerup", onUp, true);
+    window.addEventListener("pointercancel", onUp, true);
+    el.addEventListener("gesturestart", noGesture);
+    return () => {
+      el.removeEventListener("pointerdown", onDown, true);
+      window.removeEventListener("pointermove", onMove, { capture: true });
+      window.removeEventListener("pointerup", onUp, true);
+      window.removeEventListener("pointercancel", onUp, true);
+      el.removeEventListener("gesturestart", noGesture);
+    };
+  }, []);
 
   const draftTail = draft.at(-1);
   const hoverSnapped = hover && { x: snap(hover.x, snapStep), y: snap(hover.y, snapStep) };
   const closing = mode === "draw" && hover && draft.length >= 3 && dist(hover, draft[0]) * scale < CLOSE_RADIUS_PX;
-  const handleR = 7 / scale;
+  const handleR = (COARSE ? 11 : 7) / scale;
 
   const bar = scaleBar(scale);
 
@@ -298,16 +355,14 @@ export default function GardenStage({
       y={view.y}
       scaleX={scale}
       scaleY={scale}
-      draggable
+      draggable={!panLocked}
       onDragMove={(e) => e.target === stageRef.current && setView((v) => ({ ...v, x: e.target.x(), y: e.target.y() }))}
       onDragEnd={(e) => e.target === stageRef.current && setView((v) => ({ ...v, x: e.target.x(), y: e.target.y() }))}
       onClick={(e) => e.evt.button === 0 && handleTap(e)}
       onTap={handleTap}
       onWheel={handleWheel}
-      onMouseMove={() => setHover(pointer())}
+      onPointerMove={() => !gesture.current.active && setHover(pointer())}
       onMouseLeave={() => setHover(null)}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
       style={{ cursor: mode === "select" ? "grab" : "crosshair" }}
     >
       <Layer ref={layerRef}>
@@ -632,7 +687,7 @@ export default function GardenStage({
                 key={i}
                 x={p.x}
                 y={p.y}
-                radius={(i === 0 && draft.length >= 3 ? 9 : 6) / scale}
+                radius={(i === 0 && draft.length >= 3 ? (COARSE ? 13 : 9) : 6) / scale}
                 fill={i === 0 && closing ? COLORS.edgeSelected : "#3b4a32"}
                 stroke="#fff"
                 strokeWidth={2}
