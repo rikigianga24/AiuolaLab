@@ -7,7 +7,8 @@ App web per progettare aiuole, balconi e orti, che si usa sia dal browser sia da
   - **giardino**;
   - **balcone/terrazzo**: pavimento in cotto, gres, legno o cemento; parapetto a ringhiera, muretto o vetro; piante nei vasi;
   - **orto**: aiuole riempite a file con le distanze giuste per ogni ortaggio.
-- **Database piante**: cerchi le piante per nome, esposizione, acqua, pH del terreno, colore e periodo di fioritura. I dati vengono da [Perenual](https://perenual.com/docs/api), un database pubblico di circa 10.000 specie.
+- **Catalogo piante**: quasi 1.000 schede in italiano (rose inglesi e antiche, perenni da cottage garden, annuali, bulbose, arbusti, rampicanti, graminacee, aromatiche e fiori da balcone). Si cerca per nome, tipo, esposizione, acqua, pH del terreno, colore e periodo di fioritura. Le schede sono in `server/plants/catalog/`, una riga per pianta: per aggiungerne una basta una riga nel file giusto (il formato è spiegato in `catalog/index.js`). In alternativa si può usare [Perenual](https://perenual.com/docs/api), a pagamento per uso commerciale.
+- **Orto**: 47 ortaggi con calendario, distanze, consociazioni e circa 150 varietà italiane (San Marzano, Cuore di bue, Zolfino, Rossa di Tropea...).
 - **Orto**: calendario di 30 ortaggi (semenzaio, semina, trapianto, raccolta). Le **consociazioni** sbagliate compaiono come linea rossa sul disegno, e la **rotazione** delle colture viene seguita negli anni.
 - **Vasi**: vaso tondo o quadrato, fioriera, fioriera da ringhiera, vaso appeso; con misure, materiale e volume di terriccio.
 - **Consigli con l'IA**: indichi condizioni e gusti, Claude propone le piante, le quantità e la disposizione, e l'app le posiziona nell'aiuola. Funziona anche per vasi e orto.
@@ -90,7 +91,7 @@ Prima di pubblicare completa i dati del titolare in `src/lib/legal.js`: nome, in
 
 | Variabile | A cosa serve |
 |---|---|
-| `PERENUAL_API_KEY` | Database piante completo (chiave su perenual.com; per uso commerciale verifica il piano) |
+| `PLANT_PROVIDER` + `PERENUAL_API_KEY` | Facoltativo: `PLANT_PROVIDER=perenual` usa Perenual al posto del catalogo interno (uso commerciale solo con piano a pagamento) |
 | `ANTHROPIC_API_KEY` | Consulente IA (console.anthropic.com) |
 | `SUGGEST_RATE_LIMIT` | Richieste massime all'IA per IP ogni ora (default 20) |
 | `NOTIFY_HOUR` | Ora predefinita delle notifiche (default 8, fuso Europe/Rome) |
@@ -126,7 +127,7 @@ server/
   notify.js          email (SMTP) e notifiche push
   scheduler.js       promemoria del calendario e avvisi meteo
   routes/            auth, account (GDPR), progetti, piante, meteo, consulente IA
-  plants/            adattatore Perenual, normalizzazione dati, cache
+  plants/            catalogo interno (catalog/), adattatore Perenual, normalizzazione, cache
 src/
   components/garden/ editor: canvas, catalogo piante e ortaggi, vasi, irrigazione
   components/        calendario, account, pagine legali, banner cookie

@@ -30,6 +30,19 @@ export const SEASONS = {
   winter: "Inverno",
 };
 
+// Gruppi del catalogo interno (server/plants/catalog).
+export const GROUPS = {
+  rose: "Rose",
+  perenni: "Perenni erbacee",
+  annuali: "Annuali e biennali",
+  bulbose: "Bulbose",
+  arbusti: "Arbusti",
+  rampicanti: "Rampicanti",
+  graminacee: "Graminacee, felci e tappezzanti",
+  aromatiche: "Aromatiche",
+  balcone: "Fiori da balcone e vaso",
+};
+
 export const CYCLE = {
   perennial: "Perenne",
   annual: "Annuale",

@@ -151,8 +151,9 @@ export function matchesFilters(plant, f = {}) {
   const has = (list, wanted) => !wanted || list.length === 0 || list.includes(wanted);
   if (f.q) {
     const q = f.q.toLowerCase();
-    const hay = [plant.commonName, plant.scientificName, ...(plant.otherNames || [])].join(" ").toLowerCase();
-    if (!hay.includes(q)) return false;
+    const fold = (t) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const hay = fold([plant.commonName, plant.scientificName, ...(plant.otherNames || []), plant.description ?? ""].join(" "));
+    if (!fold(q).split(/\s+/).every((word) => hay.includes(word))) return false;
   }
   if (!has(plant.sunlight, f.sunlight)) return false;
   if (f.watering && plant.watering && plant.watering !== f.watering) return false;
@@ -162,5 +163,6 @@ export function matchesFilters(plant, f = {}) {
   if (!has(plant.floweringSeasons, f.season)) return false;
   if (f.cycle && plant.cycle && plant.cycle !== f.cycle) return false;
   if (f.maxHeightCm && plant.heightCm && plant.heightCm.min > f.maxHeightCm) return false;
+  if (f.group && plant.group && plant.group !== f.group) return false;
   return true;
 }

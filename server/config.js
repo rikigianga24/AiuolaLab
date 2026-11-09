@@ -11,9 +11,10 @@ export const config = {
   databaseUrl: env.DATABASE_URL || null,
   databaseSsl: env.DATABASE_SSL === "true",
 
-  // Fonte dati piante: "perenual" (DB pubblico) oppure "demo" (catalogo
-  // di esempio incluso, utile in sviluppo senza chiave API).
-  plantProvider: env.PLANT_PROVIDER || (env.PERENUAL_API_KEY ? "perenual" : "demo"),
+  // Fonte dati piante: "catalogo" (schede interne in server/plants/catalog,
+  // predefinito) oppure "perenual" (DB pubblico a pagamento per uso
+  // commerciale, serve anche PERENUAL_API_KEY).
+  plantProvider: env.PLANT_PROVIDER === "perenual" && env.PERENUAL_API_KEY ? "perenual" : "catalogo",
   perenual: {
     apiKey: env.PERENUAL_API_KEY || null,
     baseUrl: env.PERENUAL_API_BASE || "https://perenual.com/api/v2",

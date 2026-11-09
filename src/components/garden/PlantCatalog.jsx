@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useDebounced } from "../../hooks/useDebounced";
-import { getHealth, getPlant, searchPlants } from "../../lib/api";
-import { COLORS, CYCLE, SEASONS, SOIL_PH, SUNLIGHT, WATERING } from "../../lib/labels";
+import { getPlant, searchPlants } from "../../lib/api";
+import { COLORS, CYCLE, GROUPS, SEASONS, SOIL_PH, SUNLIGHT, WATERING } from "../../lib/labels";
 import { flowerHexes, getIconUrl, iconTypeFor } from "../../lib/plantIcons";
 import PlantFacts from "./PlantFacts";
 import { plantInfo } from "../../lib/plantInfo";
@@ -12,14 +12,14 @@ import { matchesLocal } from "../../lib/plantFilters";
 import FavButton from "../plants/FavButton";
 import PlantGallery from "../plants/PlantGallery";
 
-const EMPTY = { q: "", sunlight: "", watering: "", ph: "", color: "", season: "" };
+const EMPTY = { q: "", group: "", sunlight: "", watering: "", ph: "", color: "", season: "" };
 
-function Select({ label, value, onChange, options }) {
+function Select({ label, value, onChange, options, all = "Tutte" }) {
   return (
     <label className="mini-select">
       <span>{label}</span>
       <select value={value} onChange={(e) => onChange(e.target.value)}>
-        <option value="">Tutte</option>
+        <option value="">{all}</option>
         {Object.entries(options).map(([k, v]) => (
           <option key={k} value={k}>
             {typeof v === "string" ? v : v.label}
@@ -36,7 +36,6 @@ export default function PlantCatalog({ selectedBed, onPickPlant }) {
   const [state, setState] = useState({ key: null, items: [], error: null, lastPage: 1 });
   const [openId, setOpenId] = useState(null);
   const [details, setDetails] = useState({});
-  const [source, setSource] = useState(null);
   const q = useDebounced(filters.q);
   const { settings } = useSession();
   const favs = useFavorites();
@@ -46,10 +45,6 @@ export default function PlantCatalog({ selectedBed, onPickPlant }) {
   const [petSafe, setPetSafe] = useState(false);
   const myPets = settings.pets?.length ? settings.pets : ["dog", "cat"];
   const isSafe = (p) => !plantInfo(p).tox?.to.some((t) => myPets.includes(t));
-
-  useEffect(() => {
-    getHealth().then((h) => setSource(h.plantSource));
-  }, []);
 
   const query = { ...filters, q };
   const queryKey = JSON.stringify(query);
@@ -109,7 +104,7 @@ export default function PlantCatalog({ selectedBed, onPickPlant }) {
           <i className="fa-solid fa-magnifying-glass" />
           <input
             type="search"
-            placeholder="Cerca per nome (es. lavanda, salvia...)"
+            placeholder="Cerca per nome (es. lavanda, rosa Austin...)"
             value={filters.q}
             onChange={(e) => update("q", e.target.value)}
             aria-label="Cerca pianta"
@@ -137,6 +132,7 @@ export default function PlantCatalog({ selectedBed, onPickPlant }) {
           <i className="fa-solid fa-sliders" /> Filtri {activeFilters > 0 && <span className="badge">{activeFilters}</span>}
         </summary>
         <div className="filters-grid">
+          <Select label="Tipo" value={filters.group} onChange={(v) => update("group", v)} options={GROUPS} all="Tutti" />
           <Select label="Esposizione" value={filters.sunlight} onChange={(v) => update("sunlight", v)} options={SUNLIGHT} />
           <Select label="Acqua" value={filters.watering} onChange={(v) => update("watering", v)} options={WATERING} />
           <Select label="pH terreno" value={filters.ph} onChange={(v) => update("ph", v)} options={SOIL_PH} />
@@ -160,12 +156,6 @@ export default function PlantCatalog({ selectedBed, onPickPlant }) {
           )}
         </div>
       </details>
-
-      {source === "demo" && !showingFav && (
-        <p className="panel-note">
-          <i className="fa-solid fa-circle-info" /> Catalogo di esempio: configura <code>PERENUAL_API_KEY</code> sul server per usare il database completo.
-        </p>
-      )}
 
       {state.error && <p className="panel-error">{state.error}</p>}
 
