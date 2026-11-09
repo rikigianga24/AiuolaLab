@@ -83,6 +83,12 @@ Senza SMTP gli account funzionano lo stesso: l'email non viene confermata e il r
 
 Non serve nessuna chiave: MET Norway è gratuito anche per uso commerciale, con licenza CC BY 4.0 (la fonte è citata nell'app). I loro termini chiedono un contatto, quindi imposta `WEATHER_CONTACT=tua@email.it`.
 
+### Foto delle piante
+
+Arrivano da [iNaturalist](https://www.inaturalist.org): nessuna chiave da configurare. Vengono mostrate solo foto con licenza CC0, CC BY o CC BY-SA, sempre con l'autore, e solo a chi accetta i contenuti esterni.
+
+All'avvio il server cerca in sottofondo la foto principale di tutte le piante del catalogo e degli ortaggi, una richiesta al secondo come chiede iNaturalist. La prima volta servono circa 11 minuti. I link restano nel database per 60 giorni, il controllo si ripete ogni settimana e, se iNaturalist non risponde, il server riprova dopo un'ora. Per disattivarlo imposta `PHOTO_WARMUP=off`.
+
 ### 5. Pagine legali
 
 Prima di pubblicare completa i dati del titolare in `src/lib/legal.js`: nome, indirizzo, email, fornitori di hosting, database ed email. Rileggi informativa e cookie policy (`/privacy`, `/cookie`) e falle verificare da un professionista se l'app diventa un'attività commerciale.

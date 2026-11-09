@@ -55,3 +55,50 @@ test("preferite: filtri applicati in locale", () => {
   assert.equal(matchesLocal(p, { sunlight: "full_shade" }), false);
   assert.equal(matchesLocal(p, { color: "purple", season: "summer", ph: "alkaline" }), true);
 });
+
+test("foto: riempimento della cache in sottofondo", async () => {
+  const { warmPhotoCache, setRequestSpacing } = await import("../server/plants/photos.js");
+  setRequestSpacing(5);
+  const asked = [];
+  const okFetch = async (url) => {
+    asked.push(decodeURIComponent(url));
+    return { ok: true, json: async () => ({ results: [{ id: 1, name: "Salvia nemorosa", default_photo: { id: 5, url: "https://s.example/photos/5/square.jpg", license_code: "cc0" } }] }) };
+  };
+  const logs = [];
+  const stats = await warmPhotoCache(["Salvia nemorosa 'Caradonna'", "Salvia nemorosa", "Lavandula angustifolia"], { fetchImpl: okFetch, log: (m) => logs.push(m) });
+  // le varietà si riducono alla specie: due nomi distinti, due richieste
+  assert.equal(stats.total, 2);
+  assert.equal(stats.fetched, 2);
+  assert.equal(asked.length, 2);
+  // secondo giro: tutto già in cache, nessuna richiesta
+  const again = await warmPhotoCache(["Salvia nemorosa", "Lavandula angustifolia"], { fetchImpl: okFetch, log: () => {} });
+  assert.equal(again.cached, 2);
+  assert.equal(asked.length, 2);
+
+  // iNaturalist irraggiungibile: si ferma dopo 5 errori di fila
+  const failing = async () => {
+    throw new Error("rete bloccata");
+  };
+  const names = Array.from({ length: 12 }, (_, i) => `Genere${i} specie`);
+  const res = await warmPhotoCache(names, { fetchImpl: failing, log: () => {} });
+  assert.equal(res.errors, 5);
+  assert.equal(res.stoppedEarly, true);
+  setRequestSpacing(1000);
+});
+
+test("foto: le richieste degli utenti passano davanti al riempimento", async () => {
+  const { getPlantPhotos, setRequestSpacing } = await import("../server/plants/photos.js");
+  setRequestSpacing(20);
+  const order = [];
+  const fetchImpl = async (url) => {
+    order.push(decodeURIComponent(url).match(/q=([^&]+)/)[1]);
+    return { ok: true, json: async () => ({ results: [] }) };
+  };
+  const low = ["Aaa uno", "Bbb due", "Ccc tre"].map((n) => getPlantPhotos(n, { fetchImpl, priority: "low" }));
+  const high = getPlantPhotos("Zzz utente", { fetchImpl });
+  await Promise.all([...low, high]);
+  // quella dell'utente parte prima delle altre in attesa
+  assert.ok(order.indexOf("Zzz utente") <= 1, order.join(", "));
+  assert.ok(order.indexOf("Zzz utente") < order.indexOf("Bbb due"));
+  setRequestSpacing(1000);
+});

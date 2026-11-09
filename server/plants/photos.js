@@ -67,15 +67,41 @@ async function cacheSet(key, data) {
 }
 
 // ---- richieste a iNaturalist, in fila (chiedono al massimo ~1 al secondo) ----
+//
+// Due code: "high" per chi sta guardando la pagina, "low" per il
+// riempimento automatico in sottofondo. Le richieste degli utenti passano
+// sempre davanti.
 
-let queue = Promise.resolve();
-const SPACING_MS = 1000;
+let spacingMs = 1000;
+// solo per i test
+export const setRequestSpacing = (ms) => {
+  spacingMs = ms;
+};
+const queues = { high: [], low: [] };
+let pumping = false;
 const inflight = new Map();
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-function throttled(fn) {
-  const run = queue.then(fn);
-  queue = run.catch(() => {}).then(() => new Promise((r) => setTimeout(r, SPACING_MS)));
-  return run;
+function schedule(fn, priority = "high") {
+  return new Promise((resolve, reject) => {
+    queues[priority === "low" ? "low" : "high"].push({ fn, resolve, reject });
+    pump();
+  });
+}
+
+async function pump() {
+  if (pumping) return;
+  pumping = true;
+  while (queues.high.length || queues.low.length) {
+    const job = queues.high.shift() ?? queues.low.shift();
+    try {
+      job.resolve(await job.fn());
+    } catch (err) {
+      job.reject(err);
+    }
+    await sleep(spacingMs);
+  }
+  pumping = false;
 }
 
 async function inat(path, fetchImpl) {
@@ -132,7 +158,7 @@ function pickTaxon(results, name) {
  * full=false: solo la foto principale (per le schede in elenco, 1 richiesta).
  * full=true: galleria fino a 8 foto (2 richieste).
  */
-export async function getPlantPhotos(scientificName, { full = false, fetchImpl = fetch } = {}) {
+export async function getPlantPhotos(scientificName, { full = false, fetchImpl = fetch, priority = "high" } = {}) {
   const name = cleanScientificName(scientificName);
   if (!name) return { name, taxon: null, photos: [] };
   const key = `${full ? "full" : "main"}:${name.toLowerCase()}`;
@@ -141,7 +167,7 @@ export async function getPlantPhotos(scientificName, { full = false, fetchImpl =
   if (inflight.has(key)) return inflight.get(key);
 
   const job = (async () => {
-    const search = await throttled(() => inat(`/taxa?q=${encodeURIComponent(name)}&is_active=true&per_page=5&locale=it`, fetchImpl));
+    const search = await schedule(() => inat(`/taxa?q=${encodeURIComponent(name)}&is_active=true&per_page=5&locale=it`, fetchImpl), priority);
     const taxon = pickTaxon(search.results ?? [], name);
     let result = { name, taxon: null, photos: [], source: "iNaturalist" };
     if (taxon) {
@@ -149,7 +175,7 @@ export async function getPlantPhotos(scientificName, { full = false, fetchImpl =
       const main = toPhoto(taxon.default_photo);
       result.photos = main ? [main] : [];
       if (full) {
-        const detail = await throttled(() => inat(`/taxa/${taxon.id}?locale=it`, fetchImpl));
+        const detail = await schedule(() => inat(`/taxa/${taxon.id}?locale=it`, fetchImpl), priority);
         const t = detail.results?.[0];
         const photos = (t?.taxon_photos ?? []).map((tp) => toPhoto(tp.photo)).filter(Boolean);
         const seen = new Set();
@@ -162,4 +188,78 @@ export async function getPlantPhotos(scientificName, { full = false, fetchImpl =
 
   inflight.set(key, job);
   return job;
+}
+
+// ---- riempimento automatico della cache ----
+//
+// All'avvio (e poi ogni settimana) il server cerca in sottofondo la foto
+// principale di tutte le piante del catalogo e degli ortaggi, una al
+// secondo. Così nella pagina "Scopri le piante" le foto compaiono subito.
+// Le piante già in cache vengono saltate senza fare richieste.
+
+const WEEK = 7 * 24 * 60 * 60 * 1000;
+let warming = false;
+
+export async function warmPhotoCache(scientificNames, { fetchImpl = fetch, log = console.log } = {}) {
+  if (warming) return null;
+  warming = true;
+  const names = [...new Set(scientificNames.map(cleanScientificName).filter(Boolean))];
+  const stats = { total: names.length, cached: 0, fetched: 0, withPhoto: 0, errors: 0 };
+  let consecutiveErrors = 0;
+  try {
+    log(`[photos] Riempimento cache foto: ${names.length} nomi`);
+    for (const name of names) {
+      if (await cacheGet(`main:${name.toLowerCase()}`)) {
+        stats.cached++;
+        continue;
+      }
+      try {
+        const res = await getPlantPhotos(name, { fetchImpl, priority: "low" });
+        stats.fetched++;
+        if (res.photos.length) stats.withPhoto++;
+        consecutiveErrors = 0;
+      } catch (err) {
+        stats.errors++;
+        consecutiveErrors++;
+        // iNaturalist non raggiungibile: si riprova al prossimo giro
+        if (consecutiveErrors >= 5) {
+          log(`[photos] iNaturalist non risponde (${err.message}): riprovo tra un'ora`);
+          stats.stoppedEarly = true;
+          break;
+        }
+      }
+      if ((stats.fetched + stats.errors) % 100 === 0) log(`[photos] ...${stats.fetched} piante cercate, ${stats.withPhoto} con foto`);
+    }
+    log(`[photos] Cache foto: ${stats.cached} già pronte, ${stats.fetched} cercate (${stats.withPhoto} con foto), ${stats.errors} errori`);
+    return stats;
+  } finally {
+    warming = false;
+  }
+}
+
+const HOUR = 60 * 60 * 1000;
+
+export function startPhotoWarmup(getNames, { delayMs = 30_000 } = {}) {
+  let retry = null;
+  const run = async () => {
+    try {
+      const stats = await warmPhotoCache(getNames());
+      // iNaturalist non raggiungibile: nuovo tentativo tra un'ora
+      if (stats?.stoppedEarly) {
+        retry = setTimeout(run, HOUR);
+        retry.unref?.();
+      }
+    } catch (err) {
+      console.warn("[photos] riempimento fallito:", err.message);
+    }
+  };
+  const first = setTimeout(run, delayMs);
+  const weekly = setInterval(run, WEEK);
+  first.unref?.();
+  weekly.unref?.();
+  return () => {
+    clearTimeout(first);
+    clearTimeout(retry);
+    clearInterval(weekly);
+  };
 }
