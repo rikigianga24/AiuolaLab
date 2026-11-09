@@ -6,6 +6,7 @@ import { POT_TYPES, isFloor, isPot } from "../../lib/containers";
 import { cityTexture, lawnTexture } from "../../lib/textures";
 import { BedBase, HangingChains, PotGhost } from "./BedShapes";
 import { companionReport } from "../../lib/crops";
+import { sizeAt } from "../../lib/growth";
 
 export const PX_PER_M = 60;
 const MIN_ZOOM = 0.15;
@@ -141,6 +142,11 @@ export default function GardenStage({
   faucet,
   onPlaceFaucet,
   onFaucetMove,
+  viewer,
+  onPlaceViewer,
+  onViewerMove,
+  growthYear = null,
+  growthMarks = null,
 }) {
   const stageRef = useRef(null);
   const layerRef = useRef(null);
@@ -213,6 +219,10 @@ export default function GardenStage({
     }
     if (mode === "faucet") {
       onPlaceFaucet({ x: snap(p.x, snapStep), y: snap(p.y, snapStep) });
+      return;
+    }
+    if (mode === "viewer") {
+      onPlaceViewer?.({ x: snap(p.x, snapStep), y: snap(p.y, snapStep) });
       return;
     }
     if (mode === "place") {
@@ -345,8 +355,12 @@ export default function GardenStage({
               )}
               {(bed.plants || []).map((pl) => {
                 const isSel = selection?.plantId === pl.id;
-                const r = pl.spreadM / 2;
-                const size = pl.spreadM / ICON_FILL;
+                // previsione: misura della pianta nell'anno scelto
+                const grown = growthYear != null ? sizeAt(pl, growthYear) : null;
+                const spreadNow = grown ? grown.spread : pl.spreadM;
+                const r = spreadNow / 2;
+                const size = spreadNow / ICON_FILL;
+                const mark = growthMarks?.[pl.id];
                 const icon = iconForPlaced(pl);
                 return (
                   <Group
@@ -373,9 +387,20 @@ export default function GardenStage({
                       offsetX={size / 2}
                       offsetY={size / 2}
                       rotation={rotationFor(pl.id)}
+                      opacity={grown && !grown.alive ? 0.35 : 1}
                       listening={false}
                       perfectDrawEnabled={false}
                     />
+                    {growthYear != null && (mark || (grown && !grown.alive)) && (
+                      <Circle
+                        radius={r * 1.02}
+                        stroke={grown && !grown.alive ? "#6b6b6b" : mark === "dominant" ? "#e0a526" : "#d6453a"}
+                        strokeWidth={3}
+                        dash={mark === "dominant" ? undefined : [8, 5]}
+                        strokeScaleEnabled={false}
+                        listening={false}
+                      />
+                    )}
                     {/* area di tocco */}
                     <Circle radius={Math.max(r, 14 / scale)} fill="rgba(0,0,0,0.001)" />
                     {isSel && (
@@ -517,6 +542,41 @@ export default function GardenStage({
               <Label y={16} listening={false}>
                 <Tag fill="rgba(255,255,255,0.9)" cornerRadius={4} pointerDirection="up" pointerWidth={8} pointerHeight={4} />
                 <Text text="Rubinetto" fontSize={11} fontStyle="600" fill={COLORS.label} padding={3} />
+              </Label>
+            </Group>
+          </Group>
+        )}
+
+        {viewer && (
+          <Group
+            x={viewer.x}
+            y={viewer.y}
+            draggable={mode === "select"}
+            onDragEnd={(e) => {
+              e.cancelBubble = true;
+              onViewerMove?.({ x: snap(e.target.x(), snapStep), y: snap(e.target.y(), snapStep) });
+            }}
+            onDragMove={(e) => (e.cancelBubble = true)}
+          >
+            <Group scaleX={1 / scale} scaleY={1 / scale}>
+              <Circle radius={15} fill="#c0643b" stroke="#fff" strokeWidth={3} shadowColor="black" shadowOpacity={0.4} shadowBlur={4} />
+              {/* occhio stilizzato */}
+              <Shape
+                sceneFunc={(c, shape) => {
+                  c.beginPath();
+                  c.moveTo(-9, 0);
+                  c.quadraticCurveTo(0, -9, 9, 0);
+                  c.quadraticCurveTo(0, 9, -9, 0);
+                  c.closePath();
+                  c.fillStrokeShape(shape);
+                }}
+                fill="#fffaf0"
+              />
+              <Circle radius={3.6} fill="#3a3226" />
+              <Circle x={-1.2} y={-1.2} radius={1.1} fill="#fffaf0" />
+              <Label y={18} listening={false}>
+                <Tag fill="rgba(255,255,255,0.92)" cornerRadius={4} pointerDirection="up" pointerWidth={8} pointerHeight={4} />
+                <Text text="Da qui guardi" fontSize={11} fontStyle="600" fill={COLORS.label} padding={3} />
               </Label>
             </Group>
           </Group>

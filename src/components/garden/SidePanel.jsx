@@ -5,12 +5,14 @@ import PlantCatalog from "./PlantCatalog";
 import ProjectPanel from "./ProjectPanel";
 import { ENVIRONMENTS } from "../../lib/projects";
 import CropCatalog from "./CropCatalog";
+import ForecastPanel from "./ForecastPanel";
 
 const TABS = [
   { id: "piante", label: "Piante", icon: "fa-seedling" },
   { id: "aiuola", label: "Aiuola", icon: "fa-draw-polygon" },
   { id: "ia", label: "Consigli IA", icon: "fa-wand-magic-sparkles" },
   { id: "irrigazione", label: "Irrigazione", icon: "fa-faucet-drip" },
+  { id: "crescita", label: "Crescita", icon: "fa-chart-line" },
   { id: "progetto", label: "Progetto", icon: "fa-folder-open" },
 ];
 
@@ -72,6 +74,19 @@ export default function SidePanel({ isMobile, open, onOpenChange, tab, onTabChan
           ) : (
             <PlantCatalog selectedBed={props.selectedBed} onPickPlant={props.onPickPlant} />
           ))}
+        {tab === "crescita" && (
+          <ForecastPanel
+            project={props.project}
+            bed={props.selectedBed && props.selectedBed.kind !== "floor" ? props.selectedBed : null}
+            analysis={props.forecast}
+            year={props.forecastYear}
+            onYear={props.onForecastYear}
+            onSelectBed={props.onSelectForecastBed}
+            onStartViewer={props.onStartViewer}
+            onOpenOrientation={props.onOpenOrientation}
+            onPickPlant={props.onPickPlant}
+          />
+        )}
         {tab === "aiuola" && (
           <BedInspector
             project={props.project}

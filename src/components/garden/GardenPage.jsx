@@ -19,6 +19,8 @@ import ConfirmDialog from "../ConfirmDialog";
 import GardenStage from "./GardenStage";
 import SidePanel from "./SidePanel";
 import Tour from "./Tour";
+import { Compass, OrientationDialog } from "./Orientation";
+import { analyzeBed } from "../../lib/forecast";
 import StylePicker from "../StylePicker";
 import { tourDone } from "../../lib/tour";
 import { useConsent } from "../../lib/consent";
@@ -31,6 +33,7 @@ const HINTS_MOBILE = {
   place: "Tocca dentro un'aiuola per piantare",
   faucet: "Tocca dove si trova il rubinetto",
   pot: "Tocca dove mettere il vaso",
+  viewer: "Tocca il punto da cui guardi l'aiuola",
 };
 
 const HINTS = {
@@ -39,6 +42,7 @@ const HINTS = {
   place: "Tocca dentro un'aiuola per piantare · «Fine» per smettere",
   faucet: "Tocca il punto del disegno dove si trova il rubinetto",
   pot: "Tocca il punto dove mettere il vaso (sul terrazzo o in giardino)",
+  viewer: "Tocca il punto da cui guardi di solito l'aiuola: la finestra, la terrazza, il vialetto...",
 };
 
 function isSelfIntersecting(points) {
@@ -93,7 +97,7 @@ export default function GardenPage() {
 
   // Salvataggio automatico del progetto aperto nel browser e, con l'account,
   // anche sul server.
-  const { user } = useSession();
+  const { user, settings } = useSession();
   const { patchAll } = history;
   useEffect(() => {
     const t = setTimeout(() => saveCurrent(project), 400);
@@ -121,6 +125,23 @@ export default function GardenPage() {
     notify("Rubinetto posizionato: impianto calcolato.", "success");
   };
 
+  // ---- previsione di crescita ----
+  const [forecastYear, setForecastYear] = useState(3);
+  const [orientOpen, setOrientOpen] = useState(false);
+  const placeViewer = (p) => {
+    setProject((pr) => ({ ...pr, viewer: p }));
+    setMode("select");
+    setTab("crescita");
+    if (isMobile) setSheetOpen(true);
+    notify("Punto di vista segnato: puoi trascinarlo quando vuoi.", "success");
+  };
+  const startViewer = () => {
+    setMode("viewer");
+    setDraft([]);
+    setPlacing(null);
+    if (isMobile) setSheetOpen(false);
+  };
+
   const startFaucet = () => {
     setMode("faucet");
     setDraft([]);
@@ -133,6 +154,19 @@ export default function GardenPage() {
     () => project.beds.find((b) => b.id === selection?.bedId) ?? null,
     [project.beds, selection],
   );
+
+  const forecast = useMemo(
+    () => (tab === "crescita" && selectedBed && !isFloor(selectedBed) ? analyzeBed(selectedBed, { viewer: project.viewer ?? null, northDeg: project.northDeg ?? null, climate: settings.climate }) : null),
+    [tab, selectedBed, project.viewer, project.northDeg, settings.climate],
+  );
+  const growthMarks = useMemo(() => {
+    const y = forecast?.ok && forecastYear > 0 ? forecast.years[forecastYear] : null;
+    if (!y) return null;
+    const marks = {};
+    for (const p of y.dominant) marks[p.id] = "dominant";
+    for (const p of y.atRisk) marks[p.id] = "risk";
+    return marks;
+  }, [forecast, forecastYear]);
 
   const updateBeds = useCallback(
     (fn, opts) => setProject((p) => ({ ...p, beds: fn(p.beds), updatedAt: new Date().toISOString() }), opts),
@@ -362,7 +396,8 @@ export default function GardenPage() {
 
   const handleSelect = (sel) => {
     setSelection(sel);
-    if (sel?.bedId) setTab("aiuola");
+    // nella scheda Crescita si resta lì: toccare un'aiuola la analizza
+    if (sel?.bedId && tab !== "crescita") setTab("aiuola");
   };
 
   const deleteBed = useCallback(
@@ -523,6 +558,11 @@ export default function GardenPage() {
             placingPot={placingPot}
             onPlacePot={placePot}
             onFaucetMove={(p) => setProject((pr) => ({ ...pr, faucet: p }))}
+            viewer={project.viewer}
+            onPlaceViewer={placeViewer}
+            onViewerMove={(p) => setProject((pr) => ({ ...pr, viewer: p }))}
+            growthYear={tab === "crescita" ? forecastYear : null}
+            growthMarks={growthMarks}
             onDraftPoint={addDraftPoint}
             onDraftClose={closeDraft}
             onSelect={handleSelect}
@@ -549,6 +589,15 @@ export default function GardenPage() {
             <>
               <span className="tool-chip">
                 <i className="fa-solid fa-bucket" /> {POT_TYPES[placingPot]?.label}
+              </span>
+              <button className="tool-btn" onClick={stopMode}>
+                <i className="fa-solid fa-xmark" /> <span>Annulla</span>
+              </button>
+            </>
+          ) : mode === "viewer" ? (
+            <>
+              <span className="tool-chip">
+                <i className="fa-solid fa-eye" /> Da dove guardi l'aiuola?
               </span>
               <button className="tool-btn" onClick={stopMode}>
                 <i className="fa-solid fa-xmark" /> <span>Annulla</span>
@@ -675,6 +724,12 @@ export default function GardenPage() {
           )}
         </div>
 
+        {(project.northDeg != null || tab === "crescita") && (
+          <div className="compass-wrap">
+            <Compass northDeg={project.northDeg ?? null} onClick={() => setOrientOpen(true)} size={isMobile ? 52 : 64} />
+          </div>
+        )}
+
         {!(isMobile && sheetOpen) && <div className="garden-hint">{(isMobile ? HINTS_MOBILE : HINTS)[mode]}</div>}
 
         {toast && (
@@ -725,7 +780,17 @@ export default function GardenPage() {
         onNewProject={newProject}
         onRenameProject={renameProject}
         notify={notify}
+        forecast={forecast}
+        forecastYear={forecastYear}
+        onForecastYear={setForecastYear}
+        onStartViewer={startViewer}
+        onOpenOrientation={() => setOrientOpen(true)}
+        onSelectForecastBed={(bedId) => setSelection({ bedId, plantId: null })}
       />
+
+      {orientOpen && (
+        <OrientationDialog northDeg={project.northDeg ?? null} onSave={(deg) => setProject((pr) => ({ ...pr, northDeg: deg }))} onClose={() => setOrientOpen(false)} />
+      )}
 
       {/* la guida parte dopo la scelta sui cookie, per non sovrapporsi al banner */}
       <Tour open={tourOpen && Boolean(consent)} onClose={() => setTourOpen(false)} />
