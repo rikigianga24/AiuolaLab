@@ -1,20 +1,25 @@
-// Invio di email (SMTP) e notifiche push (Web Push).
+// Invio di email (API di Brevo o SMTP) e notifiche push (Web Push).
 import nodemailer from "nodemailer";
 import webpush from "web-push";
 import { config } from "./config.js";
 import { query } from "./db.js";
 
 let transport = null;
-if (config.mail.enabled) {
+if (config.mail.brevoApiKey) {
+  console.log("[mail] Email attive tramite l'API di Brevo");
+} else if (config.mail.enabled) {
   transport = nodemailer.createTransport({
     host: config.mail.host,
     port: config.mail.port,
     secure: config.mail.secure,
     auth: config.mail.user ? { user: config.mail.user, pass: config.mail.pass } : undefined,
+    // se la porta è bloccata (es. Render gratuito) meglio un errore rapido
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
   });
   console.log(`[mail] SMTP attivo (${config.mail.host})`);
 } else {
-  console.log("[mail] SMTP non configurato: email disattivate.");
+  console.log("[mail] Email non configurate: imposta BREVO_API_KEY (consigliato) oppure SMTP_HOST.");
 }
 
 if (config.push.enabled) {
@@ -22,7 +27,7 @@ if (config.push.enabled) {
   console.log("[push] Notifiche push attive.");
 }
 
-export const mailEnabled = () => Boolean(transport);
+export const mailEnabled = () => Boolean(config.mail.brevoApiKey || transport);
 export const pushEnabled = () => config.push.enabled;
 
 const escape = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -60,10 +65,35 @@ export function emailLayout({ title, intro, sections = [], cta, footer }) {
   return { html, text };
 }
 
-export async function sendMail(to, subject, content) {
-  if (!transport) return false;
-  await transport.sendMail({ from: config.mail.from, to, subject, html: content.html, text: content.text });
-  return true;
+// "AiuolaLab <noreply@sito.it>" -> { name: "AiuolaLab", email: "noreply@sito.it" }
+export function parseSender(from) {
+  const m = String(from).match(/^\s*"?([^"<]*?)"?\s*<([^>]+)>\s*$/);
+  return m ? { ...(m[1] ? { name: m[1] } : {}), email: m[2].trim() } : { email: String(from).trim() };
+}
+
+async function sendViaBrevo(to, subject, content, fetchImpl = fetch) {
+  const r = await fetchImpl("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: { "api-key": config.mail.brevoApiKey, "content-type": "application/json", accept: "application/json" },
+    body: JSON.stringify({ sender: parseSender(config.mail.from), to: [{ email: to }], subject, htmlContent: content.html, textContent: content.text }),
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (!r.ok) {
+    const detail = await r.text().catch(() => "");
+    throw new Error(`Brevo ${r.status}: ${detail.slice(0, 200)}`);
+  }
+}
+
+export async function sendMail(to, subject, content, { fetchImpl } = {}) {
+  try {
+    if (config.mail.brevoApiKey) await sendViaBrevo(to, subject, content, fetchImpl);
+    else if (transport) await transport.sendMail({ from: config.mail.from, to, subject, html: content.html, text: content.text });
+    else return false;
+    return true;
+  } catch (err) {
+    console.warn(`[mail] invio a ${to.replace(/^(.).*@/, "$1***@")} non riuscito: ${err.message}`);
+    throw err;
+  }
 }
 
 // Invia una notifica a tutti i dispositivi dell'utente; rimuove quelli scaduti.

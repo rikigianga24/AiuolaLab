@@ -29,12 +29,16 @@ export const config = {
   suggestRateLimitPerHour: Number(env.SUGGEST_RATE_LIMIT) || 20,
 
   // Indirizzo pubblico dell'app (link nelle email, controllo di origine).
-  appUrl: (env.APP_URL || "http://localhost:5173").replace(/\/$/, ""),
+  // su Render RENDER_EXTERNAL_URL è impostato in automatico
+  appUrl: (env.APP_URL || env.RENDER_EXTERNAL_URL || "http://localhost:5173").replace(/\/$/, ""),
 
   // Email (SMTP: Brevo, Mailjet, Gmail, Aruba...). Senza SMTP_HOST le email
   // sono disattivate e la registrazione non richiede la conferma.
+  // BREVO_API_KEY: invio tramite l'API di Brevo (HTTPS). Serve dove le
+  // porte SMTP sono bloccate, come sul piano gratuito di Render.
   mail: {
-    enabled: Boolean(env.SMTP_HOST),
+    enabled: Boolean(env.BREVO_API_KEY || env.SMTP_HOST),
+    brevoApiKey: env.BREVO_API_KEY || null,
     host: env.SMTP_HOST,
     port: Number(env.SMTP_PORT) || 587,
     secure: env.SMTP_SECURE === "true",
