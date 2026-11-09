@@ -15,6 +15,8 @@ test("email: mittente letto da MAIL_FROM", () => {
   // come scritto nel pannello di Render, con le virgolette dell'esempio
   assert.deepEqual(parseSender('"AiuolaLab <ciao@esempio.it>"'), { name: "AiuolaLab", email: "ciao@esempio.it", valid: true });
   assert.deepEqual(parseSender(" 'AiuolaLab' < ciao@esempio.it > "), { name: "AiuolaLab", email: "ciao@esempio.it", valid: true });
+  // anche senza le parentesi angolari
+  assert.deepEqual(parseSender("AiuolaLab noreply@aiuolalab.it"), { name: "AiuolaLab", email: "noreply@aiuolalab.it", valid: true });
   assert.equal(parseSender("AiuolaLab").valid, false);
   assert.equal(parseSender("").valid, false);
 });

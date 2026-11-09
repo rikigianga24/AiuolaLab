@@ -71,7 +71,8 @@ const EMAIL_RE = /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/;
 export function parseSender(from) {
   let t = String(from ?? "").trim();
   while (/^["'].*["']$/.test(t)) t = t.slice(1, -1).trim();
-  const m = t.match(/^(.*?)<\s*([^>]+?)\s*>\s*$/);
+  // "Nome <email>" oppure anche "Nome email" (senza parentesi)
+  const m = t.match(/^(.*?)<\s*([^>]+?)\s*>\s*$/) ?? t.match(/^(.*\S)\s+(\S+@\S+)$/);
   const name = m ? m[1].replace(/["']/g, "").trim() : "";
   const email = (m ? m[2] : t).replace(/["']/g, "").trim();
   return { ...(name ? { name } : {}), email, valid: EMAIL_RE.test(email) };
