@@ -8,7 +8,7 @@ import CropCatalog from "./CropCatalog";
 
 const TABS = [
   { id: "piante", label: "Piante", icon: "fa-seedling" },
-  { id: "aiuola", label: "Aiuola", icon: "fa-vector-square" },
+  { id: "aiuola", label: "Aiuola", icon: "fa-draw-polygon" },
   { id: "ia", label: "Consigli IA", icon: "fa-wand-magic-sparkles" },
   { id: "irrigazione", label: "Irrigazione", icon: "fa-faucet-drip" },
   { id: "progetto", label: "Progetto", icon: "fa-folder-open" },

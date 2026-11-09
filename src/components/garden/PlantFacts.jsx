@@ -1,10 +1,11 @@
 import PlantSafety from "./PlantSafety";
-import { COLORS, CYCLE, GROUPS, SEASONS, SOIL_PH, SOIL_TEXTURE, SUNLIGHT, WATERING, formatRangeCm } from "../../lib/labels";
+import { COLORS, CYCLE, GROUPS, SEASONS, SOIL_PH, SOIL_TEXTURE, SUNLIGHT, WATERING, formatRangeCm, hardinessInfo } from "../../lib/labels";
 
 const list = (values, dict) =>
   values?.length ? values.map((v) => (typeof dict[v] === "string" ? dict[v] : dict[v]?.label ?? v)).join(", ") : "n.d.";
 
 export default function PlantFacts({ plant }) {
+  const cold = hardinessInfo(plant.hardiness);
   return (
     <dl className="plant-facts">
       {plant.description && <dd className="facts-wide facts-note-text">{plant.description}</dd>}
@@ -49,12 +50,14 @@ export default function PlantFacts({ plant }) {
           </dd>
         </>
       )}
-      {plant.hardiness?.min != null && (
+      {cold && (
         <>
-          <dt>Rusticità</dt>
+          <dt>Freddo</dt>
           <dd>
-            zone USDA {plant.hardiness.min}
-            {plant.hardiness.max ? `–${plant.hardiness.max}` : ""}
+            <span className={`cold-badge cold-${cold.level.key}`} title="Temperatura minima invernale sopportata">
+              <i className="fa-solid fa-snowflake" /> {cold.text}
+            </span>
+            <span className="cold-note">{cold.level.label}</span>
           </dd>
         </>
       )}

@@ -96,3 +96,28 @@ export const formatRangeCm = (r) => {
   if (!r) return "n.d.";
   return r.min === r.max ? `${r.min} cm` : `${r.min}–${r.max} cm`;
 };
+
+// Rusticità: la zona USDA indica la temperatura minima invernale che la
+// pianta sopporta. Ogni zona copre 10 °F (circa 5,6 °C) a partire da -51 °C
+// (zona 1); la pianta resiste fino al limite inferiore della sua zona minima.
+export function hardinessMinC(zone) {
+  const z = Number.parseFloat(zone);
+  if (!Number.isFinite(z)) return null;
+  return Math.round(-51.1 + (z - 1) * 5.56);
+}
+
+const minus = (n) => (n < 0 ? `−${Math.abs(n)}` : `${n}`);
+
+// { celsius: -18, temp: "−18 °C", text: "Resiste fino a −18 °C", level: { key, label } }
+export function hardinessInfo(hardiness) {
+  const c = hardinessMinC(hardiness?.min);
+  if (c == null) return null;
+  const temp = `${minus(c)} °C`;
+  let level;
+  if (c <= -15) level = { key: "high", label: "molto resistente al freddo" };
+  else if (c <= -7) level = { key: "good", label: "resiste al gelo" };
+  else if (c <= -1) level = { key: "mild", label: "sopporta solo gelate leggere" };
+  else level = { key: "none", label: "non sopporta il gelo" };
+  const text = c > 0 ? `Va riparata sotto i ${temp}` : `Resiste fino a ${temp}`;
+  return { celsius: c, temp, text, level };
+}

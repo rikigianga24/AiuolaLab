@@ -13,6 +13,7 @@ export default function Footer() {
         <p className="footer-sub">progettato con cura, cresciuto con pazienza</p>
         <div className="footer-links">
           <Link to="/">Home</Link>
+          <Link to="/piante">Scopri le piante</Link>
           <Link to="/gardencanvas">Progetta</Link>
           <Link to="/calendario">Calendario</Link>
           <Link to="/aboutme">Chi sono</Link>

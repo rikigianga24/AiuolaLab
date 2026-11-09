@@ -1,0 +1,471 @@
+/* ===== Scopri le piante ===== */
+
+.discover-page {
+  padding-bottom: 5rem;
+}
+
+.discover-search {
+  position: relative;
+  max-width: 560px;
+  margin-top: 1.3rem;
+}
+
+.discover-search i {
+  position: absolute;
+  left: 1.1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--sage-dark);
+}
+
+.discover-search input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.85rem 1.2rem 0.85rem 2.8rem;
+  font: inherit;
+  font-size: 1.05rem;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.06);
+}
+
+.discover-search input:focus {
+  outline: none;
+  border-color: var(--sage);
+  box-shadow: 0 0 0 3px rgba(125, 143, 90, 0.25);
+}
+
+.discover-tabs {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.discover-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink-soft);
+  border-radius: 999px;
+  padding: 0.55rem 1.1rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.discover-tabs button i {
+  color: var(--sage);
+}
+
+.discover-tabs button.is-active {
+  background: var(--sage-dark);
+  border-color: var(--sage-dark);
+  color: #fff;
+}
+
+.discover-tabs button.is-active i {
+  color: #f6dd9b;
+}
+
+.tab-count {
+  background: var(--terracotta);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  padding: 0 0.45rem;
+  line-height: 1.5;
+}
+
+.discover-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-bottom: 1.2rem;
+}
+
+.color-filter {
+  display: flex;
+  gap: 6px;
+}
+
+.color-filter button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--paper);
+  box-shadow: 0 0 0 1px rgba(111, 78, 55, 0.3);
+  cursor: pointer;
+}
+
+.color-filter button.is-active {
+  box-shadow: 0 0 0 3px var(--terracotta);
+}
+
+.discover-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.1rem;
+}
+
+.discover-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.discover-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 26px rgba(80, 60, 30, 0.14);
+}
+
+.discover-card.is-fav {
+  border-color: rgba(192, 100, 59, 0.55);
+}
+
+.discover-card > .fav-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+}
+
+.dc-open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.dc-photo {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: radial-gradient(circle at 50% 55%, #eef2e4 0%, #e1e8d3 70%);
+  overflow: hidden;
+}
+
+.dc-icon {
+  position: absolute;
+  inset: 12% 22%;
+  width: 56%;
+  height: 76%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.18));
+}
+
+.dc-real {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: fade-in 0.35s ease;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.dc-credit {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.6rem 0.6rem 0.3rem;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
+  color: #fff;
+  font-size: 0.65rem;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dc-body {
+  padding: 0.85rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dc-body h3 {
+  font-family: var(--font-title);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.dc-body h3 button {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.page .dc-sci {
+  font-style: italic;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+  margin-top: -0.2rem;
+}
+
+.dc-chips {
+  list-style: none;
+  margin: 0.2rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.dc-chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--cream);
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+}
+
+.dc-chips li i {
+  color: var(--sage-dark);
+}
+
+.dc-chips li.cold-high,
+.dc-chips li.cold-good {
+  background: #e5eef5;
+  color: #2c5470;
+}
+
+.dc-chips li.cold-mild {
+  background: #fdf1dc;
+  color: #7a5200;
+}
+
+.dc-chips li.cold-none {
+  background: #fbe3dc;
+  color: #8a3b22;
+}
+
+.dc-chips li[class^="cold"] i {
+  color: inherit;
+}
+
+.page .dc-flowers {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  margin-top: 0.2rem;
+}
+
+.dc-flowers .dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.dc-flowers span:not(.dot) {
+  margin-left: 0.3rem;
+}
+
+.discover-status {
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.discover-more {
+  display: flex;
+  justify-content: center;
+  min-height: 1px;
+  margin-top: 1.5rem;
+}
+
+/* barra in basso con le preferite */
+.fav-bar {
+  position: fixed;
+  left: 50%;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--ink);
+  color: #fffaf0;
+  border-radius: 999px;
+  padding: 0.45rem 0.5rem 0.45rem 1.2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  max-width: calc(100vw - 24px);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.fav-bar i.fa-heart {
+  color: #f08a6a;
+}
+
+/* scheda completa */
+.no-scroll {
+  overflow: hidden;
+}
+
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: rgba(40, 35, 25, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.sheet {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  padding: 1rem 1.2rem 1.3rem;
+  border-style: solid;
+}
+
+.sheet-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.6rem;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 253, 247, 0.95);
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.sheet .photo-consent {
+  margin-right: 2.6rem;
+}
+
+.sheet-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0.3rem 0 0.6rem;
+}
+
+.sheet-head h2 {
+  font-family: var(--font-title);
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.15;
+}
+
+.sheet .plant-facts {
+  font-size: 0.92rem;
+}
+
+@media (max-width: 600px) {
+  .discover-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin: 0 -1rem 0.9rem;
+    padding: 0 1rem 4px;
+    scrollbar-width: none;
+  }
+
+  .discover-tabs button {
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 0.88rem;
+    padding: 0.45rem 0.85rem;
+  }
+
+  .discover-page .page-hero .lead {
+    font-size: 1rem;
+  }
+
+  .discover-filters {
+    gap: 0.6rem;
+  }
+
+  .color-filter button {
+    width: 28px;
+    height: 28px;
+  }
+
+  .discover-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+  }
+
+  .dc-body {
+    padding: 0.6rem 0.65rem 0.75rem;
+  }
+
+  .dc-body h3 {
+    font-size: 1.02rem;
+  }
+
+  .page .dc-sci {
+    font-size: 0.78rem;
+  }
+
+  .dc-chips li {
+    font-size: 0.7rem;
+  }
+
+  .page .dc-flowers span:not(.dot) {
+    display: none;
+  }
+
+  .discover-card > .fav-btn {
+    width: 36px;
+    height: 36px;
+    top: 6px;
+    right: 6px;
+  }
+
+  .sheet-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .sheet {
+    max-height: 92dvh;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .fav-bar {
+    gap: 0.6rem;
+    font-size: 0.9rem;
+  }
+}

@@ -57,7 +57,8 @@ export function PrivacyPage() {
         <li>notifiche push: il servizio di notifiche del tuo browser (per esempio Google, Apple o Mozilla), che riceve il testo della notifica.</li>
       </ul>
       <p>
-        Le previsioni meteo (MET Norway), la ricerca dei comuni (OpenStreetMap) e il database delle piante (Perenual) sono
+        Le previsioni meteo (MET Norway), la ricerca dei comuni (OpenStreetMap), il database delle piante (Perenual) e la ricerca delle
+        foto delle piante (iNaturalist) sono
         interrogati dal nostro server: questi servizi non ricevono il tuo indirizzo IP né dati del tuo account, ma solo le
         coordinate approssimate o il testo della ricerca.
       </p>
@@ -132,8 +133,10 @@ export function CookiePage() {
 
       <h2>Contenuti esterni (solo con consenso)</h2>
       <p>
-        Le foto delle piante del catalogo sono ospitate da Perenual. Per mostrarle il tuo browser si collega ai loro server, che
-        possono così vedere il tuo indirizzo IP. Senza consenso le foto non vengono caricate e al loro posto vedi le nostre icone.
+        Le foto delle piante sono ospitate da iNaturalist (archivio di foto con licenza libera, gestito da un'organizzazione
+        statunitense senza scopo di lucro) e, per alcune schede del catalogo, da Perenual. Per mostrarle il tuo browser si collega ai
+        loro server, che possono così vedere il tuo indirizzo IP. Senza consenso le foto non vengono caricate e al loro posto vedi le
+        nostre illustrazioni. Sotto ogni foto sono indicati autore e licenza.
       </p>
 
       <p>

@@ -22,6 +22,18 @@ const Settings = z
       hour: z.number().int().min(5).max(21),
     }).partial(),
     pets: z.array(z.enum(["dog", "cat", "horse", "farm", "people"])).max(5),
+    // piante "mi piace": chiave, tipo e copia ridotta della scheda
+    favorites: z
+      .array(
+        z.object({
+          key: z.string().max(200),
+          kind: z.enum(["plant", "crop"]),
+          cropId: z.string().max(60).optional(),
+          plant: z.record(z.string(), z.unknown()).optional(),
+          at: z.string().max(30).optional(),
+        }),
+      )
+      .max(300),
     taskState: z.record(z.string().max(300), z.object({ done: z.string().max(10).optional(), snoozedUntil: z.string().max(10).optional() })),
   })
   .partial();
@@ -32,6 +44,7 @@ export const DEFAULT_SETTINGS = {
   notify: { push: false, emailWeekly: true, emailWeather: true, hour: config.notifyHour },
   taskState: {},
   pets: [],
+  favorites: [],
 };
 
 export const userSettings = (u) => ({

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
+import { getPlantPhotos } from "../plants/photos.js";
 import { getPlant, providerName, searchPlants } from "../plants/service.js";
 
 const router = Router();
@@ -26,6 +27,22 @@ router.get("/", async (req, res, next) => {
     res.json({ source: providerName, ...(await searchPlants(parsed.data)) });
   } catch (err) {
     next(err);
+  }
+});
+
+// Foto da iNaturalist: /api/plants/photos?name=Lavandula%20angustifolia[&full=1]
+const PhotoQuery = z.object({ name: z.string().trim().min(2).max(120), full: z.enum(["0", "1"]).optional() });
+
+router.get("/photos", async (req, res) => {
+  const parsed = PhotoQuery.safeParse(req.query);
+  if (!parsed.success) return res.status(400).json({ error: "Nome non valido" });
+  try {
+    const data = await getPlantPhotos(parsed.data.name, { full: parsed.data.full === "1" });
+    res.set("Cache-Control", "public, max-age=86400");
+    res.json(data);
+  } catch (err) {
+    console.warn("[photos]", err.message);
+    res.status(502).json({ error: "Foto non disponibili al momento", photos: [] });
   }
 });
 

@@ -3,6 +3,9 @@ import { CROPS, CROP_BY_ID, FAMILIES, MONTHS, cropActions, cropAsPlant } from ".
 import { getIconUrl, iconTypeFor } from "../../lib/plantIcons";
 import { isFloor } from "../../lib/containers";
 import PlantSafety from "./PlantSafety";
+import { Link } from "react-router-dom";
+import { favCrop, useFavorites } from "../../lib/favorites";
+import FavButton from "../plants/FavButton";
 
 const ACTION_STYLE = {
   semenzaio: { label: "Semenzaio", color: "#b9a24a" },
@@ -53,6 +56,9 @@ export default function CropCatalog({ selectedBed, onPickPlant, onFillRows }) {
   const [onlyNow, setOnlyNow] = useState(true);
   const [openId, setOpenId] = useState(null);
   const [varietyOf, setVarietyOf] = useState({});
+  const favs = useFavorites();
+  const [onlyFav, setOnlyFav] = useState(() => favs.cropIds.size > 0);
+  const showingFav = onlyFav && favs.cropIds.size > 0;
 
   const needle = q.trim().toLowerCase();
   const matches = (c) =>
@@ -60,9 +66,9 @@ export default function CropCatalog({ selectedBed, onPickPlant, onFillRows }) {
     c.name.toLowerCase().includes(needle) ||
     c.scientificName.toLowerCase().includes(needle) ||
     c.varieties.some((v) => v.name.toLowerCase().includes(needle));
-  const list = CROPS.filter(matches).filter(
-    (c) => !onlyNow || cropActions(c, month).some((a) => a !== "raccolta"),
-  );
+  const list = CROPS.filter((c) => !showingFav || favs.cropIds.has(c.id))
+    .filter(matches)
+    .filter((c) => showingFav || !onlyNow || cropActions(c, month).some((a) => a !== "raccolta"));
   const canFill = selectedBed && !isFloor(selectedBed);
 
   return (
@@ -73,10 +79,26 @@ export default function CropCatalog({ selectedBed, onPickPlant, onFillRows }) {
           <input type="search" placeholder="Cerca un ortaggio o una varietà" value={q} onChange={(e) => setQ(e.target.value)} aria-label="Cerca ortaggio" />
         </span>
       </div>
-      <label className="checkbox-row">
-        <input type="checkbox" checked={onlyNow} onChange={(e) => setOnlyNow(e.target.checked)} /> Solo quelli da seminare o trapiantare a{" "}
-        {new Date().toLocaleDateString("it-IT", { month: "long" })}
-      </label>
+      <div className="fav-switch" role="group" aria-label="Quali ortaggi mostrare">
+        <button type="button" className={showingFav ? "is-active" : ""} onClick={() => setOnlyFav(true)} disabled={!favs.cropIds.size}>
+          <i className="fa-solid fa-heart" /> Preferiti <span className="tab-count">{favs.cropIds.size}</span>
+        </button>
+        <button type="button" className={!showingFav ? "is-active" : ""} onClick={() => setOnlyFav(false)}>
+          <i className="fa-solid fa-carrot" /> Tutti gli ortaggi
+        </button>
+      </div>
+      {!favs.cropIds.size && (
+        <p className="fav-hint">
+          <i className="fa-regular fa-heart" /> Nessun ortaggio preferito. <Link to="/piante?tab=orto">Sfoglia gli ortaggi</Link> e tocca il cuore su quelli che
+          vuoi coltivare.
+        </p>
+      )}
+      {!showingFav && (
+        <label className="checkbox-row">
+          <input type="checkbox" checked={onlyNow} onChange={(e) => setOnlyNow(e.target.checked)} /> Solo quelli da seminare o trapiantare a{" "}
+          {new Date().toLocaleDateString("it-IT", { month: "long" })}
+        </label>
+      )}
       {!canFill && <p className="panel-note">Seleziona un'aiuola dell'orto per riempirla a file con un ortaggio.</p>}
 
       <ul className="plant-list">
@@ -86,20 +108,23 @@ export default function CropCatalog({ selectedBed, onPickPlant, onFillRows }) {
           const variety = crop.varieties.find((v) => v.name === varietyOf[crop.id]) ?? null;
           return (
             <li key={crop.id} className={`plant-item ${open ? "is-open" : ""}`}>
-              <button className="plant-row" onClick={() => setOpenId(open ? null : crop.id)} aria-expanded={open}>
-                <img className="plant-icon" src={getIconUrl(iconTypeFor({ cropId: crop.id }), crop.colors, 96, crop.name)} alt="" />
-                <span className="plant-names">
-                  <strong>{crop.name}</strong>
-                  <em>{FAMILIES[crop.family]}</em>
-                </span>
-                <span className="crop-badges">
-                  {now.map((a) => (
-                    <span key={a} className="crop-badge" style={{ background: ACTION_STYLE[a].color }}>
-                      {ACTION_STYLE[a].label}
-                    </span>
-                  ))}
-                </span>
-              </button>
+              <div className="plant-row-wrap">
+                <button className="plant-row" onClick={() => setOpenId(open ? null : crop.id)} aria-expanded={open}>
+                  <img className="plant-icon" src={getIconUrl(iconTypeFor({ cropId: crop.id }), crop.colors, 96, crop.name)} alt="" />
+                  <span className="plant-names">
+                    <strong>{crop.name}</strong>
+                    <em>{FAMILIES[crop.family]}</em>
+                  </span>
+                  <span className="crop-badges">
+                    {now.map((a) => (
+                      <span key={a} className="crop-badge" style={{ background: ACTION_STYLE[a].color }}>
+                        {ACTION_STYLE[a].label}
+                      </span>
+                    ))}
+                  </span>
+                </button>
+                <FavButton size="small" active={favs.isFav(`crop:${crop.id}`)} onToggle={() => favs.toggle(favCrop(crop))} name={crop.name} />
+              </div>
               {open && (
                 <div className="plant-detail">
                   {crop.varieties.length > 0 && (
@@ -150,7 +175,7 @@ export default function CropCatalog({ selectedBed, onPickPlant, onFillRows }) {
           );
         })}
       </ul>
-      {!list.length && <p className="panel-note">Nessun ortaggio {onlyNow ? "da seminare questo mese" : "trovato"}.</p>}
+      {!list.length && <p className="panel-note">Nessun ortaggio {onlyNow && !showingFav ? "da seminare questo mese" : "trovato"}.</p>}
     </div>
   );
 }

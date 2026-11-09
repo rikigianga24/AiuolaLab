@@ -386,3 +386,178 @@
     flex-direction: column;
   }
 }
+
+/* ---------- la tua pianta preferita ---------- */
+
+.fav-question {
+  padding-top: 3.5rem;
+  padding-bottom: 2rem;
+}
+
+.fq-card {
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+  background: var(--paper);
+  border-radius: 26px;
+  border: 2px dashed rgba(125, 143, 90, 0.4);
+  box-shadow: 0 14px 34px rgba(80, 60, 30, 0.1);
+  padding: 2.4rem 1.6rem 1.8rem;
+}
+
+.fq-card h2 {
+  font-size: clamp(1.8rem, 4.2vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0.2rem 0 0.6rem;
+}
+
+.fq-lead {
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+  max-width: 34rem;
+  margin: 0 auto 1.3rem;
+}
+
+.fq-form {
+  position: relative;
+  display: flex;
+  gap: 0.5rem;
+  max-width: 540px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.35rem 0.35rem 0.35rem 2.6rem;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.05);
+}
+
+.fq-form:focus-within {
+  border-color: var(--sage);
+  box-shadow: 0 0 0 3px rgba(125, 143, 90, 0.22);
+}
+
+.fq-form > i {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--sage-dark);
+}
+
+.fq-form input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 1.05rem;
+  color: var(--ink);
+  outline: none;
+}
+
+.home .fq-form .btn-country {
+  width: auto;
+  box-shadow: none;
+}
+
+.fq-ideas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1.3rem 0 0.8rem;
+}
+
+.fq-ideas button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--line);
+  background: var(--cream);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.25rem 0.9rem 0.25rem 0.3rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.fq-ideas button:hover {
+  background: var(--sage-soft);
+  transform: translateY(-2px);
+}
+
+.fq-ideas img {
+  width: 34px;
+  height: 34px;
+}
+
+.fq-browse {
+  color: var(--ink-soft);
+}
+
+.fq-browse a {
+  color: var(--sage-dark);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.fq-steps {
+  list-style: none;
+  margin: 2.5rem auto 0;
+  padding: 0;
+  max-width: 1000px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+.fq-steps li {
+  position: relative;
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+}
+
+.fq-num {
+  position: absolute;
+  left: 36px;
+  top: -6px;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--terracotta);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fq-steps h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.2rem;
+}
+
+.fq-steps p {
+  color: #5e5341;
+}
+
+@media (max-width: 768px) {
+  .fq-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .fq-card {
+    padding: 1.8rem 1rem 1.4rem;
+  }
+
+  .fq-ideas button {
+    font-size: 0.9rem;
+  }
+}

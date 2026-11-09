@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { getIconUrl } from "../lib/plantIcons";
 import { Sprig, Wave } from "./decor";
 import background from "../styles/hp-background.png";
@@ -41,6 +42,76 @@ const SEASONS = [
   { name: "Inverno", icon: "fa-snowflake", items: ["Protezione dal gelo", "Vasi al riparo", "Si progetta l'anno nuovo"] },
 ];
 
+const FAVORITE_IDEAS = [
+  { label: "Rosa", q: "rosa", icon: ["rose", ["#e88fb4"]] },
+  { label: "Lavanda", q: "lavanda", icon: ["spike", ["#9b6fc4"]] },
+  { label: "Ortensia", q: "ortensia", icon: ["cluster", ["#5b8fd9", "#e88fb4"]] },
+  { label: "Geranio", q: "geranio", icon: ["flower", ["#d64545"]] },
+  { label: "Margherita", q: "rudbeckia", icon: ["daisy", ["#f2c94c"]] },
+  { label: "Pomodoro", q: "pomodoro", tab: "orto", icon: ["fruiting", ["#d64545"]] },
+];
+
+const STEPS = [
+  { icon: "fa-heart", title: "Scegli le piante", text: "Sfoglia le schede con le foto e tocca il cuore su quelle che ti piacciono." },
+  { icon: "fa-pen-ruler", title: "Disegna lo spazio", text: "Aiuola, balcone o orto: le tue preferite sono già pronte nel catalogo." },
+  { icon: "fa-bell", title: "Prenditene cura", text: "Calendario, promemoria e avvisi meteo per tutto l'anno." },
+];
+
+function FavoriteQuestion() {
+  const [q, setQ] = useState("");
+  const navigate = useNavigate();
+  const go = (query, tab) => navigate(`/piante?${new URLSearchParams({ ...(tab ? { tab } : {}), ...(query ? { q: query } : {}) })}`);
+  return (
+    <section className="home-section paper fav-question">
+      <div className="container">
+        <div className="fq-card">
+          <p className="script">cominciamo da qui</p>
+          <h2>Qual è la tua pianta preferita?</h2>
+          <p className="fq-lead">Prima scegli le piante che ti piacciono, poi disegni lo spazio: AiuolaLab te le fa trovare già pronte.</p>
+          <form
+            className="fq-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              go(q.trim());
+            }}
+          >
+            <i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
+            <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Scrivi una pianta: rosa, lavanda, gelsomino…" aria-label="La tua pianta preferita" />
+            <button type="submit" className="btn-country is-primary is-small">
+              Cerca
+            </button>
+          </form>
+          <div className="fq-ideas">
+            {FAVORITE_IDEAS.map((idea) => (
+              <button key={idea.label} type="button" onClick={() => go(idea.q, idea.tab)}>
+                <img src={getIconUrl(idea.icon[0], idea.icon[1], 96, idea.label)} alt="" />
+                {idea.label}
+              </button>
+            ))}
+          </div>
+          <p className="fq-browse">
+            Non sai ancora? <Link to="/piante">Sfoglia tutte le piante</Link>
+          </p>
+        </div>
+        <ol className="fq-steps">
+          {STEPS.map((st, i) => (
+            <li key={st.title}>
+              <span className="fq-num">{i + 1}</span>
+              <span className="badge-round">
+                <i className={`fa-solid ${st.icon}`} />
+              </span>
+              <div>
+                <h3>{st.title}</h3>
+                <p>{st.text}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   return (
     <div className="home">
@@ -57,17 +128,20 @@ export default function Home() {
             Disegna aiuole, balconi e orti in scala reale, scegli le piante adatte e ricevi i consigli giusti, stagione dopo stagione.
           </p>
           <div className="home-cta">
-            <Link to="/gardencanvas" className="btn-country is-primary">
-              <i className="fa-solid fa-trowel" /> Inizia a progettare
+            <Link to="/piante" className="btn-country is-primary">
+              <i className="fa-solid fa-heart" /> Scegli le tue piante
             </Link>
-            <Link to="/calendario" className="btn-country is-light">
-              <i className="fa-solid fa-calendar-days" /> Il calendario
+            <Link to="/gardencanvas" className="btn-country is-light">
+              <i className="fa-solid fa-trowel" /> Progetta subito
             </Link>
           </div>
           <p className="hero-note">Gratis, senza registrazione · funziona anche dal telefono</p>
         </div>
         <Wave color="#f7f1e3" />
       </section>
+
+      {/* ---------- La pianta preferita ---------- */}
+      <FavoriteQuestion />
 
       {/* ---------- Cosa puoi fare ---------- */}
       <section className="home-section paper">

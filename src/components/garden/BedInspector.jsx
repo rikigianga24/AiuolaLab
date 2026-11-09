@@ -170,7 +170,7 @@ export default function BedInspector({ project, bed, selection, onSelect, onUpda
               {project.beds.map((b) => (
                 <li key={b.id}>
                   <button onClick={() => onSelect({ bedId: b.id, plantId: null })}>
-                    <i className={`fa-solid ${isPot(b) ? "fa-bucket" : isFloor(b) ? "fa-border-all" : "fa-vector-square"}`} /> {b.name}
+                    <i className={`fa-solid ${isPot(b) ? "fa-bucket" : isFloor(b) ? "fa-border-all" : "fa-draw-polygon"}`} /> {b.name}
                     <small>
                       {formatM2(polygonArea(b.points))} · {b.plants?.length ?? 0} piante
                     </small>

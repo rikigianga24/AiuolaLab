@@ -27,6 +27,11 @@ const STEPS = [
     text: "Cerca le piante con i filtri (sole, acqua, terreno, colori). Ogni scheda dice se è tossica per gli animali, chi la mangia e da dove viene.",
   },
   {
+    target: ".fav-switch",
+    title: "Le tue preferite",
+    text: "Le piante che hai segnato con il cuore nella pagina «Scopri le piante» sono qui, pronte da mettere nell'aiuola. Puoi sempre passare a tutto il catalogo.",
+  },
+  {
     target: ".gp-tabs .gp-tab:nth-child(3)",
     title: "Consigli con l'IA",
     text: "Indica gusti e condizioni: l'intelligenza artificiale propone le piante, le quantità e le dispone nell'aiuola.",

@@ -30,6 +30,8 @@ export function searchPlants(filters, signal) {
 }
 
 export const getPlant = (id) => request(`/plants/${encodeURIComponent(id)}`);
+export const getPlantPhotos = (name, full = false) =>
+  request(`/plants/photos?name=${encodeURIComponent(name)}${full ? "&full=1" : ""}`);
 export const suggestBed = (payload) => request("/suggest", { method: "POST", body: payload });
 
 export const projectsApi = (ownerKey) => {

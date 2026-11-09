@@ -13,6 +13,7 @@ const DEFAULT_SETTINGS = {
   notify: { push: false, emailWeekly: true, emailWeather: true, hour: 8 },
   taskState: {},
   pets: [],
+  favorites: [],
 };
 
 const merge = (a, b) => ({ ...a, ...b, notify: { ...a.notify, ...(b?.notify ?? {}) }, taskState: { ...a.taskState, ...(b?.taskState ?? {}) } });
