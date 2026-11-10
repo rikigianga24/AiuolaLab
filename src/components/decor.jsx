@@ -46,9 +46,13 @@ export function SectionTitle({ script, title, light = false, sprigs = true }) {
 }
 
 // Apertura delle pagine interne: fondo crema, scritta a mano, titolo e onda.
-export function PageHero({ script, title, lead, children, waveColor = "#f7f1e3", compact = false }) {
+// Con `image` la foto fa da sfondo, sfumata a sinistra per leggere il testo.
+export function PageHero({ script, title, lead, children, waveColor = "#f7f1e3", compact = false, image = null }) {
   return (
-    <section className={`page-hero ${compact ? "is-compact" : ""}`}>
+    <section
+      className={`page-hero ${compact ? "is-compact" : ""} ${image ? "has-image" : ""}`}
+      style={image ? { backgroundImage: `url(${image})` } : undefined}
+    >
       <div className="page-hero-inner">
         {script && <p className="script">{script}</p>}
         <h1>{title}</h1>

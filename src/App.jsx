@@ -12,17 +12,20 @@ import Navbar from "./components/Navbar";
 import AccountPage from "./components/AccountPage";
 import AuthPage from "./components/AuthPage";
 import DiscoverPage from "./components/DiscoverPage";
-import StylesPage from "./components/StylesPage";
+import StylesPage, { StylePage } from "./components/StylesPage";
+import SharedPage from "./components/SharedPage";
 import GuidePage from "./components/GuidePage";
 import CalendarPage from "./components/CalendarPage";
 import CookieBanner from "./components/CookieBanner";
 import { CookiePage, PrivacyPage } from "./components/LegalPages";
 import { SessionProvider, useSession } from "./lib/session";
 import { setArtStyle } from "./lib/artStyle";
+import { usePathMeta } from "./lib/pageMeta";
 
 function Layout() {
   const { pathname } = useLocation();
   const { settings } = useSession();
+  usePathMeta(pathname);
   // lo stile del disegno vale per tutta l'app; cambiandolo le pagine si ridisegnano
   setArtStyle(settings.artStyle);
   const artStyle = settings.artStyle ?? "tempera";
@@ -36,6 +39,8 @@ function Layout() {
           <Route path="/" element={<Home />} />
           <Route path="/piante" element={<DiscoverPage />} />
           <Route path="/stili" element={<StylesPage />} />
+          <Route path="/stili/:id" element={<StylePage />} />
+          <Route path="/condiviso/:token" element={<SharedPage />} />
           <Route path="/guida" element={<GuidePage />} />
           <Route path="/gardencanvas" element={<GardenPage />} />
           <Route path="/aboutme" element={<AboutMe />} />

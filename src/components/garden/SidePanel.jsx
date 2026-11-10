@@ -125,6 +125,7 @@ export default function SidePanel({ isMobile, open, onOpenChange, tab, onTabChan
             onRename={props.onRenameProject}
             onBudgetSettings={props.onBudgetSettings}
             onSaved={props.onProjectSaved}
+            onShared={props.onProjectShared}
             notify={props.notify}
           />
         )}

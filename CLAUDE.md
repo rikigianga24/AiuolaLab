@@ -51,6 +51,12 @@ node --test --test-name-pattern="notifiche" test/   # tests matching a name
 - Anonymous users are identified by a random device key sent as `X-Owner-Key`. After login, those projects are re-owned to `user:<id>`.
 - A project is a JSON blob (`data` JSONB) with `beds[]`, and each bed has `points` (in metres) and `plants[]`.
 
+**Sharing and page meta.**
+- A project can be shared read-only by link: `projects.share_token` (random, 16 chars). `POST/DELETE /api/projects/:id/share` create/revoke it; `GET /api/shared/:token` is public and returns only what is needed to draw. The page is `/condiviso/:token` (`src/components/SharedPage.jsx`). Shared projects auto-sync to the server even without an account, so the link shows the latest version.
+- Titles, descriptions and Open Graph previews come from `src/lib/seo.js`. The server writes them into `index.html` per route (`server/seo.js`), because crawlers and chat apps don't run the SPA; it also serves `/sitemap.xml` and `/robots.txt`.
+
+**Garden styles.** Each style has its own page `/stili/:id`. Text is in `gardenStyles.js`, practical info (cost, space, seasons, balcony, quiz sizes) in `styleGuide.js`. Photos are in `public/img/stili/<id>-{640,960,1536}.webp` plus `<id>-og.jpg` (1200×630); list a style in `stylePhotos.js` once its files exist, otherwise the drawn scene is used.
+
 **User settings.**
 - Settings are one JSONB column on `users`: climate, location, `notify{…}`, `taskState`, pets and so on.
 - The client merges partial patches through `updateSettings`, which debounces `PUT /api/account/settings`. That endpoint validates with a partial zod schema and merges server-side.

@@ -76,7 +76,7 @@ function remoteStore() {
     },
     async open(id) {
       const r = await api.get(id);
-      return { ...r.data, id: r.data.localId ?? newId(), type: r.data.type ?? "garden", remoteId: r.id, name: r.name, updatedAt: r.updatedAt };
+      return { ...r.data, id: r.data.localId ?? newId(), type: r.data.type ?? "garden", remoteId: r.id, name: r.name, shareToken: r.shareToken ?? null, updatedAt: r.updatedAt };
     },
     async save(project) {
       const data = { beds: project.beds, localId: project.id, type: project.type, faucet: project.faucet ?? null, irrigation: project.irrigation ?? null, budget: project.budget ?? null };
@@ -86,7 +86,7 @@ function remoteStore() {
             throw err;
           })
         : await api.create(project.name, data);
-      return { ...project, remoteId: r.id, updatedAt: r.updatedAt };
+      return { ...project, remoteId: r.id, shareToken: r.shareToken ?? project.shareToken ?? null, updatedAt: r.updatedAt };
     },
     async remove(id) {
       await api.remove(id);
@@ -105,4 +105,24 @@ export async function syncProject(project) {
 export async function getProjectStore() {
   const health = await getHealth();
   return health.database ? remoteStore() : localStore;
+}
+
+// ---- condivisione con un link ----
+
+export const shareUrl = (token) => `${window.location.origin}/condiviso/${token}`;
+
+/** Salva il progetto sul server e crea il link in sola lettura. */
+export async function shareProject(project) {
+  const health = await getHealth();
+  if (!health.database) throw new Error("Per condividere serve il salvataggio sul server, che ora non è attivo.");
+  const store = remoteStore();
+  const saved = await store.save(project);
+  const { shareToken } = await projectsApi(ownerKey()).share(saved.remoteId);
+  return { ...saved, shareToken };
+}
+
+/** Il link smette di funzionare. */
+export async function unshareProject(project) {
+  if (project.remoteId) await projectsApi(ownerKey()).unshare(project.remoteId);
+  return { ...project, shareToken: null };
 }
