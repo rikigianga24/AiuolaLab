@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import compression from "compression";
 import express from "express";
 import { sameOrigin, sessionMiddleware } from "./auth.js";
 import { config } from "./config.js";
@@ -20,6 +21,8 @@ export function createApp() {
   const app = express();
   app.disable("x-powered-by");
   app.set("trust proxy", 1);
+  // File compressi (gzip): codice e grafica pesano circa un quarto.
+  app.use(compression());
   app.use(express.json({ limit: "1mb" }));
 
   // Intestazioni di sicurezza di base.
