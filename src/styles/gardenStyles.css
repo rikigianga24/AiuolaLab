@@ -11,6 +11,13 @@
   display: block;
 }
 
+.style-scene.is-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
 /* questionario */
 .style-quiz {
   max-width: 820px;

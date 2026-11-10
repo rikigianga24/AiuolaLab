@@ -178,7 +178,39 @@ const LAYOUTS = {
   },
 };
 
+// Foto degli stili (src/assets/stili/<id>-640.webp e <id>-960.webp).
+// Se uno stile non ha ancora la foto, si usa il disegno qui sotto.
+const PHOTO_FILES = import.meta.glob("../../assets/stili/*.webp", { eager: true, query: "?url", import: "default" });
+const PHOTOS = {};
+for (const [path, url] of Object.entries(PHOTO_FILES)) {
+  const [, id, w] = path.match(/\/([a-z]+)-(\d+)\.webp$/) ?? [];
+  if (id) (PHOTOS[id] ??= []).push({ url, w: Number(w) });
+}
+
+function StylePhoto({ style, width, height, photos }) {
+  const sorted = [...photos].sort((a, b) => a.w - b.w);
+  return (
+    <div className="style-scene is-photo">
+      <img
+        src={sorted[0].url}
+        srcSet={sorted.map((p) => `${p.url} ${p.w}w`).join(", ")}
+        sizes={`(max-width: 768px) 100vw, ${width}px`}
+        alt={`Esempio di ${style.name}`}
+        loading="lazy"
+        decoding="async"
+        style={{ aspectRatio: `${width} / ${height}` }}
+      />
+    </div>
+  );
+}
+
 export default function StyleScene({ style, width = 360, height = 220 }) {
+  const photos = PHOTOS[style.id];
+  if (photos?.length) return <StylePhoto style={style} width={width} height={height} photos={photos} />;
+  return <StyleDrawing style={style} width={width} height={height} />;
+}
+
+function StyleDrawing({ style, width, height }) {
   const canvasRef = useRef(null);
   const [wrapRef, inView] = useInView("200px");
   useEffect(() => {
