@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getIconUrl } from "../lib/plantIcons";
 import { Sprig, Wave } from "./decor";
-import background from "../styles/hp-background.png";
+import background from "../styles/hp-background.webp";
 import "../styles/home.css";
 
 const FEATURES = [
