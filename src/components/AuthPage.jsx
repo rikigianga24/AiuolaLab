@@ -19,6 +19,51 @@ const TEXTS = {
   reset: { script: "quasi fatto", title: "Scegli una nuova password", button: "Salva la nuova password" },
 };
 
+const GOOGLE_ERRORS = {
+  google: "Accesso con Google non riuscito. Riprova.",
+  "google-annullato": "Accesso con Google annullato.",
+  "google-email": "Il tuo account Google non ha un'email verificata.",
+  "google-off": "L'accesso con Google non è attivo su questo server.",
+  "google-nuovo": "Non hai ancora un account: accetta l'informativa privacy qui sotto e continua con Google per crearlo.",
+};
+
+// Logo "G" di Google, nei colori ufficiali.
+function GoogleLogo() {
+  return (
+    <svg viewBox="0 0 48 48" width="18" height="18" aria-hidden="true">
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+    </svg>
+  );
+}
+
+function GoogleButton({ mode, privacy, marketing, next }) {
+  const needsConsent = mode === "register" && !privacy;
+  const qs = new URLSearchParams({ next: next ?? "/calendario" });
+  if (mode === "register") {
+    qs.set("privacy", "1");
+    if (marketing) qs.set("marketing", "1");
+  }
+  return (
+    <>
+      <a
+        className={`google-btn ${needsConsent ? "is-disabled" : ""}`}
+        href={needsConsent ? undefined : `/api/auth/google?${qs}`}
+        aria-disabled={needsConsent}
+        title={needsConsent ? "Accetta prima l'informativa privacy" : undefined}
+      >
+        <GoogleLogo /> {mode === "register" ? "Registrati con Google" : "Continua con Google"}
+      </a>
+      {needsConsent && <p className="help has-text-centered">Spunta l'informativa privacy qui sopra per registrarti con Google.</p>}
+      <div className="auth-or">
+        <span>oppure con email</span>
+      </div>
+    </>
+  );
+}
+
 function Notice({ kind = "info", children }) {
   return <div className={`notification is-${kind} is-light`}>{children}</div>;
 }
@@ -35,6 +80,8 @@ function AuthForm({ initialMode }) {
   const location = useLocation();
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const t = TEXTS[mode];
+  const googleError = GOOGLE_ERRORS[params.get("errore")];
+  const showGoogle = features.google && (mode === "login" || mode === "register");
 
   const submit = async (e) => {
     e.preventDefault();
@@ -76,7 +123,9 @@ function AuthForm({ initialMode }) {
       )}
       <p className="script">{t.script}</p>
       <h1 className="auth-title">{t.title}</h1>
-      {mode === "register" && <p className="auth-lead">Gratis, bastano un'email e una password.</p>}
+      {mode === "register" && (
+        <p className="auth-lead">{features.google ? "Gratis: con Google in un clic, oppure con email e password." : "Gratis, bastano un'email e una password."}</p>
+      )}
       {mode === "forgot" && <p className="auth-lead">Inserisci la tua email: ti mandiamo un link per sceglierne una nuova.</p>}
 
       {!features.accounts ? (
@@ -85,6 +134,26 @@ function AuthForm({ initialMode }) {
         </Notice>
       ) : (
         <form onSubmit={submit}>
+          {googleError && <Notice kind={params.get("errore") === "google-nuovo" ? "info" : "warning"}>{googleError}</Notice>}
+          {showGoogle && mode === "login" && <GoogleButton mode="login" next={location.state?.from} />}
+          {mode === "register" && (
+            <div className="auth-consents">
+              <label className="checkbox consent-row">
+                <input type="checkbox" required checked={form.privacy} onChange={(e) => set("privacy", e.target.checked)} /> Ho letto l'
+                <Link to="/privacy" target="_blank">
+                  informativa privacy
+                </Link>{" "}
+                e ho almeno 14 anni (obbligatorio)
+              </label>
+              <label className="checkbox consent-row">
+                <input type="checkbox" checked={form.marketing} onChange={(e) => set("marketing", e.target.checked)} /> Voglio ricevere offerte e
+                novità su prodotti per il giardino (facoltativo, revocabile)
+              </label>
+            </div>
+          )}
+          {showGoogle && mode === "register" && (
+            <GoogleButton mode="register" privacy={form.privacy} marketing={form.marketing} />
+          )}
           {mode !== "reset" && (
             <div className="field">
               <label className="label" htmlFor="email">
@@ -139,21 +208,6 @@ function AuthForm({ initialMode }) {
                 Password dimenticata?
               </button>
             </p>
-          )}
-          {mode === "register" && (
-            <div className="auth-consents">
-              <label className="checkbox consent-row">
-                <input type="checkbox" required checked={form.privacy} onChange={(e) => set("privacy", e.target.checked)} /> Ho letto l'
-                <Link to="/privacy" target="_blank">
-                  informativa privacy
-                </Link>{" "}
-                e ho almeno 14 anni (obbligatorio)
-              </label>
-              <label className="checkbox consent-row">
-                <input type="checkbox" checked={form.marketing} onChange={(e) => set("marketing", e.target.checked)} /> Voglio ricevere offerte e
-                novità su prodotti per il giardino (facoltativo, revocabile)
-              </label>
-            </div>
           )}
           {status.error && <Notice kind="danger">{status.error}</Notice>}
           {status.info && <Notice kind="success">{status.info}</Notice>}

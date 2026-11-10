@@ -64,7 +64,7 @@ export const accountApi = {
   subscribePush: (sub) => request("/account/push", { method: "POST", body: sub }),
   unsubscribePush: (endpoint) => request("/account/push", { method: "DELETE", body: { endpoint } }),
   testNotification: (email) => request("/account/test-notification", { method: "POST", body: { email } }),
-  remove: (password) => request("/account", { method: "DELETE", body: { password } }),
+  remove: (password, confirm) => request("/account", { method: "DELETE", body: { password, confirm } }),
 };
 
 // ---- meteo ----

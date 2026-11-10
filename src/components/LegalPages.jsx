@@ -32,7 +32,7 @@ export function PrivacyPage() {
       <h2>Quali dati trattiamo</h2>
       <ul>
         <li><strong>Senza account</strong>: i progetti restano nella memoria del tuo browser. Se il server ha un archivio, i progetti salvati sono legati a un codice anonimo del dispositivo.</li>
-        <li><strong>Account</strong>: indirizzo email, password (conservata solo in forma cifrata con algoritmo non reversibile), data e versione dell'informativa accettata, eventuale consenso a comunicazioni promozionali.</li>
+        <li><strong>Account</strong>: indirizzo email, password (conservata solo in forma cifrata con algoritmo non reversibile), data e versione dell'informativa accettata, eventuale consenso a comunicazioni promozionali. Se accedi con Google riceviamo da Google solo il tuo indirizzo email (verificato) e un identificativo anonimo dell'account: nessuna password, foto o contatto.</li>
         <li><strong>Contenuti</strong>: progetti, piante, impostazioni dell'irrigazione, attività del calendario segnate come fatte.</li>
         <li><strong>Località</strong> (facoltativa): comune o coordinate che scegli per le previsioni meteo.</li>
         <li><strong>Notifiche</strong>: se le attivi, l'indirizzo tecnico del dispositivo fornito dal browser per le notifiche push e l'elenco delle notifiche già inviate.</li>
