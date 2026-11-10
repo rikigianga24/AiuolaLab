@@ -17,7 +17,7 @@ import SharedPage from "./components/SharedPage";
 import GuidePage from "./components/GuidePage";
 import CalendarPage from "./components/CalendarPage";
 import CookieBanner from "./components/CookieBanner";
-import { CookiePage, PrivacyPage } from "./components/LegalPages";
+import { CookiePage, PrivacyPage, TermsPage } from "./components/LegalPages";
 import { SessionProvider, useSession } from "./lib/session";
 import { setArtStyle } from "./lib/artStyle";
 import { usePathMeta } from "./lib/pageMeta";
@@ -50,6 +50,7 @@ function Layout() {
           <Route path="/registrati" element={<AuthPage mode="register" />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/cookie" element={<CookiePage />} />
+          <Route path="/termini" element={<TermsPage />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </main>

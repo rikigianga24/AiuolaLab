@@ -10,7 +10,7 @@ import {
   rateLimit,
   verifyPassword,
 } from "../auth.js";
-import { config, PRIVACY_VERSION } from "../config.js";
+import { config, PRIVACY_VERSION, TERMS_VERSION } from "../config.js";
 import { hasDatabase, query } from "../db.js";
 import { emailLayout, mailEnabled, sendMail } from "../notify.js";
 
@@ -70,7 +70,7 @@ router.post("/register", limiter, async (req, res, next) => {
     .safeParse(req.body);
   if (!body.success) {
     const msg = body.error.issues.find((i) => i.path[0] === "privacy")
-      ? "Per registrarti devi accettare l'informativa privacy."
+      ? "Per registrarti devi accettare i termini di utilizzo e l'informativa privacy."
       : (body.error.issues[0]?.message ?? "Dati non validi");
     return res.status(400).json({ error: msg });
   }
@@ -79,9 +79,9 @@ router.post("/register", limiter, async (req, res, next) => {
     const { rows: exists } = await query("SELECT 1 FROM users WHERE email = $1", [email]);
     if (exists.length) return res.status(409).json({ error: "Esiste già un account con questa email." });
     const { rows } = await query(
-      `INSERT INTO users (email, password_hash, privacy_version, marketing_consent, marketing_consent_at, email_verified_at)
-       VALUES ($1, $2, $3, $4, CASE WHEN $4 THEN now() END, CASE WHEN $5 THEN now() END) RETURNING *`,
-      [email, await hashPassword(password), PRIVACY_VERSION, marketing, !mailEnabled()],
+      `INSERT INTO users (email, password_hash, privacy_version, terms_version, terms_accepted_at, marketing_consent, marketing_consent_at, email_verified_at)
+       VALUES ($1, $2, $3, $6, now(), $4, CASE WHEN $4 THEN now() END, CASE WHEN $5 THEN now() END) RETURNING *`,
+      [email, await hashPassword(password), PRIVACY_VERSION, marketing, !mailEnabled(), TERMS_VERSION],
     );
     const user = rows[0];
     await createSession(res, user.id);

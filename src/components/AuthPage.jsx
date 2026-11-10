@@ -24,7 +24,7 @@ const GOOGLE_ERRORS = {
   "google-annullato": "Accesso con Google annullato.",
   "google-email": "Il tuo account Google non ha un'email verificata.",
   "google-off": "L'accesso con Google non è attivo su questo server.",
-  "google-nuovo": "Non hai ancora un account: accetta l'informativa privacy qui sotto e continua con Google per crearlo.",
+  "google-nuovo": "Non hai ancora un account: accetta i termini e l'informativa privacy qui sotto e continua con Google per crearlo.",
 };
 
 // Logo "G" di Google, nei colori ufficiali.
@@ -52,11 +52,11 @@ function GoogleButton({ mode, privacy, marketing, next }) {
         className={`google-btn ${needsConsent ? "is-disabled" : ""}`}
         href={needsConsent ? undefined : `/api/auth/google?${qs}`}
         aria-disabled={needsConsent}
-        title={needsConsent ? "Accetta prima l'informativa privacy" : undefined}
+        title={needsConsent ? "Accetta prima i termini e l'informativa privacy" : undefined}
       >
         <GoogleLogo /> {mode === "register" ? "Registrati con Google" : "Continua con Google"}
       </a>
-      {needsConsent && <p className="help has-text-centered">Spunta l'informativa privacy qui sopra per registrarti con Google.</p>}
+      {needsConsent && <p className="help has-text-centered">Spunta la casella dei termini e della privacy qui sopra per registrarti con Google.</p>}
       <div className="auth-or">
         <span>oppure con email</span>
       </div>
@@ -139,7 +139,11 @@ function AuthForm({ initialMode }) {
           {mode === "register" && (
             <div className="auth-consents">
               <label className="checkbox consent-row">
-                <input type="checkbox" required checked={form.privacy} onChange={(e) => set("privacy", e.target.checked)} /> Ho letto l'
+                <input type="checkbox" required checked={form.privacy} onChange={(e) => set("privacy", e.target.checked)} /> Accetto i{" "}
+                <Link to="/termini" target="_blank">
+                  termini di utilizzo
+                </Link>
+                , ho letto l'
                 <Link to="/privacy" target="_blank">
                   informativa privacy
                 </Link>{" "}

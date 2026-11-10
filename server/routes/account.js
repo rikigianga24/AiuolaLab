@@ -176,6 +176,8 @@ router.get("/export", async (req, res, next) => {
         emailVerifiedAt: u.email_verified_at,
         privacyVersion: u.privacy_version,
         privacyAcceptedAt: u.privacy_accepted_at,
+        termsVersion: u.terms_version ?? null,
+        termsAcceptedAt: u.terms_accepted_at ?? null,
         marketingConsent: u.marketing_consent,
         marketingConsentAt: u.marketing_consent_at,
         plan: u.plan ?? "free",

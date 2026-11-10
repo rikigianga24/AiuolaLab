@@ -147,3 +147,196 @@ export function CookiePage() {
     </LegalLayout>
   );
 }
+
+export function TermsPage() {
+  return (
+    <LegalLayout title="Termini di utilizzo">
+      <p>
+        Questi termini regolano l'uso di AiuolaLab, il sito e l'app per progettare giardini, balconi e orti. Usando il servizio o
+        creando un account li accetti. Sono scritti nel modo più semplice possibile: se qualcosa non è chiaro, scrivici.
+      </p>
+      <p>
+        Nessuna parte di questi termini limita i diritti che la legge ti riconosce come consumatore, in particolare quelli
+        previsti dal Codice del Consumo (D.Lgs. 206/2005) e dalle norme dell'Unione Europea.
+      </p>
+
+      <h2>1. Chi fornisce il servizio</h2>
+      <p>
+        AiuolaLab è fornito da {LEGAL.owner}, {LEGAL.address}
+        {LEGAL.vat && `, P. IVA ${LEGAL.vat}`}, email {LEGAL.email} (di seguito «noi»).
+      </p>
+
+      <h2>2. Il servizio</h2>
+      <ul>
+        <li>
+          AiuolaLab ti permette di disegnare aiuole, balconi e orti in scala, consultare un catalogo di piante, ricevere proposte
+          dal consulente basato sull'intelligenza artificiale, calcolare un impianto di irrigazione, una stima dei costi, un
+          calendario delle cure e ricevere avvisi meteo e promemoria.
+        </li>
+        <li>
+          Il servizio di base è <strong>gratuito</strong>. Il piano Premium offre funzioni in più (per esempio più proposte del
+          consulente IA e la previsione di crescita completa). Al momento non è previsto alcun pagamento online. Se in futuro
+          introdurremo servizi a pagamento, prezzo e condizioni ti saranno mostrati chiaramente prima dell'acquisto, insieme alle
+          informazioni sul diritto di recesso previste dal Codice del Consumo, e niente ti sarà addebitato senza la tua conferma
+          esplicita.
+        </li>
+        <li>
+          Possiamo migliorare, modificare o togliere singole funzioni. Se una modifica riduce in modo importante ciò che usi, te
+          lo comunicheremo con un preavviso ragionevole.
+        </li>
+      </ul>
+
+      <h2>3. Account</h2>
+      <ul>
+        <li>Puoi usare gran parte del servizio anche senza account: in questo caso i progetti restano soprattutto nel tuo browser.</li>
+        <li>
+          Per creare un account devi avere almeno 14 anni. Se hai meno di 18 anni puoi usare AiuolaLab solo con il consenso di chi
+          esercita su di te la responsabilità genitoriale.
+        </li>
+        <li>
+          Devi indicare un indirizzo email tuo e valido e custodire la password. L'account è personale: avvisaci subito se pensi
+          che qualcuno lo stia usando senza il tuo permesso.
+        </li>
+        <li>Puoi cancellare l'account in qualsiasi momento dalla pagina Account: verranno cancellati anche tutti i progetti salvati online.</li>
+      </ul>
+
+      <h2>4. Cosa non è consentito</h2>
+      <p>Usando AiuolaLab ti impegni a non:</p>
+      <ul>
+        <li>violare la legge o i diritti di altre persone, compresi i diritti d'autore e la privacy;</li>
+        <li>inserire nei progetti, nei nomi o nei testi contenuti offensivi, discriminatori, violenti, illegali o dati personali di altre persone;</li>
+        <li>tentare di accedere ad account o dati altrui, aggirare le misure di sicurezza o i limiti di utilizzo (per esempio le quote del consulente IA);</li>
+        <li>usare programmi automatici per scaricare in massa il catalogo o altri contenuti, o sovraccaricare il servizio;</li>
+        <li>rivendere il servizio o presentarlo come tuo.</li>
+      </ul>
+
+      <h2>5. I tuoi contenuti e i progetti condivisi</h2>
+      <ul>
+        <li>
+          I progetti e i testi che crei restano <strong>tuoi</strong>. Ci autorizzi a conservarli, elaborarli e mostrarli solo
+          per quanto serve a fornirti il servizio (per esempio per sincronizzarli tra i tuoi dispositivi, generare il calendario o
+          mostrarli a chi apre un tuo link di condivisione). L'autorizzazione è gratuita, non esclusiva e termina quando cancelli
+          i contenuti o l'account.
+        </li>
+        <li>
+          Se condividi un progetto con un link, <strong>chiunque abbia il link</strong> può vederlo, senza poterlo modificare. Sei
+          tu a decidere a chi mandarlo e sei responsabile di ciò che condividi: non mettere nel nome o nel progetto dati personali
+          tuoi o di altri. Puoi disattivare il link in qualsiasi momento con «Smetti di condividere».
+        </li>
+        <li>I progetti condivisi non vengono pubblicati da noi né indicizzati dai motori di ricerca.</li>
+      </ul>
+
+      <h2>6. Segnalare contenuti illeciti</h2>
+      <p>
+        Se trovi su AiuolaLab un contenuto che ritieni illecito (per esempio in un progetto condiviso), scrivi a {LEGAL.email},
+        in italiano o in inglese, indicando il link, il motivo per cui il contenuto è illecito e, se vuoi, il tuo nome e la tua
+        email. Esamineremo la segnalazione in modo tempestivo e imparziale e ti risponderemo. Se rimuoviamo un contenuto o
+        disattiviamo un link, lo comunichiamo alla persona interessata spiegando il motivo, come previsto dal Regolamento UE
+        2022/2065 sui servizi digitali (Digital Services Act). Lo stesso indirizzo è il punto di contatto per le autorità.
+      </p>
+
+      <h2>7. Informazioni sulle piante, intelligenza artificiale e sicurezza</h2>
+      <ul>
+        <li>
+          Schede delle piante, consigli di cura, calendario, previsioni di crescita, impianto di irrigazione e stime dei costi
+          sono <strong>indicazioni generali</strong>: dipendono dal clima, dal terreno e da molti fattori che non possiamo
+          conoscere. Non sostituiscono il parere di un vivaista, agronomo, idraulico o altro professionista. Prezzi e quantità
+          sono stime e possono essere diversi da quelli reali.
+        </li>
+        <li>
+          Le proposte del consulente sono <strong>generate da un sistema di intelligenza artificiale</strong> (Google Gemini) e
+          possono contenere errori o imprecisioni: valutale sempre con buon senso prima di comprare o piantare. Alcune immagini del
+          sito (per esempio le foto degli stili di giardino) sono illustrazioni create con l'intelligenza artificiale e non
+          ritraggono giardini reali.
+        </li>
+        <li>
+          Le avvertenze sulla <strong>tossicità</strong> per persone e animali sono un aiuto, non un elenco completo. In caso di
+          ingestione di una pianta, o di sintomi, rivolgiti subito al medico, al veterinario o a un centro antiveleni.
+        </li>
+        <li>
+          Le previsioni e gli avvisi meteo arrivano da servizi esterni e possono essere imprecisi o arrivare in ritardo: non
+          basarti solo su di essi per proteggere piante, persone o cose.
+        </li>
+        <li>
+          Prima di realizzare un progetto verifica le regole che si applicano a te: distanze dal confine per alberi e siepi
+          (articoli 892 e seguenti del Codice civile), regolamenti condominiali e comunali, carico massimo di balconi e terrazzi,
+          divieti sulle specie esotiche invasive (Regolamento UE 1143/2014). Su questi aspetti la responsabilità delle scelte
+          resta tua.
+        </li>
+      </ul>
+
+      <h2>8. Disponibilità del servizio e copie dei dati</h2>
+      <ul>
+        <li>
+          Facciamo il possibile perché AiuolaLab funzioni sempre, ma non possiamo garantire che sia disponibile senza
+          interruzioni o errori: possono esserci manutenzioni, guasti o rallentamenti, anche dei fornitori esterni.
+        </li>
+        <li>
+          I progetti salvati solo nel browser possono andare persi se cancelli i dati del browser o cambi dispositivo. Ti
+          consigliamo di creare un account e di scaricare ogni tanto i tuoi dati dalla pagina Account.
+        </li>
+      </ul>
+
+      <h2>9. Limiti di responsabilità</h2>
+      <ul>
+        <li>
+          Rispondiamo dei danni causati dal servizio nei casi e nei limiti previsti dalla legge. In nessun caso escludiamo o
+          limitiamo la nostra responsabilità per dolo o colpa grave, per danni alla persona o in altri casi in cui la legge non lo
+          consente (articolo 1229 del Codice civile e Codice del Consumo).
+        </li>
+        <li>
+          Fuori da questi casi, e considerato che il servizio è gratuito, non rispondiamo dei danni dovuti a: uso del servizio in
+          modo diverso da quanto indicato in questi termini; scelte fatte affidandosi alle sole indicazioni generali del punto 7
+          senza le verifiche lì suggerite; interruzioni dovute a cause che non dipendono da noi (per esempio guasti dei fornitori
+          o della rete); contenuti inseriti o condivisi dagli utenti.
+        </li>
+      </ul>
+
+      <h2>10. Proprietà intellettuale</h2>
+      <p>
+        Il nome AiuolaLab, il software, i testi, le illustrazioni e la grafica appartengono a {LEGAL.owner} o ai rispettivi
+        titolari e sono protetti dalla legge sul diritto d'autore. Puoi usarli solo all'interno del servizio, per uso personale.
+        Le foto delle piante provengono da archivi con licenza libera: sotto ogni foto sono indicati autore e licenza.
+      </p>
+
+      <h2>11. Sospensione e chiusura</h2>
+      <ul>
+        <li>
+          Se violi questi termini in modo grave o ripetuto possiamo sospendere o chiudere il tuo account o disattivare i tuoi link
+          di condivisione. Salvo urgenze (per esempio un attacco in corso o un contenuto illecito), ti avvisiamo prima spiegando il
+          motivo e puoi rispondere scrivendo a {LEGAL.email}.
+        </li>
+        <li>
+          Se decidessimo di chiudere AiuolaLab ti avviseremo via email almeno 30 giorni prima, così potrai scaricare i tuoi dati.
+        </li>
+      </ul>
+
+      <h2>12. Modifiche ai termini</h2>
+      <p>
+        Possiamo aggiornare questi termini, per esempio per nuove funzioni o cambi di legge. Le modifiche importanti ti saranno
+        comunicate via email o con un avviso nell'app almeno 15 giorni prima che si applichino. Se non le accetti puoi cancellare
+        l'account prima di quella data; se continui a usare il servizio dopo, le modifiche si intendono accettate. Le modifiche
+        non valgono per il passato.
+      </p>
+
+      <h2>13. Legge applicabile e controversie</h2>
+      <ul>
+        <li>Questi termini sono regolati dalla legge italiana. Se sei un consumatore residente in un altro Paese dell'Unione Europea, restano valide le tutele inderogabili della legge del tuo Paese.</li>
+        <li>
+          Per qualsiasi problema scrivici prima a {LEGAL.email}: cercheremo una soluzione insieme. Puoi anche ricorrere a un
+          organismo di risoluzione alternativa delle controversie (per esempio una mediazione).
+        </li>
+        <li>
+          Se sei un consumatore, per le controversie è competente il giudice del luogo in cui risiedi o hai il domicilio
+          (articolo 66-bis del Codice del Consumo). Negli altri casi è competente il foro del luogo in cui ha sede il fornitore.
+        </li>
+      </ul>
+
+      <h2>14. Contatti e altri documenti</h2>
+      <p>
+        Per domande su questi termini scrivi a {LEGAL.email}. Come trattiamo i tuoi dati è spiegato nell'
+        <Link to="/privacy">informativa privacy</Link>; gli strumenti tecnici usati dal sito nella <Link to="/cookie">cookie policy</Link>.
+      </p>
+    </LegalLayout>
+  );
+}

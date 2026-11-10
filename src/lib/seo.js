@@ -21,6 +21,7 @@ const STATIC = {
   "/aboutme": { title: "Chi sono · AiuolaLab", description: DEFAULT_DESCRIPTION },
   "/privacy": { title: "Privacy · AiuolaLab", description: DEFAULT_DESCRIPTION },
   "/cookie": { title: "Cookie · AiuolaLab", description: DEFAULT_DESCRIPTION },
+  "/termini": { title: "Termini di utilizzo · AiuolaLab", description: "Le regole per usare AiuolaLab: servizio, account, contenuti condivisi, limiti e diritti dei consumatori." },
 };
 
 export function styleMeta(style) {

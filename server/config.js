@@ -84,3 +84,5 @@ export const config = {
 
 // Versione dell'informativa privacy accettata alla registrazione.
 export const PRIVACY_VERSION = "2026-11";
+// Versione dei termini di utilizzo accettati alla registrazione.
+export const TERMS_VERSION = "2026-11";

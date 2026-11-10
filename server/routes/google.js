@@ -5,7 +5,7 @@
 import crypto from "node:crypto";
 import { Router } from "express";
 import { createSession, parseCookies, randomToken } from "../auth.js";
-import { config, PRIVACY_VERSION } from "../config.js";
+import { config, PRIVACY_VERSION, TERMS_VERSION } from "../config.js";
 import { hasDatabase, query } from "../db.js";
 
 const router = Router();
@@ -125,9 +125,9 @@ router.get("/callback", async (req, res, next) => {
     if (!user) {
       if (!state.privacy) return res.redirect("/registrati?errore=google-nuovo");
       ({ rows } = await query(
-        `INSERT INTO users (email, password_hash, google_sub, privacy_version, marketing_consent, marketing_consent_at, email_verified_at)
-         VALUES ($1, NULL, $2, $3, $4, CASE WHEN $4 THEN now() END, now()) RETURNING *`,
-        [email, claims.sub, PRIVACY_VERSION, state.marketing],
+        `INSERT INTO users (email, password_hash, google_sub, privacy_version, terms_version, terms_accepted_at, marketing_consent, marketing_consent_at, email_verified_at)
+         VALUES ($1, NULL, $2, $3, $5, now(), $4, CASE WHEN $4 THEN now() END, now()) RETURNING *`,
+        [email, claims.sub, PRIVACY_VERSION, state.marketing, TERMS_VERSION],
       ));
       user = rows[0];
       created = true;
