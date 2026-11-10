@@ -6,6 +6,9 @@
 import { CROP_BY_ID, FAMILIES } from "./crops.js";
 import { iconForPlaced } from "./plantIcons.js";
 import { boarRisk } from "./plantInfo.js";
+import { FERTILIZERS, npkText } from "./fertilizers.js";
+
+const withNpk = (id) => `${FERTILIZERS[id].label.toLowerCase()} (${npkText(FERTILIZERS[id])})`;
 
 export const TASK_KINDS = {
   potatura: { label: "Potatura", icon: "fa-scissors", color: "#8a5a2b" },
@@ -51,11 +54,13 @@ const PLANT_RULES = [
   { id: "rose-prune", match: ROSE, window: [2, 3], kind: "potatura", title: "Potatura delle rose",
     detail: "Accorcia i rami a 3–5 gemme con un taglio inclinato sopra una gemma rivolta verso l'esterno; elimina legno secco e rami che si incrociano." },
   { id: "rose-feed", match: ROSE, window: [3, 4], kind: "concimazione", title: "Concima le rose",
-    detail: "Concime organico o specifico per rose a lenta cessione, interrato leggermente intorno alla pianta.", product: "concime per rose" },
+    detail: "Concime organico o specifico per rose a lenta cessione, interrato leggermente intorno alla pianta.", product: withNpk("rose") },
   { id: "rose-potassium", match: ROSE, window: [6, 6], kind: "concimazione", title: "Concime al potassio per le rose",
-    detail: "Dopo la prima fioritura un concime ricco di potassio stimola la rifioritura e rinforza i tessuti.", product: "concime potassico" },
+    detail: "Dopo la prima fioritura un concime ricco di potassio stimola la rifioritura e rinforza i tessuti.", product: withNpk("potassio") },
   { id: "rose-fungi", match: ROSE, window: [4, 6], kind: "trattamento", title: "Controlla oidio e ticchiolatura sulle rose",
     detail: "Macchie nere o polvere bianca sulle foglie: togli le foglie colpite e, se serve, tratta con prodotti a base di zolfo o rame.", product: "zolfo bagnabile" },
+  { id: "rose-stop", match: ROSE, window: [8, 8], kind: "cura", title: "Stop ai concimi azotati sulle rose",
+    detail: "Da fine agosto niente più azoto: i getti nuovi non farebbero in tempo a indurirsi prima del freddo. Il potassio invece va bene." },
   { id: "deadhead", match: and(isType("flower", "daisy", "rose", "cluster", "star"), not(nameMatch(/ortensi|hydrang/))), window: [6, 8], kind: "cura",
     title: "Togli i fiori appassiti", detail: "Eliminare i fiori sfioriti prolunga la fioritura e mantiene la pianta in ordine." },
   { id: "lavender-prune", match: nameMatch(/lavand/), window: [8, 9], kind: "potatura", title: "Pota la lavanda",
@@ -63,17 +68,23 @@ const PLANT_RULES = [
   { id: "hydrangea-prune", match: nameMatch(/ortensi|hydrang/), window: [3, 3], kind: "potatura", title: "Pota le ortensie",
     detail: "Togli i fiori secchi tagliando sopra la prima coppia di gemme gonfie ed elimina i rami deboli o secchi." },
   { id: "hydrangea-feed", match: nameMatch(/ortensi|hydrang/), window: [4, 4], kind: "concimazione", title: "Concime acidificante per le ortensie",
-    detail: "Un concime per acidofile mantiene il terreno acido (e il blu dei fiori, nelle varietà che cambiano colore).", product: "concime per acidofile" },
+    detail: "Un concime per acidofile mantiene il terreno acido (e il blu dei fiori, nelle varietà che cambiano colore).", product: withNpk("acidofile") },
   { id: "acid-feed", match: nameMatch(/rododendr|azalea|camell|pieris|erica/), window: [3, 3], kind: "concimazione", title: "Concime per acidofile",
-    detail: "Concime specifico per piante acidofile all'inizio della ripresa vegetativa.", product: "concime per acidofile" },
+    detail: "Concime specifico per piante acidofile all'inizio della ripresa vegetativa.", product: withNpk("acidofile") },
+  { id: "citrus-feed", match: nameMatch(/citrus|limon|agrum|kumquat/), window: [3, 9], kind: "concimazione", title: "Concima gli agrumi",
+    detail: "Da marzo a settembre: granulare a lenta cessione a marzo e luglio, oppure liquido ogni 15 giorni se sono in vaso.", product: withNpk("agrumi") },
+  { id: "wisteria-feed", match: nameMatch(/glicin|wisteria/), window: [4, 4], kind: "concimazione", title: "Niente azoto al glicine",
+    detail: "Il glicine concimato con azoto fa solo foglie: se serve, solo concime ricco di potassio prima della fioritura.", product: withNpk("potassio") },
   { id: "grass-cut", match: isType("grass"), window: [2, 3], kind: "potatura", title: "Taglia le graminacee",
     detail: "Taglia il ciuffo secco a 10–15 cm da terra prima che spunti la nuova vegetazione." },
   { id: "perennial-feed", match: and(isType("flower", "daisy", "spike", "cluster", "foliage", "groundcover"), not(nameMatch(/lavand|rosmarin|timo|thymus/))), window: [3, 4], kind: "concimazione",
-    title: "Concime di inizio stagione", detail: "Concime organico granulare a lenta cessione, sparso intorno alle piante e interrato leggermente.", product: "concime organico granulare" },
+    title: "Concime di inizio stagione", detail: "Concime organico granulare a lenta cessione, sparso intorno alle piante e interrato leggermente.", product: withNpk("organico") },
   { id: "perennial-cut", match: isType("daisy", "spike", "cluster"), window: [11, 11], kind: "potatura", title: "Taglio autunnale delle perenni",
     detail: "Taglia gli steli secchi delle erbacee perenni; lascia qualche infiorescenza per uccelli e insetti utili." },
   { id: "bulb-leaves", match: isType("cup", "star"), window: [4, 5], kind: "cura", title: "Lascia seccare le foglie dei bulbi",
     detail: "Dopo la fioritura non tagliare le foglie finché non sono gialle: nutrono il bulbo per l'anno prossimo." },
+  { id: "bulb-feed", match: isType("cup", "star"), window: [4, 4], kind: "concimazione", title: "Concima i bulbi dopo la fioritura",
+    detail: "Finché le foglie sono verdi il bulbo si ricarica: un concime ricco di fosforo e potassio lo aiuta a rifiorire l'anno dopo.", product: withNpk("bulbi") },
   { id: "bulb-plant", match: isType("cup", "star"), window: [10, 11], kind: "trapianto", title: "Periodo per piantare nuovi bulbi primaverili",
     detail: "Interra i bulbi a una profondità pari a 2–3 volte la loro altezza, con la punta verso l'alto.", product: "bulbi primaverili" },
   { id: "bulb-voles", match: isType("cup"), window: [10, 11], kind: "trattamento", title: "Proteggi i bulbi dai roditori",
@@ -97,7 +108,7 @@ const CROP_RULES = [
   { id: "sucker", match: (c) => c.id === "pomodoro", window: [6, 8], kind: "potatura", title: "Sfemminella i pomodori",
     detail: "Togli ogni settimana i germogli che nascono all'ascella delle foglie, quando sono lunghi pochi centimetri." },
   { id: "fruit-potassium", match: (c) => c.icon === "fruiting" || c.family === "cucurbitacee", window: [6, 6], kind: "concimazione", title: "Concime al potassio alla fioritura",
-    detail: "All'inizio della fruttificazione un concime ricco di potassio migliora sapore e conservazione.", product: "concime per ortaggi da frutto" },
+    detail: "All'inizio della fruttificazione un concime ricco di potassio migliora sapore e conservazione.", product: withNpk("frutto") },
   { id: "earth-up", match: (c) => ["patata", "porro"].includes(c.id), window: [5, 6], kind: "cura", title: "Rincalza",
     detail: "Accumula terra alla base delle piante: protegge i tuberi dalla luce (patate) e imbianca i fusti (porri)." },
   { id: "cabbage-butterfly", match: (c) => c.family === "brassicacee" && c.icon === "brassica", window: [7, 9], kind: "trattamento", title: "Controlla la cavolaia",
@@ -188,7 +199,7 @@ export function generateTasks(projects, { climate = "centro", years = [new Date(
         if (pot) {
           push({ id: `repot|${bed.id}`, kind: "cura", title: "Rinvaso o cambio del terriccio superficiale", detail: "Se le radici escono dai fori passa a un vaso più grande; altrimenti sostituisci i primi 3–5 cm di terriccio.", product: "terriccio universale", where: where(bed), env, plants: [] }, year, [3, 3]);
           for (const m of [4, 5, 6, 7, 8, 9]) {
-            push({ id: `pot-feed-${m}|${bed.id}`, kind: "concimazione", title: "Concime liquido per i vasi", detail: "Nei vasi il terriccio si esaurisce presto: concime liquido nell'acqua di irrigazione ogni 15 giorni.", product: "concime liquido universale", where: where(bed), env, plants: [] }, year, [m, m]);
+            push({ id: `pot-feed-${m}|${bed.id}`, kind: "concimazione", title: "Concime liquido per i vasi", detail: "Nei vasi il terriccio si esaurisce presto: concime liquido nell'acqua di irrigazione ogni 15 giorni.", product: withNpk("fioritura"), where: where(bed), env, plants: [] }, year, [m, m]);
           }
           push({ id: `pot-winter|${bed.id}`, kind: "cura", title: "Proteggi i vasi dal gelo", detail: "Avvolgi il vaso in juta o tessuto non tessuto e sollevalo da terra con dei piedini; sposta al riparo le piante delicate.", product: "tessuto non tessuto", where: where(bed), env, plants: [] }, year, [11, 11]);
         } else if (env === "vegetable") {

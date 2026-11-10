@@ -1,0 +1,497 @@
+/* ===== Guida al giardino ===== */
+
+.guide-toc {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.4rem;
+}
+
+.guide-toc a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.guide-toc a:hover {
+  border-color: var(--sage);
+  color: var(--sage-dark);
+}
+
+.guide-toc i {
+  color: var(--terracotta);
+}
+
+.guide-body {
+  padding: 0 1rem 4rem;
+  max-width: 1100px;
+}
+
+.guide-section {
+  padding-top: 2.5rem;
+  scroll-margin-top: 80px;
+}
+
+.page .guide-lead {
+  max-width: 760px;
+  margin: 0 auto 1.4rem;
+  text-align: center;
+  font-size: 1.02rem;
+  line-height: 1.6;
+}
+
+.guide-h3 {
+  font-family: var(--font-title);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 2rem 0 0.9rem;
+}
+
+.page .guide-note {
+  font-size: 0.88rem;
+  color: var(--ink-muted);
+  margin-top: 0.6rem;
+}
+
+.guide-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 1.1rem 1.2rem;
+}
+
+.guide-card h3 {
+  font-family: var(--font-title);
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+  line-height: 1.25;
+}
+
+.guide-card p {
+  font-size: 0.93rem;
+  line-height: 1.55;
+}
+
+.guide-card p + p {
+  margin-top: 0.5rem;
+}
+
+/* NPK */
+.nutrient-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+}
+
+.guide-card.nutrient {
+  border-top: 5px solid;
+  text-align: center;
+}
+
+.nutrient-letter {
+  display: block;
+  font-family: var(--font-title);
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.label-words {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem 1.4rem;
+}
+
+.label-words dt {
+  font-weight: 700;
+  color: var(--sage-dark);
+}
+
+.label-words dd {
+  margin: 0.15rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+/* tipi di concime */
+.fert-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 1rem;
+}
+
+.fert-card header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fert-card header h3 {
+  margin: 0;
+}
+
+.fert-card {
+  scroll-margin-top: 90px;
+}
+
+.fert-dot {
+  display: inline-block;
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.npk-bars {
+  margin: 0.7rem 0 0.4rem;
+}
+
+.npk-bar {
+  display: grid;
+  grid-template-columns: 1.2rem 1fr 1.8rem;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+}
+
+.npk-key {
+  font-weight: 800;
+}
+
+.npk-track {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--cream-dark);
+  overflow: hidden;
+}
+
+.npk-track span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.npk-val {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+
+.page .fert-meta,
+.page .fert-npk-none {
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  margin: 0.5rem 0;
+}
+
+.page .fert-when,
+.page .fert-examples {
+  font-size: 0.86rem;
+}
+
+.fert-when i,
+.fert-examples i {
+  color: var(--sage);
+  width: 1.1rem;
+}
+
+.page .guide-caution {
+  font-size: 0.85rem;
+  background: #fbf0dc;
+  border-radius: 8px;
+  padding: 0.45rem 0.6rem;
+  color: #7a4a14;
+}
+
+/* regole e trucchi */
+.rule-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.guide-card.rule > i {
+  display: inline-grid;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 50%;
+  background: var(--sage-soft);
+  color: var(--sage-dark);
+  margin-bottom: 0.6rem;
+}
+
+/* calendario */
+.feed-cal-wrap {
+  overflow-x: auto;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 0.6rem;
+}
+
+.feed-cal {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: separate;
+  border-spacing: 3px;
+  font-size: 0.85rem;
+}
+
+.feed-cal thead th {
+  text-align: center;
+  font-weight: 600;
+  color: var(--ink-muted);
+  text-transform: capitalize;
+}
+
+.feed-cal tbody th {
+  text-align: left;
+  white-space: nowrap;
+  font-weight: 600;
+  color: var(--ink);
+  padding-right: 0.5rem;
+}
+
+.feed-cal td {
+  background: var(--cream);
+  border-radius: 5px;
+  height: 1.7rem;
+  padding: 3px;
+}
+
+.feed-cell {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.feed-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  margin-top: 0.8rem;
+  font-size: 0.85rem;
+}
+
+.feed-legend a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--ink-soft);
+}
+
+/* carenze */
+.symptom-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.guide-card.symptom {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+}
+
+.symptom-tag {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 10px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--ink-muted);
+}
+
+.symptom-tag.tone-N { background: #4f7942; }
+.symptom-tag.tone-P { background: #c0643b; }
+.symptom-tag.tone-K { background: #7b5ea7; }
+.symptom-tag.tone-Fe { background: #a65e2e; }
+.symptom-tag.tone-Mg { background: #3f7f9c; }
+.symptom-tag.tone-Ca { background: #8a8170; }
+.symptom-tag.tone-warn { background: #c9452f; }
+
+.page .symptom-look {
+  font-style: italic;
+  color: var(--ink);
+}
+
+/* malattie e parassiti */
+.problem-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  align-items: start;
+}
+
+.guide-card.problem {
+  padding: 0;
+}
+
+.problem summary {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.9rem 1.1rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.problem summary::-webkit-details-marker {
+  display: none;
+}
+
+.problem summary::after {
+  content: "\f078";
+  font-family: "Font Awesome 7 Free", "Font Awesome 6 Free";
+  font-weight: 900;
+  margin-left: auto;
+  color: var(--ink-muted);
+  transition: transform 0.2s;
+}
+
+.problem[open] summary::after {
+  transform: rotate(180deg);
+}
+
+.problem summary > i {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: #f6e3d8;
+  color: var(--terracotta-dark);
+}
+
+.problem summary span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.problem summary strong {
+  color: var(--ink);
+}
+
+.problem summary small {
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.problem dl {
+  padding: 0 1.1rem 1rem;
+  border-top: 1px dashed var(--line);
+  margin: 0;
+}
+
+.problem dt {
+  margin-top: 0.7rem;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--sage-dark);
+}
+
+.problem dd {
+  margin: 0.15rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+/* falsi miti */
+.myth-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.page .myth-q {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.myth-q i {
+  color: #c9452f;
+  margin-right: 0.3rem;
+}
+
+.myth-a i {
+  color: var(--sage);
+  margin-right: 0.3rem;
+}
+
+@media (max-width: 800px) {
+  .nutrient-grid,
+  .label-words,
+  .symptom-list,
+  .problem-list,
+  .myth-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* concime nella scheda della pianta */
+.feed-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.feed-badge {
+  font-weight: 600;
+}
+
+.feed-badge i {
+  color: #6a8f2f;
+  margin-right: 0.15rem;
+}
+
+.feed-badge small {
+  margin-left: 0.4rem;
+  padding: 0 0.35rem;
+  border-radius: 4px;
+  background: #e7ecd9;
+  color: #3f4f2a;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.feed-months {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6a8f2f;
+}
+
+.feed-note,
+.feed-extra {
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.feed-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+}

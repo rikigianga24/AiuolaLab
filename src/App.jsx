@@ -13,6 +13,7 @@ import AccountPage from "./components/AccountPage";
 import AuthPage from "./components/AuthPage";
 import DiscoverPage from "./components/DiscoverPage";
 import StylesPage from "./components/StylesPage";
+import GuidePage from "./components/GuidePage";
 import CalendarPage from "./components/CalendarPage";
 import CookieBanner from "./components/CookieBanner";
 import { CookiePage, PrivacyPage } from "./components/LegalPages";
@@ -35,6 +36,7 @@ function Layout() {
           <Route path="/" element={<Home />} />
           <Route path="/piante" element={<DiscoverPage />} />
           <Route path="/stili" element={<StylesPage />} />
+          <Route path="/guida" element={<GuidePage />} />
           <Route path="/gardencanvas" element={<GardenPage />} />
           <Route path="/aboutme" element={<AboutMe />} />
           <Route path="/calendario" element={<CalendarPage />} />

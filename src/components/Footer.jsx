@@ -15,6 +15,7 @@ export default function Footer() {
           <Link to="/">Home</Link>
           <Link to="/piante">Scopri le piante</Link>
           <Link to="/stili">Stili di giardino</Link>
+          <Link to="/guida">Guida al giardino</Link>
           <Link to="/gardencanvas">Progetta</Link>
           <Link to="/calendario">Calendario</Link>
           <Link to="/aboutme">Chi sono</Link>
