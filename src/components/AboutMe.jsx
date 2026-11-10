@@ -105,9 +105,10 @@ function Story() {
             <div>
               <h3>Contento, ma con tanto da imparare</h3>
               <p>
-                Adesso sono contento di quello che ho costruito, ma ho ancora molto da imparare: non ho l'esperienza dei vivaisti che
-                accarezzano le piante da 10 o 15 anni. AiuolaLab nasce anche da tutti i miei errori, perché chi parte da zero possa farne
-                qualcuno in meno.
+                Adesso sono contento di quello che ho costruito, ma ho ancora molto da imparare. I vivaisti con cui mi confronto mi hanno
+                spiegato tanto su come funzionano le cose, ma non ho i loro anni di esperienza: loro le piante le accarezzano da 10 o 15
+                anni, e certe cose si imparano solo col tempo. AiuolaLab nasce anche da tutti i miei errori, perché chi parte da zero possa
+                farne qualcuno in meno.
               </p>
             </div>
           </li>
