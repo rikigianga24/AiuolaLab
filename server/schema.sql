@@ -36,6 +36,10 @@ CREATE TABLE IF NOT EXISTS users (
   created_at           TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Accesso con Google: account senza password, collegati con l'id Google.
+ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS google_sub TEXT UNIQUE;
+
 CREATE TABLE IF NOT EXISTS sessions (
   token_hash  TEXT PRIMARY KEY,
   user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,

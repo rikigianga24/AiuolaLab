@@ -55,6 +55,14 @@ export const config = {
     from: env.MAIL_FROM || "AiuolaLab <noreply@example.com>",
   },
 
+  // Accesso con Google: client OAuth "Applicazione web" della Google Cloud
+  // Console, con URI di reindirizzamento <APP_URL>/api/auth/google/callback.
+  google: {
+    enabled: Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET),
+    clientId: env.GOOGLE_CLIENT_ID || null,
+    clientSecret: env.GOOGLE_CLIENT_SECRET || null,
+  },
+
   // Notifiche push (Web Push). Genera le chiavi con: npx web-push generate-vapid-keys
   push: {
     enabled: Boolean(env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY),

@@ -19,5 +19,5 @@ App web per progettare aiuole, balconi e orti, che si usa sia dal browser sia da
   - programma con durata, frequenza e orario per stagione.
 - **Calendario**: potature, concimazioni, difesa, semine e raccolte delle tue piante, con date adattate alla zona climatica. Le attività si segnano come fatte o si rimandano.
 - **Meteo e avvisi**: previsioni [MET Norway](https://api.met.no/) e avvisi di gelo, caldo, pioggia, vento e siccità.
-- **Account e notifiche**: login, notifiche push sul telefono, email con riepilogo settimanale e avvisi meteo importanti.
+- **Account e notifiche**: login con email o con Google (`GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET`, vedi `.env.example`), notifiche push sul telefono, email con riepilogo settimanale e avvisi meteo importanti.
 - **Privacy**: GDPR (consensi, export dei dati, cancellazione dell'account), banner cookie, informativa e cookie policy.

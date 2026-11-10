@@ -162,12 +162,13 @@ function AccountSettings() {
   const [marketing, setMarketing] = useState(user.marketingConsent);
   const [deleting, setDeleting] = useState(false);
   const [password, setPassword] = useState("");
+  const noPassword = !user.hasPassword;
   const [msg, setMsg] = useState(null);
   const n = settings.notify;
 
   const remove = async () => {
     try {
-      await accountApi.remove(password);
+      await accountApi.remove(noPassword ? undefined : password, noPassword ? password : undefined);
       window.location.replace("/");
     } catch (err) {
       setMsg({ kind: "danger", text: err.message });
@@ -180,6 +181,11 @@ function AccountSettings() {
         <h2 className="card-title">Il tuo account</h2>
         <p>
           <strong>{user.email}</strong>{" "}
+          {user.google && (
+            <span className="tag is-info is-light">
+              <i className="fa-brands fa-google" />&nbsp;Google
+            </span>
+          )}{" "}
           {user.emailVerified ? (
             <span className="tag is-success is-light">verificata</span>
           ) : (
@@ -280,8 +286,18 @@ function AccountSettings() {
           </button>
         ) : (
           <div className="delete-box mt-2">
-            <p>Verranno cancellati definitivamente l'account e tutti i progetti salvati online. Inserisci la password per confermare.</p>
-            <input className="input is-small" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" />
+            <p>
+              Verranno cancellati definitivamente l'account e tutti i progetti salvati online.{" "}
+              {noPassword ? "Scrivi ELIMINA per confermare." : "Inserisci la password per confermare."}
+            </p>
+            <input
+              className="input is-small"
+              type={noPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete={noPassword ? "off" : "current-password"}
+              placeholder={noPassword ? "ELIMINA" : undefined}
+            />
             <div className="buttons mt-2">
               <button className="button is-small" onClick={() => setDeleting(false)}>
                 Annulla
@@ -320,7 +336,7 @@ export default function AccountPage() {
   // senza account si va alla pagina di accesso (anche per il link di reset)
   if (!loading && !user && !verifyToken && !verifyMsg) return <Navigate to={`/accedi${search}`} replace state={{ from: "/account" }} />;
 
-  const welcome = state?.welcome;
+  const welcome = state?.welcome ?? (params.get("benvenuto") ? "ok" : null);
   return (
     <div className="page account-page">
       <PageHero compact script={user ? "il tuo angolo verde" : "account"} title={user ? "Il tuo account" : "Account"} lead={user ? "Notifiche, zona, animali di casa e privacy: tutto in un posto." : null} />

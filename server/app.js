@@ -15,6 +15,7 @@ import sharedRouter from "./routes/shared.js";
 import { metaFor, renderIndex, robotsTxt, siteOrigin, sitemapXml } from "./seo.js";
 import suggestRouter from "./routes/suggest.js";
 import weatherRouter from "./routes/weather.js";
+import googleRouter, { googleEnabled } from "./routes/google.js";
 
 export function createApp() {
   const app = express();
@@ -42,10 +43,12 @@ export function createApp() {
       accounts: hasDatabase(),
       mail: mailEnabled(),
       push: pushEnabled(),
+      google: googleEnabled(),
       vapidPublicKey: pushEnabled() ? config.push.publicKey : null,
     });
   });
 
+  app.use("/api/auth/google", googleRouter);
   app.use("/api/auth", authRouter);
   app.use("/api/account", accountRouter);
   app.use("/api/plants", plantsRouter);

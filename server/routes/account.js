@@ -191,11 +191,16 @@ router.get("/export", async (req, res, next) => {
 });
 
 router.delete("/", async (req, res, next) => {
-  const body = z.object({ password: z.string().max(200) }).safeParse(req.body);
+  const body = z.object({ password: z.string().max(200).optional(), confirm: z.string().max(20).optional() }).safeParse(req.body);
   if (!body.success) return res.status(400).json({ error: "Inserisci la password per confermare" });
   try {
-    if (!(await verifyPassword(body.data.password, req.user.password_hash))) {
-      return res.status(401).json({ error: "Password non corretta" });
+    // chi accede solo con Google non ha una password: conferma scrivendo ELIMINA
+    if (req.user.password_hash) {
+      if (!(await verifyPassword(body.data.password ?? "", req.user.password_hash))) {
+        return res.status(401).json({ error: "Password non corretta" });
+      }
+    } else if (body.data.confirm?.trim().toUpperCase() !== "ELIMINA") {
+      return res.status(400).json({ error: "Scrivi ELIMINA per confermare" });
     }
     await query("DELETE FROM projects WHERE owner_key = $1", [`user:${req.user.id}`]);
     await query("DELETE FROM users WHERE id = $1", [req.user.id]); // sessioni, token, push e log in cascata
