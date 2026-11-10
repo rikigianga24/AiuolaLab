@@ -36,7 +36,7 @@ export function createApp() {
       ok: true,
       database: hasDatabase(),
       plantSource: providerName,
-      ai: config.anthropic.enabled,
+      ai: config.gemini.enabled && hasDatabase(),
       accounts: hasDatabase(),
       mail: mailEnabled(),
       push: pushEnabled(),

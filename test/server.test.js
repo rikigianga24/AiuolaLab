@@ -14,10 +14,37 @@ const skip = !DB && "TEST_DATABASE_URL non impostata";
 
 let base, server, pool;
 
+// Finto Gemini: le chiamate a Google sono intercettate, le altre passano.
+const realFetch = globalThis.fetch;
+const gemini = { calls: 0, fail: null };
+const FAKE_PROPOSAL = {
+  title: "Aiuola di prova",
+  concept: "Lavanda e salvia al sole.",
+  plants: [
+    { scientific_name: "Lavandula angustifolia", common_name: "Lavanda", candidate_id: null, layer: "media", quantity: 5, spacing_cm: 40, height_cm: 60, flower_colors: ["viola"], bloom_seasons: ["summer"], reason: "Ama il sole." },
+  ],
+  bloom_calendar: "Estate.",
+  care_tips: ["Poca acqua."],
+  warnings: [],
+};
+globalThis.fetch = async (url, opts) => {
+  if (!String(url).startsWith("https://generativelanguage.googleapis.com/")) return realFetch(url, opts);
+  gemini.calls += 1;
+  if (gemini.fail) return new Response(JSON.stringify({ error: { message: "boom" } }), { status: gemini.fail });
+  return new Response(
+    JSON.stringify({
+      candidates: [{ finishReason: "STOP", content: { parts: [{ text: "ragiono...", thought: true }, { text: JSON.stringify(FAKE_PROPOSAL) }] } }],
+      usageMetadata: { promptTokenCount: 5000, candidatesTokenCount: 900, thoughtsTokenCount: 300 },
+    }),
+    { status: 200, headers: { "Content-Type": "application/json" } },
+  );
+};
+
 before(async () => {
   if (!DB) return;
   process.env.DATABASE_URL = DB;
   process.env.SCHEDULER = "off";
+  process.env.GEMINI_API_KEY = "chiave-finta-per-i-test";
   delete process.env.SMTP_HOST;
   const { initDatabase, query } = await import("../server/db.js");
   await initDatabase();
@@ -193,4 +220,79 @@ test("notifiche: pulsanti Fatto e Rimanda e notifica del giorno", { skip }, asyn
 
   await pool.query("DELETE FROM projects WHERE owner_key = $1", [`user:${user.id}`]);
   await pool.query("DELETE FROM users WHERE id = $1", [user.id]);
+});
+
+test("consulente IA: accesso, quote per piano, cache e tetto giornaliero", { skip }, async () => {
+  const api = client();
+  const body = (sunlight = "full_sun", notes) => ({
+    bed: { areaM2: 4, widthM: 2, depthM: 2 },
+    environment: "garden",
+    conditions: { sunlight },
+    preferences: { notes: notes ?? `prova ${Date.now()}` },
+  });
+
+  let r = await api("/api/health");
+  assert.equal(r.data.ai, true);
+  r = await api("/api/suggest", { method: "POST", body: body() });
+  assert.equal(r.status, 401, "serve un account");
+
+  const email = `ia${Date.now()}@test.aiuolalab`;
+  r = await api("/api/auth/register", { method: "POST", body: { email, password: PASSWORD, privacy: true } });
+  assert.equal(r.data.user.plan, "free");
+  const userId = r.data.user.id;
+
+  r = await api("/api/suggest/quota");
+  assert.equal(r.data.plan, "free");
+  assert.equal(r.data.remaining, 1);
+  assert.equal(r.data.label, "1 proposta ogni 2 giorni");
+
+  // una richiesta fallita non consuma la quota
+  gemini.fail = 500;
+  r = await api("/api/suggest", { method: "POST", body: body() });
+  assert.equal(r.status, 503);
+  assert.equal(r.data.quota.remaining, 1);
+  gemini.fail = null;
+
+  const first = body("full_sun", `prima ${Date.now()}`);
+  const before = gemini.calls;
+  r = await api("/api/suggest", { method: "POST", body: first });
+  assert.equal(r.status, 200);
+  assert.equal(r.data.title, "Aiuola di prova");
+  assert.equal(r.data.cached, false);
+  assert.equal(r.data.quota.remaining, 0);
+  assert.ok(new Date(r.data.quota.nextAt) - Date.now() > 47 * 3600 * 1000, "prossima tra circa 2 giorni");
+  assert.equal(gemini.calls, before + 1);
+  const { rows: usage } = await pool.query("SELECT input_tokens, output_tokens FROM ai_usage WHERE user_id = $1", [userId]);
+  assert.deepEqual(usage, [{ input_tokens: 5000, output_tokens: 1200 }]);
+
+  // stessa richiesta: risposta salvata, nessuna chiamata a Google
+  r = await api("/api/suggest", { method: "POST", body: first });
+  assert.equal(r.status, 200);
+  assert.equal(r.data.cached, true);
+  assert.equal(gemini.calls, before + 1);
+
+  // richiesta diversa: quota finita
+  r = await api("/api/suggest", { method: "POST", body: body("part_shade") });
+  assert.equal(r.status, 429);
+  assert.match(r.data.error, /piano Gratis/);
+
+  // premium: 3 al giorno
+  await pool.query("UPDATE users SET plan = 'premium' WHERE id = $1", [userId]);
+  r = await api("/api/suggest/quota");
+  assert.equal(r.data.plan, "premium");
+  assert.equal(r.data.remaining, 2);
+
+  // tetto giornaliero di tutta l'app
+  const { googleDay } = await import("../server/ai/quota.js");
+  await pool.query("INSERT INTO ai_usage (user_id, google_day, created_at) SELECT $1, $2, now() - interval '2 days' FROM generate_series(1, 230)", [userId, googleDay()]);
+  r = await api("/api/suggest", { method: "POST", body: body("full_shade") });
+  assert.equal(r.status, 429);
+  assert.match(r.data.error, /per oggi/);
+
+  r = await api("/api/account/export");
+  assert.equal(r.data.account.plan, "premium");
+
+  await pool.query("DELETE FROM users WHERE id = $1", [userId]);
+  const { rows: left } = await pool.query("SELECT count(*)::int AS n FROM ai_usage WHERE user_id = $1", [userId]);
+  assert.equal(left[0].n, 0, "i dati IA si cancellano con l'account");
 });
