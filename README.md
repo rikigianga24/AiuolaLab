@@ -11,7 +11,7 @@ App web per progettare aiuole, balconi e orti, che si usa sia dal browser sia da
 - **Orto**: 47 ortaggi con calendario, distanze, consociazioni e circa 150 varietà italiane (San Marzano, Cuore di bue, Zolfino, Rossa di Tropea...).
 - **Orto**: calendario di 30 ortaggi (semenzaio, semina, trapianto, raccolta). Le **consociazioni** sbagliate compaiono come linea rossa sul disegno, e la **rotazione** delle colture viene seguita negli anni.
 - **Vasi**: vaso tondo o quadrato, fioriera, fioriera da ringhiera, vaso appeso; con misure, materiale e volume di terriccio.
-- **Consigli con l'IA**: indichi condizioni e gusti, Claude propone le piante, le quantità e la disposizione, e l'app le posiziona nell'aiuola. Funziona anche per vasi e orto.
+- **Consigli con l'IA**: indichi condizioni e gusti, l'IA (Google Gemini) propone le piante, le quantità e la disposizione, e l'app le posiziona nell'aiuola. Funziona anche per vasi e orto.
 - **Irrigazione a goccia**:
   - percorso di tubo più corto dal rubinetto a tutte le piante;
   - gocciolatori calibrati sul fabbisogno di ogni pianta;

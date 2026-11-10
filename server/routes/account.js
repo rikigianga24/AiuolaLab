@@ -165,6 +165,7 @@ router.get("/export", async (req, res, next) => {
       `user:${req.user.id}`,
     ]);
     const { rows: devices } = await query("SELECT created_at FROM push_subscriptions WHERE user_id = $1", [req.user.id]);
+    const { rows: aiUsage } = await query("SELECT created_at FROM ai_usage WHERE user_id = $1 ORDER BY created_at", [req.user.id]);
     const u = req.user;
     res.setHeader("Content-Disposition", 'attachment; filename="aiuolalab-dati.json"');
     res.json({
@@ -177,10 +178,12 @@ router.get("/export", async (req, res, next) => {
         privacyAcceptedAt: u.privacy_accepted_at,
         marketingConsent: u.marketing_consent,
         marketingConsentAt: u.marketing_consent_at,
+        plan: u.plan ?? "free",
       },
       settings: userSettings(u),
       projects,
       pushDevices: devices.length,
+      aiProposals: aiUsage.map((r) => r.created_at),
     });
   } catch (err) {
     next(err);

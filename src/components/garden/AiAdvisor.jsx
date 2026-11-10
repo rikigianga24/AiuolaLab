@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { getHealth, suggestBed } from "../../lib/api";
+import { Link } from "react-router-dom";
+import { getAiQuota, getHealth, suggestBed } from "../../lib/api";
 import { CROP_BY_ID } from "../../lib/crops";
 import { bbox, formatM2, polygonArea } from "../../lib/geometry";
 import { POT_TYPES, isFloor, isPot, potVolumeL } from "../../lib/containers";
 import { useSession } from "../../lib/session";
+import { PLANS, quotaLabel } from "../../lib/plans";
 import { COLORS, LAYERS, SEASONS, SOIL_PH, SOIL_TEXTURE, STYLES, SUNLIGHT, WATERING } from "../../lib/labels";
 
 const MAINTENANCE = { bassa: "Bassa", media: "Media", alta: "Curata" };
@@ -27,6 +29,24 @@ function Chips({ options, values, onToggle }) {
   );
 }
 
+const whenLabel = (iso) =>
+  new Date(iso).toLocaleString("it-IT", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+
+// Riga con il piano e le proposte rimaste.
+function QuotaNote({ quota }) {
+  if (!quota) return null;
+  let state;
+  if (quota.globalExhausted) state = "Il consulente ha finito le proposte di oggi per tutti: riprova domani mattina.";
+  else if (quota.remaining > 0) state = quota.remaining === 1 ? "ti resta 1 proposta." : `ti restano ${quota.remaining} proposte.`;
+  else state = `prossima proposta da ${whenLabel(quota.nextAt)}.`;
+  return (
+    <p className="ai-quota">
+      <i className="fa-solid fa-ticket" /> Piano <strong>{quota.planLabel}</strong> ({quota.label}): {state}
+      {quota.plan === "free" && <small> Con Premium: {quotaLabel(PLANS.premium.ai)}.</small>}
+    </p>
+  );
+}
+
 const toggleIn = (list, v) => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
 
 export default function AiAdvisor({ bed, environment, onUpdateBed, onApply }) {
@@ -35,12 +55,25 @@ export default function AiAdvisor({ bed, environment, onUpdateBed, onApply }) {
   const [status, setStatus] = useState({ loading: false, error: null });
   const [proposal, setProposal] = useState(null);
   const [replace, setReplace] = useState(true);
-  const { settings } = useSession();
+  const { settings, user } = useSession();
   const [petSafe, setPetSafe] = useState(Boolean(settings.pets?.length));
+  const [quota, setQuota] = useState(null);
+  const userId = user?.id;
 
   useEffect(() => {
     getHealth().then((h) => setAiEnabled(Boolean(h.ai)));
   }, []);
+
+  useEffect(() => {
+    if (!aiEnabled || !userId) return;
+    let alive = true;
+    getAiQuota()
+      .then((q) => alive && setQuota(q))
+      .catch(() => alive && setQuota(null));
+    return () => {
+      alive = false;
+    };
+  }, [aiEnabled, userId]);
 
   if (isFloor(bed)) {
     return (
@@ -101,8 +134,10 @@ export default function AiAdvisor({ bed, environment, onUpdateBed, onApply }) {
         },
       });
       setProposal(res);
+      if (res.quota) setQuota(res.quota);
       setStatus({ loading: false, error: null });
     } catch (err) {
+      if (err.data?.quota) setQuota(err.data.quota);
       setStatus({ loading: false, error: err.message });
     }
   };
@@ -112,9 +147,11 @@ export default function AiAdvisor({ bed, environment, onUpdateBed, onApply }) {
 
   return (
     <div className="ai-advisor">
-      {aiEnabled === false && (
-        <p className="panel-error">
-          Il consulente IA non è attivo sul server: imposta <code>ANTHROPIC_API_KEY</code> nel file <code>.env</code>.
+      {aiEnabled === false && <p className="panel-error">Il consulente IA non è attivo in questo momento.</p>}
+      {aiEnabled && !user && (
+        <p className="ai-login">
+          <i className="fa-solid fa-user-lock" /> Il consulente IA è per chi ha un account, ed è gratis: <Link to="/accedi">accedi</Link> o{" "}
+          <Link to="/registrati">registrati</Link>. Il tuo disegno resta salvato.
         </p>
       )}
 
@@ -204,7 +241,12 @@ export default function AiAdvisor({ bed, environment, onUpdateBed, onApply }) {
         <input type="checkbox" checked={petSafe} onChange={(e) => setPetSafe(e.target.checked)} /> Ho animali o bambini: evita le piante tossiche
       </label>
 
-      <button className={`button is-primary is-fullwidth ${status.loading ? "is-loading" : ""}`} onClick={ask} disabled={status.loading || aiEnabled === false}>
+      <QuotaNote quota={user ? quota : null} />
+      <button
+        className={`button is-primary is-fullwidth ${status.loading ? "is-loading" : ""}`}
+        onClick={ask}
+        disabled={status.loading || !aiEnabled || !user || Boolean(quota && (quota.remaining <= 0 || quota.globalExhausted))}
+      >
         <i className="fa-solid fa-wand-magic-sparkles" />&nbsp; Proponimi un'aiuola
       </button>
       {status.loading && <p className="panel-note">Il consulente sta progettando… può richiedere fino a un minuto.</p>}
@@ -212,6 +254,11 @@ export default function AiAdvisor({ bed, environment, onUpdateBed, onApply }) {
 
       {proposal && (
         <section className="proposal">
+          {proposal.cached && (
+            <p className="panel-note">
+              Per questa richiesta c'era già una proposta pronta: non ha consumato la tua quota. Cambia una preferenza per averne una diversa.
+            </p>
+          )}
           <h3>{proposal.title}</h3>
           <p>{proposal.concept}</p>
           <ul className="proposal-plants">

@@ -76,7 +76,15 @@ node --test --test-name-pattern="notifiche" test/   # tests matching a name
 - Touch input is handled with native pointer events: pinch zoom, tap deduplication, `Konva.dragDistance`, and larger hit targets on coarse pointers. Konva's own gesture handling was not reliable here, so don't replace this with Konva gesture APIs.
 - Plant icons are drawn procedurally into cached canvases (`src/lib/plantIcons.js`). Several art styles are selected through `artStyle.js`; the "tempera" style lives in `tempera.js` and `temperaGround.js`.
 
-**AI advisor.** `server/ai/advisor.js` and `routes/suggest.js` use the Anthropic SDK and are enabled only by `ANTHROPIC_API_KEY`. They are rate-limited.
+**AI advisor and plans.**
+- `server/ai/advisor.js` builds the prompt (about 40 catalog candidates plus the form data) and calls Google Gemini through `server/ai/gemini.js`. That file is plain `fetch` to `generateContent`, with structured JSON output and a capped thinking budget. It needs `GEMINI_API_KEY`; `GEMINI_MODEL` defaults to `gemini-2.5-flash`.
+- The advisor needs both the key and the database, and only logged-in users can use it.
+- Plans live in `src/lib/plans.js`, a shared module. It sets the AI quota per plan (free: 1 every 48h; premium: 3 every 24h, rolling windows) and `fullForecast`. Without `fullForecast`, the "Crescita" panel shows only the aesthetic scores and a Premium teaser.
+- `users.plan` is `'free'` or `'premium'`. There are no payments yet: the owner sets it by hand in Supabase.
+- `routes/suggest.js` (`GET /api/suggest/quota`, `POST /api/suggest`) does this in order:
+  - serves identical requests from `ai_cache` without consuming quota;
+  - checks the user quota and a global daily cap (`AI_DAILY_LIMIT`, default 230), counted in `ai_usage` per Google day in Los Angeles time;
+  - reserves a usage row before calling Gemini and deletes it if the call fails.
 
 **Notifications** (`server/notify.js`, `server/scheduler.js`, `server/pushMessages.js`, `public/push-sw.js`).
 - The scheduler runs every 10 minutes in Europe/Rome time. It deduplicates through `notification_log` (`alreadySent(userId, key)`, with keys such as `daily:<date>`, `task:<id>`, `alert:<id>`, `week:<isoWeek>`).

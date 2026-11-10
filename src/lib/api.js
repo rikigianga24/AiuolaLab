@@ -9,6 +9,7 @@ async function request(path, { method = "GET", body, headers } = {}) {
   if (!res.ok) {
     const err = new Error(data.error || `Errore ${res.status}`);
     err.status = res.status;
+    err.data = data;
     throw err;
   }
   return data;
@@ -33,6 +34,7 @@ export const getPlant = (id) => request(`/plants/${encodeURIComponent(id)}`);
 export const getPlantPhotos = (name, full = false) =>
   request(`/plants/photos?name=${encodeURIComponent(name)}${full ? "&full=1" : ""}`);
 export const suggestBed = (payload) => request("/suggest", { method: "POST", body: payload });
+export const getAiQuota = () => request("/suggest/quota");
 
 export const projectsApi = (ownerKey) => {
   const headers = { "X-Owner-Key": ownerKey };

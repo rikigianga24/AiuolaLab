@@ -53,7 +53,7 @@ export function PrivacyPage() {
         <li>hosting dell'applicazione: {LEGAL.hosting};</li>
         <li>database: {LEGAL.database};</li>
         <li>invio delle email: {LEGAL.mailProvider};</li>
-        <li>consulente IA: Anthropic (Stati Uniti), che riceve solo i dati dell'aiuola e le preferenze che scrivi, non la tua email;</li>
+        <li>consulente IA: Google (servizio Gemini, Stati Uniti), che riceve solo i dati dell'aiuola e le preferenze che scrivi, non la tua email né il tuo nome. Con il servizio gratuito di Google questi testi possono essere usati da Google per migliorare i suoi prodotti: non scrivere dati personali nel campo «Altre richieste»;</li>
         <li>notifiche push: il servizio di notifiche del tuo browser (per esempio Google, Apple o Mozilla), che riceve il testo della notifica.</li>
       </ul>
       <p>
