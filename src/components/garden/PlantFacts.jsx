@@ -1,7 +1,9 @@
+import "../../styles/guide.css";
 import { Link } from "react-router-dom";
 import PlantSafety from "./PlantSafety";
 import { STYLE_BY_ID, stylesFor } from "../../lib/gardenStyles";
 import { PRICE_TIERS, priceTier } from "../../lib/budget";
+import { FERTILIZERS, fertilizerPlan, monthsText, npkText } from "../../lib/fertilizers";
 import { COLORS, CYCLE, GROUPS, SEASONS, SOIL_PH, SOIL_TEXTURE, SUNLIGHT, WATERING, formatRangeCm, hardinessInfo } from "../../lib/labels";
 
 const list = (values, dict) =>
@@ -11,6 +13,8 @@ export default function PlantFacts({ plant }) {
   const cold = hardinessInfo(plant.hardiness);
   const styles = plant.cropId ? [] : stylesFor(plant);
   const price = PRICE_TIERS[priceTier(plant)];
+  const feed = fertilizerPlan(plant);
+  const mainFeed = FERTILIZERS[feed.main];
   return (
     <dl className="plant-facts">
       {plant.description && <dd className="facts-wide facts-note-text">{plant.description}</dd>}
@@ -70,6 +74,23 @@ export default function PlantFacts({ plant }) {
           </dd>
         </>
       )}
+      <dt>Concime</dt>
+      <dd className="feed-facts">
+        <span className="feed-badge">
+          <i className="fa-solid fa-flask" /> {mainFeed.label}
+          {npkText(mainFeed) && <small>{npkText(mainFeed)}</small>}
+        </span>
+        <span className="feed-months">{monthsText(feed.months)}</span>
+        <span className="feed-note">{feed.note}</span>
+        {feed.extra.map((x) => (
+          <span key={x.id} className="feed-extra">
+            + {FERTILIZERS[x.id].label.toLowerCase()} ({monthsText(x.months)}): {x.why}
+          </span>
+        ))}
+        <Link to="/guida#concimi" className="feed-link">
+          Guida ai concimi <i className="fa-solid fa-arrow-right" />
+        </Link>
+      </dd>
       {styles.length > 0 && (
         <>
           <dt>Stili</dt>

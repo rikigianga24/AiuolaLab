@@ -1,0 +1,278 @@
+// Contenuti della guida: concimazione, carenze, malattie, parassiti, trucchi
+// e falsi miti. Testi pensati per giardini e balconi italiani.
+
+// Regole d'oro della concimazione.
+export const FEEDING_RULES = [
+  { icon: "fa-droplet", title: "Mai su terreno secco", text: "Annaffia prima, concima dopo. Il concime su radici asciutte le brucia, soprattutto quello liquido e minerale." },
+  { icon: "fa-scale-balanced", title: "Meglio meno che troppo", text: "Una dose in meno non fa danni, una in più sì: radici bruciate, foglie dai bordi secchi, crosta bianca sul terriccio. Nel dubbio usa metà dose e più spesso." },
+  { icon: "fa-bed", title: "Non concimare chi sta male", text: "Una pianta appena trapiantata, sofferente o malata non riesce ad assorbire: aspetta 3-4 settimane dal trapianto e prima risolvi la causa (acqua, luce, parassiti)." },
+  { icon: "fa-temperature-high", title: "Non in pieno caldo", text: "Con più di 30 °C molte piante si fermano: il concime resta nel terreno e si concentra. A luglio e agosto concima la sera e a dosi ridotte, o salta." },
+  { icon: "fa-snowflake", title: "Stop all'azoto da fine agosto", text: "L'azoto fa nascere germogli teneri che non fanno in tempo a indurirsi prima del gelo. Dopo agosto al massimo potassio, che anzi aiuta a superare l'inverno." },
+  { icon: "fa-bullseye", title: "Dove sono le radici che mangiano", text: "Le radici che assorbono non sono attaccate al tronco ma sotto il bordo della chioma: spargi lì il granulare, non contro il fusto." },
+  { icon: "fa-bucket", title: "I vasi vanno nutriti di più", text: "Ogni annaffiatura porta via un po' di nutrienti dai fori: in vaso servono concimazioni più frequenti e più leggere che in piena terra." },
+  { icon: "fa-seedling", title: "Il terreno prima della pianta", text: "Compost e letame maturo non nutrono solo la pianta: rendono il terreno soffice, trattengono acqua e nutrienti. Un terreno vivo ha bisogno di meno concime." },
+];
+
+// Calendario della concimazione per tipo di pianta (mesi 1-12).
+export const FEEDING_CALENDAR = [
+  { who: "Rose", months: { 3: "rose", 4: "rose", 6: "potassio", 7: "potassio" } },
+  { who: "Perenni da fiore", months: { 3: "organico", 4: "organico", 6: "universale" } },
+  { who: "Arbusti", months: { 2: "organico", 3: "universale", 4: "universale" } },
+  { who: "Siepi sempreverdi", months: { 3: "azoto", 4: "azoto", 6: "azoto" } },
+  { who: "Acidofile", months: { 3: "acidofile", 5: "acidofile", 6: "acidofile" } },
+  { who: "Bulbose", months: { 3: "bulbi", 4: "bulbi", 10: "fosforo", 11: "fosforo" } },
+  { who: "Fiori da balcone", months: { 4: "lentaCessione", 5: "fioritura", 6: "fioritura", 7: "fioritura", 8: "fioritura", 9: "fioritura" } },
+  { who: "Agrumi", months: { 3: "agrumi", 4: "agrumi", 5: "agrumi", 6: "agrumi", 7: "agrumi", 8: "agrumi", 9: "potassio" } },
+  { who: "Orto da frutto", months: { 2: "organico", 3: "organico", 5: "frutto", 6: "frutto", 7: "frutto", 8: "frutto" } },
+  { who: "Orto da foglia", months: { 3: "foglia", 4: "foglia", 8: "foglia", 9: "foglia" } },
+  { who: "Mediterranee", months: { 3: "poco" } },
+  { who: "Piante grasse", months: { 5: "succulente", 7: "succulente" } },
+];
+
+// Come riconoscere carenze ed eccessi dalle foglie.
+export const SYMPTOMS = [
+  { look: "Foglie vecchie (in basso) gialle in modo uniforme, pianta pallida e che cresce poco", cause: "Carenza di azoto", fix: "Concime azotato o organico; nei vasi spesso il terriccio è semplicemente esaurito.", tone: "N" },
+  { look: "Foglie giovani (in cima) gialle con le nervature che restano verdi", cause: "Clorosi ferrica", fix: "Tipica di terreni calcarei e acqua dura, soprattutto su acidofile e agrumi: ferro chelato EDDHA e, a lungo termine, concime acidificante e acqua piovana.", tone: "Fe" },
+  { look: "Foglie vecchie gialle tra le nervature, a chiazze, a volte rossicce", cause: "Carenza di magnesio", fix: "Solfato di magnesio (sale inglese): un cucchiaio in 5 litri d'acqua, 2-3 volte. Frequente su rose, agrumi e pomodori.", tone: "Mg" },
+  { look: "Bordi delle foglie vecchie secchi e marroni, come bruciati; fiori e frutti scarsi", cause: "Carenza di potassio (o eccesso di sali)", fix: "Concime ricco di potassio; se il terriccio ha una crosta bianca, prima lava il vaso con molta acqua.", tone: "K" },
+  { look: "Foglie verde scuro tendenti al violaceo, crescita bloccata, poche radici", cause: "Carenza di fosforo (o freddo)", fix: "Spesso è il terreno freddo che blocca l'assorbimento: aspetta il caldo. Se persiste, concime fosfatico vicino alle radici.", tone: "P" },
+  { look: "Tante foglie grandi e scure, pochi o nessun fiore, tanti afidi", cause: "Eccesso di azoto", fix: "Sospendi l'azoto e passa a un concime ricco di potassio. Tipico di glicini e pomodori concimati troppo.", tone: "N" },
+  { look: "Punte e bordi bruciati anche sulle foglie nuove, crosta bianca sul terriccio o sul vaso", cause: "Eccesso di concime o di sali (acqua dura)", fix: "Annaffia abbondantemente facendo uscire l'acqua dai fori, 2-3 volte. Salta le concimazioni per un mese.", tone: "!" },
+  { look: "Macchia nera e secca sotto il frutto del pomodoro o del peperone", cause: "Marciume apicale (calcio)", fix: "Quasi sempre annaffiature irregolari, non mancanza di calcio nel terreno: annaffia con regolarità e pacciama.", tone: "Ca" },
+];
+
+// Malattie fungine e batteriche.
+export const DISEASES = [
+  {
+    name: "Oidio (mal bianco)",
+    icon: "fa-cloud",
+    who: "Rose, zucchine, zucche, cetrioli, salvie, ortensie, querce, viti",
+    when: "Primavera ed estate, con giornate calde e notti umide; anche senza pioggia",
+    signs: "Patina bianca farinosa sulle foglie, che poi ingialliscono e seccano. I germogli si deformano.",
+    prevent: "Piante distanziate e arieggiate, niente eccesso di azoto, varietà resistenti. Annaffia al piede.",
+    cure: "Togli le foglie colpite. Zolfo bagnabile nelle ore fresche (mai sopra 30 °C: brucia le foglie) oppure bicarbonato di potassio. Anche il latte diluito al 10% ha un effetto preventivo.",
+  },
+  {
+    name: "Ticchiolatura della rosa (macchia nera)",
+    icon: "fa-circle",
+    who: "Rose",
+    when: "Da maggio in poi, con piogge e foglie bagnate a lungo",
+    signs: "Macchie nere dal bordo sfrangiato, la foglia ingiallisce attorno e cade. In estate la rosa resta spoglia.",
+    prevent: "Non bagnare le foglie, raccogli le foglie cadute (svernano lì le spore), pacciama per evitare gli schizzi di terra, scegli rose resistenti.",
+    cure: "Togli foglie malate (non nel compost). Prodotti a base di rame in primavera, oppure fungicidi specifici ammessi per uso hobbistico.",
+  },
+  {
+    name: "Peronospora",
+    icon: "fa-droplet",
+    who: "Pomodori, patate, vite, basilico, cipolle, zucchine",
+    when: "Periodi caldo-umidi, piogge frequenti, rugiade",
+    signs: "Macchie giallo-oleose sopra la foglia e muffa grigio-violacea sotto; sul pomodoro macchie brune su foglie e frutti che marciscono in pochi giorni.",
+    prevent: "Mai bagnare le foglie, tutori e sfemminellatura per arieggiare, rotazione delle colture, togli le foglie basse a contatto con il terreno.",
+    cure: "Rame (ossicloruro o idrossido) dopo le piogge, nelle ore fresche. Le piante molto colpite vanno tolte. Il rame si accumula nel suolo: usalo solo quando serve.",
+  },
+  {
+    name: "Ruggine",
+    icon: "fa-fire",
+    who: "Rose, malvarosa, gerani, pervinche, menta, fagioli, porri",
+    when: "Primavera e autunno umidi",
+    signs: "Pustole arancioni o brune sotto le foglie, macchie gialle sopra.",
+    prevent: "Arieggiare, non bagnare le foglie, togliere le foglie colpite appena compaiono.",
+    cure: "Zolfo o rame; le foglie malate vanno eliminate, non compostate.",
+  },
+  {
+    name: "Botrite (muffa grigia)",
+    icon: "fa-smog",
+    who: "Fragole, peonie, gerani, ciclamini, pomodori, uva, fiori recisi",
+    when: "Primavera e autunno freschi e umidi; serre e balconi poco ventilati",
+    signs: "Muffa grigia polverosa su fiori, frutti e boccioli che marciscono. I boccioli di peonia anneriscono e non si aprono.",
+    prevent: "Togli subito fiori appassiti e frutti marci, arieggia, non annaffiare la sera, paglia sotto le fragole.",
+    cure: "Rimuovi tutte le parti colpite. Esistono prodotti biologici a base di Bacillus subtilis o Trichoderma.",
+  },
+  {
+    name: "Marciume radicale e del colletto",
+    icon: "fa-water",
+    who: "Piante in vaso, lavanda, rosmarino, piante grasse, agrumi, bosso",
+    when: "Tutto l'anno con ristagni d'acqua, soprattutto in inverno",
+    signs: "La pianta appassisce anche con la terra bagnata, foglie gialle che cadono, base del fusto molle e scura, odore di marcio.",
+    prevent: "Drenaggio: fori liberi, niente acqua nel sottovaso, terriccio leggero (con sabbia o pomice per mediterranee e grasse), annaffiare solo quando i primi cm sono asciutti.",
+    cure: "Raramente si salva: svasa, taglia le radici marce, rinvasa in terriccio nuovo e asciutto. Prevenire è l'unica vera cura.",
+  },
+  {
+    name: "Fumaggine",
+    icon: "fa-paintbrush",
+    who: "Agrumi, oleandri, alloro, pittosporo, olivo",
+    when: "Estate, dopo attacchi di afidi, cocciniglie o mosca bianca",
+    signs: "Patina nera come fuliggine sulle foglie: è un fungo che cresce sulla melata zuccherina degli insetti.",
+    prevent: "Combatti gli insetti che producono la melata (spesso ci sono anche le formiche che li proteggono).",
+    cure: "Elimina prima cocciniglie e afidi, poi lava le foglie con acqua e sapone molle potassico.",
+  },
+  {
+    name: "Corineo e bolla del pesco",
+    icon: "fa-circle-dot",
+    who: "Pesco, albicocco, ciliegio, alloro ceraso (corineo); pesco (bolla)",
+    when: "Fine inverno e primavera piovosa",
+    signs: "Corineo: foglie bucherellate 'a pallini'. Bolla: foglie bollose, arricciate e rossastre.",
+    prevent: "Si previene solo d'inverno, perché quando si vedono i sintomi è tardi.",
+    cure: "Rame alla caduta delle foglie (novembre) e alla rottura delle gemme (febbraio-marzo).",
+  },
+];
+
+// Insetti e altri parassiti.
+export const PESTS = [
+  {
+    name: "Afidi",
+    icon: "fa-bug",
+    who: "Rose, fave, cavoli, peperoni, lupini, agrumi, quasi tutto",
+    when: "Primavera, sui germogli teneri",
+    signs: "Colonie di piccoli insetti verdi, neri o grigi sulle punte; foglie arricciate e appiccicose, formiche che salgono e scendono.",
+    cure: "Getto d'acqua, poi sapone molle potassico (non detersivo per piatti) o olio di neem. Coccinelle, crisope e sirfidi li mangiano: evita gli insetticidi ad ampio spettro.",
+    tip: "Troppo azoto li attira: foglie molli e tenere sono il loro piatto preferito.",
+  },
+  {
+    name: "Cocciniglie",
+    icon: "fa-shield",
+    who: "Agrumi, oleandri, palme, piante grasse, alloro, olivo",
+    when: "Tutto l'anno, peggio in ambienti caldi e poco ventilati",
+    signs: "Scudetti bruni o batuffoli bianchi cotonosi lungo i rami e sotto le foglie, melata appiccicosa e fumaggine.",
+    cure: "Pochi esemplari: cotton fioc con alcol. Infestazioni: olio bianco minerale o olio di neem a fine inverno, quando le giovani larve non hanno ancora lo scudo.",
+    tip: "Sui balconi riparati e caldi proliferano: arieggia e controlla l'interno della chioma.",
+  },
+  {
+    name: "Ragnetto rosso",
+    icon: "fa-spider",
+    who: "Rose, fagioli, pomodori, cetrioli, conifere nane, piante da balcone",
+    when: "Estate calda e secca, balconi esposti a sud",
+    signs: "Foglie puntinate di giallo, opache, come impolverate; sottilissime ragnatele sotto le foglie.",
+    cure: "Odia l'umidità: bagna spesso il fogliame (anche sotto) la sera presto. Sapone molle o zolfo; in serra si usano acari predatori (Phytoseiulus).",
+    tip: "Se vedi le ragnatele l'infestazione è già avanzata: controlla con una lente sotto le foglie da giugno.",
+  },
+  {
+    name: "Oziorrinco",
+    icon: "fa-moon",
+    who: "Piante in vaso, rododendri, azalee, ortensie, fragole, tasso, alloro, heuchera",
+    when: "Adulti da maggio a settembre di notte; larve nel terriccio in autunno e primavera",
+    signs: "Foglie con il bordo 'morsicato' a semicerchi regolari. Le larve bianche a C mangiano le radici e la pianta collassa d'improvviso.",
+    cure: "Contro le larve: nematodi entomopatogeni (Steinernema o Heterorhabditis) nel terriccio umido ad aprile-maggio e settembre, con terreno sopra i 12 °C. Adulti: raccoglili la notte con una torcia.",
+    tip: "Se la pianta in vaso cede senza motivo, svasa e guarda le radici: trovare larve a C è la conferma.",
+  },
+  {
+    name: "Piralide del bosso",
+    icon: "fa-leaf",
+    who: "Bosso",
+    when: "Da aprile a ottobre, 2-3 generazioni all'anno",
+    signs: "Bruchi verdi a strisce nere dentro la chioma, ragnatele, foglie mangiate fino a lasciare solo lo scheletro; il bosso diventa marrone in pochi giorni.",
+    cure: "Bacillus thuringiensis var. kurstaki appena si vedono i primi bruchi, ripetuto a ogni generazione; trappole a feromoni per capire quando volano le farfalle.",
+    tip: "Dove la piralide è diffusa considera sostituti del bosso come Ilex crenata, Euonymus 'Green Spire' o Teucrium.",
+  },
+  {
+    name: "Popillia japonica",
+    icon: "fa-triangle-exclamation",
+    who: "Rose, viti, piccoli frutti, glicine, tigli, prati (larve)",
+    when: "Adulti da giugno ad agosto",
+    signs: "Coleotteri verde metallico con ciuffi bianchi sui fianchi che scheletrizzano foglie e fiori in gruppo.",
+    cure: "Raccogli gli adulti al mattino presto facendoli cadere in un secchio d'acqua e sapone. Le larve nel prato si combattono con nematodi a fine estate.",
+    tip: "È un organismo da quarantena presente in Piemonte, Lombardia ed Emilia: se lo vedi fuori da queste zone segnalalo al Servizio Fitosanitario della regione.",
+  },
+  {
+    name: "Cimice asiatica",
+    icon: "fa-bug-slash",
+    who: "Frutteti, pomodori, peperoni, fagioli, mais, nocciolo",
+    when: "Da maggio a ottobre; in autunno cerca riparo nelle case",
+    signs: "Cimice marrone marmorizzata; frutti con zone suberose, deformi e che marciscono dove ha punto.",
+    cure: "Difficile in giardino: reti anti-insetto sull'orto e raccolta manuale. Gli insetticidi servono a poco.",
+    tip: "Non schiacciarla in casa (puzza a lungo): aspirapolvere con un sacchetto dedicato.",
+  },
+  {
+    name: "Mosca bianca e tripidi",
+    icon: "fa-feather",
+    who: "Pomodori, gerani, poinsettie, fucsie, salvie, piante da balcone",
+    when: "Estate, e tutto l'anno in serra",
+    signs: "Nuvolette di moscerini bianchi quando scuoti la pianta (mosca bianca); petali e foglie argentati e puntinati (tripidi).",
+    cure: "Trappole cromotropiche gialle (mosca bianca) e azzurre (tripidi), sapone molle, olio di neem.",
+    tip: "Le trappole servono prima di tutto per accorgersene presto: appendine una a primavera.",
+  },
+  {
+    name: "Tuta absoluta (tignola del pomodoro)",
+    icon: "fa-apple-whole",
+    who: "Pomodoro, melanzana, patata",
+    when: "Da giugno, peggio con estati calde",
+    signs: "Gallerie trasparenti nelle foglie (mine) e fori nei frutti con escrementi.",
+    cure: "Bacillus thuringiensis e trappole a feromoni; togli e distruggi foglie e frutti colpiti.",
+    tip: "Non lasciare a fine stagione le piante di pomodoro nell'orto: lì svernano le pupe.",
+  },
+  {
+    name: "Punteruolo rosso",
+    icon: "fa-tree",
+    who: "Palme (Phoenix, anche Chamaerops e Washingtonia)",
+    when: "Da primavera ad autunno",
+    signs: "Ciuffo centrale che si piega, foglie centrali che cadono 'a ombrello', fibre masticate e odore di fermentato.",
+    cure: "Quando si vede è spesso tardi: servono trattamenti preventivi periodici (nematodi o prodotti autorizzati) eseguiti da ditte specializzate.",
+    tip: "In molte regioni c'è l'obbligo di segnalazione e di abbattimento delle palme morte.",
+  },
+  {
+    name: "Lumache e limacce",
+    icon: "fa-shrimp",
+    who: "Hosta, insalate, fragole, basilico, delphinium, piantine appena trapiantate",
+    when: "Primavera e autunno, notti umide, dopo la pioggia",
+    signs: "Fori irregolari nelle foglie, scie argentate di bava, piantine sparite in una notte.",
+    cure: "Esche a base di fosfato ferrico (ammesse in biologico e non pericolose per cani e gatti, a differenza del metaldeide). Raccolta serale con la torcia, tavolette sollevate come rifugio-trappola.",
+    tip: "Annaffia la mattina invece che la sera: il terreno arriva asciutto alla notte e si muovono molto meno.",
+  },
+  {
+    name: "Processionaria",
+    icon: "fa-ellipsis",
+    who: "Pini, cedri e querce (anche in giardino)",
+    when: "Nidi in inverno, discesa delle larve in fila tra febbraio e aprile",
+    signs: "Nidi bianchi sericei in cima ai rami, larve pelose in processione sul terreno.",
+    cure: "Non toccarle: i peli sono fortemente urticanti per persone e soprattutto cani. Taglio dei nidi d'inverno con protezioni, trappole a collare sul tronco, Bacillus thuringiensis in autunno sulle giovani larve.",
+    tip: "La lotta è obbligatoria per legge: per alberi alti meglio chiamare una ditta.",
+  },
+];
+
+// Trucchi e cose non scontate.
+export const TIPS = [
+  { icon: "fa-sun", title: "Annaffia la mattina presto, al piede", text: "Le foglie bagnate la sera restano umide tutta la notte: è il clima ideale per oidio, ticchiolatura e peronospora. Di mattina l'acqua arriva alle radici prima del caldo e le foglie asciugano subito." },
+  { icon: "fa-hand-holding-droplet", title: "Poche volte ma tanta acqua", text: "Annaffiature brevi e frequenti bagnano solo la superficie e tengono le radici in alto, dove si seccano. Meglio poche annaffiature profonde: le radici scendono e la pianta regge meglio la siccità." },
+  { icon: "fa-hand-point-down", title: "Il test del dito", text: "Prima di annaffiare un vaso infila un dito nel terriccio: se i primi 2-3 cm sono umidi aspetta. Più piante muoiono per troppa acqua che per troppo poca." },
+  { icon: "fa-ban", title: "Il sottovaso pieno uccide", text: "Dieci minuti dopo l'annaffiatura svuota il sottovaso. D'inverno toglilo proprio, o metti il vaso su piedini: l'acqua ferma fa marcire le radici." },
+  { icon: "fa-layer-group", title: "Lo strato di ghiaia nel vaso non drena", text: "Contrariamente a quanto si crede, uno strato di ghiaia sul fondo alza il livello dell'acqua stagnante invece di toglierla. Meglio un terriccio drenante in tutto il vaso (con pomice o perlite) e fori liberi." },
+  { icon: "fa-scissors", title: "Disinfetta le forbici", text: "Passa le lame con alcol tra una pianta malata e l'altra: virus, batteri e funghi viaggiano sulle forbici. E taglia sempre netto e inclinato, sopra una gemma." },
+  { icon: "fa-recycle", title: "Foglie malate fuori dal compost", text: "Il compost casalingo non arriva a temperature che uccidono le spore: le foglie con ticchiolatura, ruggine o peronospora vanno nell'umido o nell'indifferenziata." },
+  { icon: "fa-circle-notch", title: "Pacciamatura lontana dal colletto", text: "Corteccia e paglia vanno tenute a qualche centimetro dal fusto: ammucchiate contro il colletto lo tengono umido e lo fanno marcire. E la corteccia fresca all'inizio sottrae un po' di azoto in superficie." },
+  { icon: "fa-trowel", title: "Buca larga, non profonda", text: "Scava una buca larga il doppio della zolla ma profonda quanto la zolla: la pianta deve stare alla stessa altezza in cui era nel vaso. Interrata troppo, il colletto marcisce (eccezione: pomodori, che fanno radici lungo il fusto)." },
+  { icon: "fa-flask-vial", title: "Niente concime minerale nella buca", text: "Il concime minerale a contatto con le radici nuove le brucia. Nella buca metti compost o letame ben maturo, eventualmente funghi micorrizici, e concima solo dopo 3-4 settimane." },
+  { icon: "fa-palette", title: "Ortensie blu o rosa?", text: "Il colore delle ortensie macrophylla dipende dal terreno: in terreno acido con alluminio disponibile i fiori diventano blu, nel calcareo rosa. Il solfato di alluminio aiuta il blu, ma le varietà bianche restano bianche." },
+  { icon: "fa-fire-flame-simple", title: "La cenere è potassio... e calcare", text: "La cenere di legna (non trattata) è ricca di potassio e calcio, ma alza molto il pH: un velo sull'orto va bene, mai sulle acidofile, mai in quantità e mai la cenere di carbonella o pellet con additivi." },
+  { icon: "fa-cloud-rain", title: "Raccogli l'acqua piovana", text: "L'acqua del rubinetto in molte zone d'Italia è molto calcarea: a lungo andare alza il pH del vaso e fa ingiallire acidofile e agrumi. L'acqua piovana è perfetta (e gratis)." },
+  { icon: "fa-vial", title: "Conosci il tuo terreno", text: "Test casalingo: un cucchiaio di terra con aceto che frigge = terreno calcareo; terra bagnata con bicarbonato che frigge = acido. Un kit del pH costa pochi euro e ti evita di comprare le piante sbagliate." },
+  { icon: "fa-calendar-check", title: "L'autunno è il momento migliore per piantare", text: "Arbusti, perenni e alberi piantati in ottobre-novembre radicano durante l'inverno con le piogge e affrontano la prima estate già forti. In primavera serve molta più acqua." },
+  { icon: "fa-bugs", title: "Gli insetti utili lavorano gratis", text: "Coccinelle, crisope, sirfidi e vespe parassitoidi tengono sotto controllo afidi e bruchi. Un insetticida ad ampio spettro li uccide per primi e dopo gli afidi tornano più numerosi. Fiori ricchi di nettare (achillea, finocchio, facelia) li attirano." },
+  { icon: "fa-rotate", title: "Ruota le colture nell'orto", text: "Non rimettere la stessa famiglia (es. pomodori, peperoni, patate e melanzane sono tutte solanacee) nello stesso punto per almeno 3 anni: malattie e parassiti del terreno si accumulano." },
+  { icon: "fa-snowflake", title: "D'inverno il nemico è il vento secco", text: "Le piante in vaso muoiono più spesso per radici gelate e per secco che per il freddo in sé: avvolgi il vaso (non la pianta) e annaffia nelle giornate miti se il terriccio è asciutto." },
+];
+
+// Falsi miti.
+export const MYTHS = [
+  { myth: "I fondi di caffè acidificano il terreno", truth: "I fondi già usati sono quasi neutri: sono un buon ammendante nel compost, ma non trasformano un terreno calcareo in acido. E in strato spesso fanno la muffa." },
+  { myth: "I gusci d'uovo fermano le lumache", truth: "Le lumache ci passano sopra senza problemi. I gusci tritati danno calcio, ma lo rilasciano in anni, non in una stagione." },
+  { myth: "Più concime = più fiori", truth: "Oltre una certa dose il concime non serve più e inizia a far danni: radici bruciate, tessuti molli, più parassiti. E troppo azoto dà più foglie, non più fiori." },
+  { myth: "Annaffiare al sole brucia le foglie per l'effetto lente", truth: "Le gocce non bruciano le foglie. Annaffiare in pieno sole è sconsigliato per un altro motivo: metà dell'acqua evapora e le radici si stressano per lo sbalzo di temperatura." },
+  { myth: "Il detersivo per i piatti è come il sapone di Marsiglia", truth: "I detersivi contengono sgrassanti e profumi che danneggiano le foglie. Contro gli afidi si usa sapone molle potassico, che è fatto apposta." },
+  { myth: "Una pianta gialla ha bisogno di concime", truth: "Il giallo più comune è da troppa acqua (radici asfissiate), poi da luce sbagliata o freddo. Concimare una pianta con le radici marce la finisce." },
+  { myth: "Le piante grasse non vanno mai annaffiate", truth: "In estate crescono e vogliono acqua abbondante, ma solo quando il terriccio è completamente asciutto. È d'inverno che vanno lasciate quasi a secco." },
+  { myth: "La birra nella trappola risolve il problema delle lumache", truth: "La birra le attira anche dai giardini vicini: funziona solo se svuoti le trappole ogni giorno e non come unica difesa." },
+];
+
+// Lessico dell'etichetta.
+export const LABEL_WORDS = [
+  { word: "NPK 10-10-10", text: "Percentuali di azoto, fosforo (come P₂O₅) e potassio (come K₂O). In 1 kg di un 10-10-10 ci sono 100 g di ciascuno: il resto è materia di supporto." },
+  { word: "Organico", text: "Di origine animale o vegetale (letame, cornunghia, farina d'ossa, sangue secco, pollina). Titolo basso, rilascio lento, nutre anche la vita del suolo. Consentito in agricoltura biologica." },
+  { word: "Minerale", text: "Sali di sintesi o estratti da miniera. Titolo alto e azione veloce: preciso, ma facile da esagerare, e non migliora il terreno." },
+  { word: "Organo-minerale", text: "Base organica arricchita con minerali: un buon compromesso tra velocità e lunga durata." },
+  { word: "Lenta cessione", text: "Granuli rivestiti che rilasciano i nutrienti in 3-6 mesi in base a temperatura e umidità. Ideali per vasi e per chi dimentica di concimare." },
+  { word: "Mesoelementi", text: "Calcio (Ca), magnesio (Mg) e zolfo (S): servono in quantità minori di NPK ma la loro carenza si vede (es. il magnesio per il verde delle foglie)." },
+  { word: "Microelementi", text: "Ferro, manganese, zinco, rame, boro, molibdeno: servono in tracce. In etichetta compaiono spesso come 'con microelementi'." },
+  { word: "Chelato (EDTA, DTPA, EDDHA)", text: "Forma che tiene il ferro disponibile per la pianta. Nei terreni calcarei (pH sopra 7,5) funziona solo l'EDDHA." },
+  { word: "Ammendante", text: "Migliora la struttura del terreno più che nutrirlo: compost, letame, torba, fibra di cocco." },
+  { word: "Correttivo", text: "Modifica il pH: zolfo per acidificare, calce o dolomite per alzarlo." },
+];
