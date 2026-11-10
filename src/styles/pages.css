@@ -509,3 +509,133 @@
     height: 110px;
   }
 }
+
+/* ---------- Chi sono: la storia ---------- */
+
+.story-section {
+  padding-bottom: 3rem;
+}
+
+.story {
+  list-style: none;
+  max-width: 760px;
+  margin: 1.5rem auto 0;
+  padding: 0;
+  position: relative;
+}
+
+.story > li:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 27px;
+  top: 56px;
+  bottom: 0;
+  border-left: 2px dashed var(--sage);
+}
+
+.story > li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 1.2rem;
+  padding-bottom: 2rem;
+}
+
+.story > li:last-child {
+  padding-bottom: 0;
+}
+
+.story-dot {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--sage-dark);
+  color: #fffaf0;
+  font-weight: 700;
+  font-size: 0.9rem;
+  box-shadow: 0 0 0 5px var(--cream);
+}
+
+.story-dot i {
+  font-size: 1.2rem;
+}
+
+.story h3 {
+  font-family: var(--font-title);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0.7rem 0 0.4rem;
+}
+
+.story p {
+  font-size: 1.03rem;
+  line-height: 1.7;
+  margin-bottom: 0.7rem;
+}
+
+.story-chips {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.3rem 0 0.9rem;
+  padding: 0;
+}
+
+.story-chips li {
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: #f6e3d8;
+  color: var(--terracotta-dark);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.story-done {
+  list-style: none;
+  margin: 0.3rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.story-done li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.7rem 0.85rem;
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.story-done i {
+  color: var(--sage-dark);
+  margin-top: 0.2rem;
+}
+
+@media (max-width: 600px) {
+  .story > li:not(:last-child)::before {
+    left: 21px;
+    top: 44px;
+  }
+  .story > li {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 0.8rem;
+  }
+  .story-dot {
+    width: 44px;
+    height: 44px;
+    font-size: 0.75rem;
+  }
+  .story-done {
+    grid-template-columns: 1fr;
+  }
+}

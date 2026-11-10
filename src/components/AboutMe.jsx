@@ -28,6 +28,95 @@ const PROJECT = [
   },
 ];
 
+const MISTAKES = [
+  { icon: "fa-paw", label: "cinghiali" },
+  { icon: "fa-tree", label: "caprioli" },
+  { icon: "fa-moon", label: "tassi" },
+  { icon: "fa-virus", label: "malattie" },
+  { icon: "fa-flask", label: "troppo concime" },
+  { icon: "fa-faucet-drip", label: "irrigazione montata male" },
+];
+
+const DONE = [
+  { icon: "fa-fish", text: "Ho rimesso a posto una fontana, riempiendola di piante e pesci" },
+  { icon: "fa-draw-polygon", text: "Ho costruito quattro aiuole" },
+  { icon: "fa-apple-whole", text: "Ho piantato alberi da frutto" },
+  { icon: "fa-leaf", text: "Ho rimesso in sesto il giardino" },
+];
+
+function Story() {
+  return (
+    <section className="page-body story-section">
+      <div className="container">
+        <SectionTitle script="dal 2022" title="La mia storia" />
+        <ol className="story">
+          <li>
+            <span className="story-dot">2022</span>
+            <div>
+              <h3>L'inizio</h3>
+              <p>
+                Tutto è cominciato nel 2022. Dopo una vita di studi e di lavoro passata davanti ai computer e alla programmazione, stavo
+                scoprendo il vero valore della natura e la sua complessità: un sistema molto più intricato di qualsiasi codice abbia mai scritto.
+              </p>
+              <p>Poi sono arrivati eventi non belli della mia vita, e lì ho capito cosa conta davvero.</p>
+            </div>
+          </li>
+          <li>
+            <span className="story-dot">
+              <i className="fa-solid fa-person-digging" />
+            </span>
+            <div>
+              <h3>Da solo, sbagliando</h3>
+              <p>
+                Ho iniziato da solo, inventandomi completamente le mie logiche di piantatura. E ho sbagliato, più e più volte. Ogni errore mi
+                ha mostrato il danno che aveva fatto:
+              </p>
+              <ul className="story-chips">
+                {MISTAKES.map((m) => (
+                  <li key={m.label}>
+                    <i className={`fa-solid ${m.icon}`} /> {m.label}
+                  </li>
+                ))}
+                <li>…e mille altre cose</li>
+              </ul>
+              <p>
+                Ma non mi sono mai arreso. Sono testardo: <strong>non perdo io.</strong>
+              </p>
+            </div>
+          </li>
+          <li>
+            <span className="story-dot">
+              <i className="fa-solid fa-house-chimney" />
+            </span>
+            <div>
+              <h3>L'agriturismo</h3>
+              <p>Poi ho avuto l'idea di creare un agriturismo e di occuparmi io di tutto l'esterno.</p>
+              <ul className="story-done">
+                {DONE.map((d) => (
+                  <li key={d.text}>
+                    <i className={`fa-solid ${d.icon}`} /> {d.text}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </li>
+          <li>
+            <span className="story-dot">oggi</span>
+            <div>
+              <h3>Contento, ma con tanto da imparare</h3>
+              <p>
+                Adesso sono contento di quello che ho costruito, ma ho ancora molto da imparare: non ho l'esperienza dei vivaisti che
+                accarezzano le piante da 10 o 15 anni. AiuolaLab nasce anche da tutti i miei errori, perché chi parte da zero possa farne
+                qualcuno in meno.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+  );
+}
+
 export default function AboutMe() {
   return (
     <div className="page">
@@ -77,6 +166,8 @@ export default function AboutMe() {
           </div>
         </div>
       </section>
+
+      <Story />
 
       <section className="page-band">
         <div className="container">
