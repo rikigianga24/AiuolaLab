@@ -96,7 +96,7 @@ export default function PlantFacts({ plant }) {
           <dt>Stili</dt>
           <dd className="style-tags">
             {styles.map((id) => (
-              <Link key={id} to={`/stili#${id}`} title={STYLE_BY_ID[id].tagline}>
+              <Link key={id} to={`/stili/${id}`} title={STYLE_BY_ID[id].tagline}>
                 {STYLE_BY_ID[id].short}
               </Link>
             ))}

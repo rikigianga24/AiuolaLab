@@ -175,6 +175,30 @@
     var(--cream-dark);
 }
 
+/* apertura con foto: sfumata crema a sinistra, come la home */
+.page-hero.has-image {
+  background-size: cover;
+  background-position: center right;
+  padding-bottom: 6rem;
+}
+
+.page-hero.has-image::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(247, 241, 227, 0.97) 0%, rgba(247, 241, 227, 0.9) 40%, rgba(247, 241, 227, 0.2) 75%, rgba(247, 241, 227, 0) 100%);
+}
+
+.page-hero.has-image .page-hero-sprig {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .page-hero.has-image::before {
+    background: linear-gradient(180deg, rgba(247, 241, 227, 0.94) 0%, rgba(247, 241, 227, 0.88) 60%, rgba(247, 241, 227, 0.7) 100%);
+  }
+}
+
 .page-hero.is-compact {
   padding-bottom: 4rem;
 }

@@ -104,7 +104,9 @@ export default function GardenPage() {
     return () => clearTimeout(t);
   }, [project]);
   useEffect(() => {
-    if (!user || (!project.beds.length && !project.remoteId)) return;
+    // si sincronizza con l'account oppure se il progetto è condiviso con un link
+    // (così chi ha il link vede sempre l'ultima versione)
+    if (!(user || project.shareToken) || (!project.beds.length && !project.remoteId)) return;
     const t = setTimeout(() => {
       syncProject(project)
         .then((saved) => {
@@ -772,6 +774,7 @@ export default function GardenPage() {
         showIrrigation={showIrrigation}
         onToggleIrrigation={setShowIrrigation}
         onProjectSaved={(remoteId) => history.patchAll((p) => ({ ...p, remoteId }))}
+        onProjectShared={(shared) => history.patchAll((p) => ({ ...p, remoteId: shared.remoteId, shareToken: shared.shareToken }))}
         onRemovePlants={(bedId, plantIds) =>
           updateBed(bedId, (b) => ({ ...b, plants: b.plants.filter((p) => !plantIds.includes(p.id)) }))
         }

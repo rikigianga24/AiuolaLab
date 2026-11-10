@@ -1,11 +1,103 @@
 import { useCallback, useEffect, useState } from "react";
-import { getProjectStore } from "../../lib/projects";
+import { ENVIRONMENTS, getProjectStore, shareProject, shareUrl, unshareProject } from "../../lib/projects";
 import BudgetPanel from "./BudgetPanel";
 
 const fmtDate = (iso) =>
   iso ? new Date(iso).toLocaleString("it-IT", { dateStyle: "short", timeStyle: "short" }) : "";
 
-export default function ProjectPanel({ project, onOpen, onNew, onRename, onSaved, onBudgetSettings, notify }) {
+// Condivisione con un link in sola lettura.
+function ShareBox({ project, onShared, notify }) {
+  const [busy, setBusy] = useState(false);
+  const what = (ENVIRONMENTS[project.type]?.short ?? ENVIRONMENTS[project.type]?.label ?? "giardino").toLowerCase();
+  const url = project.shareToken ? shareUrl(project.shareToken) : null;
+  const message = `Guarda il mio ${what} «${project.name}» su AiuolaLab`;
+
+  const create = async () => {
+    if (!project.beds.length) return notify("Disegna almeno un'aiuola prima di condividere.", "warning");
+    setBusy(true);
+    try {
+      onShared(await shareProject(project));
+      notify("Link creato: ora puoi mandarlo a chi vuoi.", "success");
+    } catch (err) {
+      notify(`Condivisione non riuscita: ${err.message}`, "danger");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const stop = async () => {
+    if (!window.confirm("Smettere di condividere? Chi ha il link non potrà più vedere il progetto.")) return;
+    setBusy(true);
+    try {
+      onShared(await unshareProject(project));
+      notify("Il link non funziona più.", "success");
+    } catch (err) {
+      notify(`Operazione non riuscita: ${err.message}`, "danger");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      notify("Link copiato.", "success");
+    } catch {
+      window.prompt("Copia il link:", url);
+    }
+  };
+
+  const nativeShare = () => navigator.share({ title: project.name, text: message, url }).catch(() => {});
+
+  return (
+    <div className="share-box">
+      <h3 className="gp-heading">
+        <i className="fa-solid fa-share-nodes" /> Condividi
+      </h3>
+      {url ? (
+        <>
+          <p className="panel-note">Chi apre il link vede il progetto ma non può modificarlo. Le tue modifiche compaiono da sole.</p>
+          <div className="share-link">
+            <input className="input is-small" value={url} readOnly onFocus={(e) => e.target.select()} aria-label="Link di condivisione" />
+            <button className="button is-small is-primary" onClick={copy}>
+              <i className="fa-solid fa-copy" />
+              &nbsp; Copia
+            </button>
+          </div>
+          <div className="button-stack horizontal">
+            {typeof navigator !== "undefined" && navigator.share && (
+              <button className="button is-small is-light" onClick={nativeShare}>
+                <i className="fa-solid fa-arrow-up-from-bracket" />
+                &nbsp; Invia…
+              </button>
+            )}
+            <a className="button is-small is-light" href={`https://wa.me/?text=${encodeURIComponent(`${message}: ${url}`)}`} target="_blank" rel="noopener noreferrer">
+              <i className="fa-brands fa-whatsapp" />
+              &nbsp; WhatsApp
+            </a>
+            <a className="button is-small is-light" href={url} target="_blank" rel="noopener noreferrer">
+              <i className="fa-solid fa-eye" />
+              &nbsp; Anteprima
+            </a>
+          </div>
+          <button className={`button is-small is-text share-stop ${busy ? "is-loading" : ""}`} onClick={stop}>
+            Smetti di condividere
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="panel-note">Crea un link per mostrare questo progetto ad amici, familiari o al vivaio. Chi lo apre lo vede senza poterlo modificare.</p>
+          <button className={`button is-small is-primary ${busy ? "is-loading" : ""}`} onClick={create}>
+            <i className="fa-solid fa-link" />
+            &nbsp; Crea link di condivisione
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+export default function ProjectPanel({ project, onOpen, onNew, onRename, onSaved, onShared, onBudgetSettings, notify }) {
   const [store, setStore] = useState(null);
   const [items, setItems] = useState([]);
   const [busy, setBusy] = useState(false);
@@ -94,6 +186,8 @@ export default function ProjectPanel({ project, onOpen, onNew, onRename, onSaved
           : "Il server non ha un database: i progetti sono salvati in questo browser."}{" "}
         Le modifiche al progetto aperto vengono comunque conservate automaticamente.
       </p>
+
+      {store?.kind === "cloud" && <ShareBox project={project} onShared={onShared} notify={notify} />}
 
       <BudgetPanel project={project} onSettings={onBudgetSettings} />
 

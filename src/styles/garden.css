@@ -2199,3 +2199,33 @@ p.fc-k {
   width: 1.1rem;
   color: #9c8f7c;
 }
+
+/* riquadro "Condividi" nel pannello Progetto */
+.share-box {
+  margin: 1rem 0;
+  padding: 0.8rem;
+  border-radius: 12px;
+  background: #f3f6ec;
+  border: 1px solid rgba(86, 101, 59, 0.2);
+}
+
+.share-box .gp-heading {
+  margin-top: 0;
+}
+
+.share-link {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0.5rem 0;
+}
+
+.share-link .input {
+  flex: 1;
+  min-width: 0;
+}
+
+.share-stop {
+  margin-top: 0.4rem;
+  color: #8a2b16 !important;
+  text-decoration: underline;
+}

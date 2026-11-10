@@ -105,6 +105,11 @@ CREATE TABLE IF NOT EXISTS ai_cache (
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Condivisione con un link: chi ha il link vede il progetto in sola lettura.
+-- Il token è casuale; togliendolo (NULL) il link smette di funzionare.
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS share_token TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS projects_share_token_idx ON projects (share_token) WHERE share_token IS NOT NULL;
+
 -- Row Level Security: su Supabase le tabelle dello schema "public" sono
 -- esposte anche dalla sua API REST. Attivando RLS senza regole l'API non
 -- vede niente; il server di AiuolaLab si collega come proprietario delle

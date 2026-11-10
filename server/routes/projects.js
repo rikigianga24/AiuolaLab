@@ -1,6 +1,7 @@
 // Progetti salvati su Postgres. Se l'utente ha fatto l'accesso i progetti
 // sono suoi (owner_key = "user:<id>"); altrimenti sono legati a una chiave
 // anonima del dispositivo (X-Owner-Key) generata dal browser.
+import crypto from "node:crypto";
 import { Router } from "express";
 import { z } from "zod";
 import { hasDatabase, query } from "../db.js";
@@ -38,6 +39,7 @@ const toDto = (row) => ({
   id: row.id,
   name: row.name,
   data: row.data,
+  shareToken: row.share_token ?? null,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
@@ -90,6 +92,35 @@ router.put("/:id", async (req, res, next) => {
     );
     if (!rows[0]) return res.status(404).json({ error: "Progetto non trovato" });
     res.json(toDto(rows[0]));
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Condivisione: crea (o restituisce) il link in sola lettura del progetto.
+router.post("/:id/share", async (req, res, next) => {
+  if (!Id.safeParse(req.params.id).success) return res.status(404).json({ error: "Progetto non trovato" });
+  try {
+    const token = crypto.randomBytes(12).toString("base64url");
+    const { rows } = await query(
+      `UPDATE projects SET share_token = COALESCE(share_token, $3)
+       WHERE id = $1 AND owner_key = $2 RETURNING share_token`,
+      [req.params.id, req.owner, token],
+    );
+    if (!rows[0]) return res.status(404).json({ error: "Progetto non trovato" });
+    res.json({ shareToken: rows[0].share_token });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Smette di condividere: il vecchio link non funziona più.
+router.delete("/:id/share", async (req, res, next) => {
+  if (!Id.safeParse(req.params.id).success) return res.status(404).json({ error: "Progetto non trovato" });
+  try {
+    const { rowCount } = await query("UPDATE projects SET share_token = NULL WHERE id = $1 AND owner_key = $2", [req.params.id, req.owner]);
+    if (!rowCount) return res.status(404).json({ error: "Progetto non trovato" });
+    res.status(204).end();
   } catch (err) {
     next(err);
   }

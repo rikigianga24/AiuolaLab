@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { getIconCanvas } from "../../lib/plantIcons";
 import { useInView } from "../../lib/photos";
 import { lawnTexture, surfaceTexture } from "../../lib/textures";
+import { stylePhoto } from "../../lib/stylePhotos";
 
 // Piante che compaiono nella scena di ogni stile: [tipo, colori, nome].
 const SCENE_PLANTS = {
@@ -177,6 +178,26 @@ const LAYOUTS = {
     if (!raked) for (let i = 0; i < 6; i++) stone(ctx, rand() * W, rand() * H, 10 + rand() * 10, 7 + rand() * 6);
   },
 };
+
+// Foto dello stile se c'è, altrimenti il disegno visto dall'alto.
+export function StyleImage({ style, width = 360, height = 220, sizes = "(max-width: 768px) 100vw, 360px", eager = false }) {
+  const photo = stylePhoto(style.id);
+  if (!photo) return <StyleScene style={style} width={width} height={height} />;
+  return (
+    <div className="style-scene is-photo">
+      <img
+        src={photo.src}
+        srcSet={photo.srcSet}
+        sizes={sizes}
+        alt={`Esempio di ${style.name}`}
+        loading={eager ? "eager" : "lazy"}
+        fetchPriority={eager ? "high" : undefined}
+        decoding="async"
+        style={{ aspectRatio: `${width} / ${height}` }}
+      />
+    </div>
+  );
+}
 
 export default function StyleScene({ style, width = 360, height = 220 }) {
   const canvasRef = useRef(null);

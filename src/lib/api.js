@@ -44,8 +44,13 @@ export const projectsApi = (ownerKey) => {
     create: (name, data) => request("/projects", { method: "POST", body: { name, data }, headers }),
     update: (id, name, data) => request(`/projects/${id}`, { method: "PUT", body: { name, data }, headers }),
     remove: (id) => request(`/projects/${id}`, { method: "DELETE", headers }),
+    share: (id) => request(`/projects/${id}/share`, { method: "POST", body: {}, headers }),
+    unshare: (id) => request(`/projects/${id}/share`, { method: "DELETE", headers }),
   };
 };
+
+// Progetto condiviso con un link (sola lettura, nessun account).
+export const getSharedProject = (token) => request(`/shared/${encodeURIComponent(token)}`);
 
 // ---- account ----
 export const authApi = {
