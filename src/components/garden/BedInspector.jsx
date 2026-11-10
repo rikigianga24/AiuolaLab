@@ -7,6 +7,7 @@ import { POT_MATERIALS, POT_TYPES, isFloor, isPot, potVolumeL, resizePot } from 
 import { companionReport, rotationWarnings } from "../../lib/crops";
 import { PETS, plantInfo, toxLevelLabel } from "../../lib/plantInfo";
 import { useSession } from "../../lib/session";
+import { MULCHES, SOIL_BAG, bedMaterials, formatEur } from "../../lib/budget";
 
 // Riepilogo dei rischi dell'aiuola: piante tossiche e animali da cui difenderla.
 function BedRisks({ bed }) {
@@ -98,6 +99,35 @@ function VegetablePanel({ bed, onEndSeason }) {
         </div>
       )}
     </>
+  );
+}
+
+// Quanto materiale serve per questa aiuola o vaso.
+function BedMaterials({ bed, soilCm }) {
+  const { soil, mulch } = bedMaterials(bed, { soilCm });
+  if (!soil && !mulch) return null;
+  return (
+    <p className="panel-note">
+      <i className="fa-solid fa-cart-shopping" /> Servono circa{" "}
+      {soil && (
+        <>
+          <strong>
+            {soil.bags} {soil.bags === 1 ? "sacco" : "sacchi"}
+          </strong>{" "}
+          di terriccio ({soil.litres} L, sacchi da {SOIL_BAG.bagL} L)
+        </>
+      )}
+      {soil && mulch && " e "}
+      {mulch && (
+        <>
+          <strong>
+            {mulch.qty} {mulch.qty === 1 ? mulch.unit.replace(/i$/, "o") : mulch.unit}
+          </strong>{" "}
+          di {mulch.label.toLowerCase()} ({mulch.m2 ? `${mulch.m2.toLocaleString("it-IT")} m² con le sovrapposizioni` : `${mulch.litres} L, strato di ${MULCHES[mulch.kind].layerCm} cm`})
+        </>
+      )}
+      : {formatEur((soil?.eur ?? 0) + (mulch?.eur ?? 0))}.
+    </p>
   );
 }
 
@@ -255,6 +285,7 @@ export default function BedInspector({ project, bed, selection, onSelect, onUpda
         </div>
       </div>
       )}
+      <BedMaterials bed={bed} soilCm={project.budget?.soilCm} />
 
       {selectedPlant && (
         <div className="selected-plant">

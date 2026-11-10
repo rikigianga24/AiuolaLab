@@ -1,6 +1,7 @@
 import { newId } from "./ids.js";
 import { plantColor, plantSpreadM } from "./labels.js";
 import { flowerHexes, iconTypeFor } from "./plantIcons.js";
+import { priceTier } from "./budget.js";
 
 // Pianta del catalogo -> esemplare piantato nell'aiuola (coordinate in metri).
 export function toPlaced(plant, point, overrides = {}) {
@@ -26,6 +27,7 @@ export function toPlaced(plant, point, overrides = {}) {
     soilPh: plant.soil?.ph ?? null,
     hardinessMin: Number.isFinite(Number.parseFloat(plant.hardiness?.min)) ? Number.parseFloat(plant.hardiness.min) : null,
     evergreen: plant.evergreen ?? null,
+    priceTier: priceTier(plant),
     x: point.x,
     y: point.y,
     ...overrides,

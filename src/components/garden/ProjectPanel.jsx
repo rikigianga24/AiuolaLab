@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { getProjectStore } from "../../lib/projects";
+import BudgetPanel from "./BudgetPanel";
 
 const fmtDate = (iso) =>
   iso ? new Date(iso).toLocaleString("it-IT", { dateStyle: "short", timeStyle: "short" }) : "";
 
-export default function ProjectPanel({ project, onOpen, onNew, onRename, onSaved, notify }) {
+export default function ProjectPanel({ project, onOpen, onNew, onRename, onSaved, onBudgetSettings, notify }) {
   const [store, setStore] = useState(null);
   const [items, setItems] = useState([]);
   const [busy, setBusy] = useState(false);
@@ -93,6 +94,8 @@ export default function ProjectPanel({ project, onOpen, onNew, onRename, onSaved
           : "Il server non ha un database: i progetti sono salvati in questo browser."}{" "}
         Le modifiche al progetto aperto vengono comunque conservate automaticamente.
       </p>
+
+      <BudgetPanel project={project} onSettings={onBudgetSettings} />
 
       <h3 className="gp-heading">Archivio</h3>
       {error && <p className="panel-error">{error}</p>}
