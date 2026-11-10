@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { searchPlants } from "../../lib/api";
 import { SPEED_LABEL, overlapText } from "../../lib/forecast";
 import { describeOrientation } from "../../lib/orientation";
+import { planFeatures } from "../../lib/plans";
+import { useSession } from "../../lib/session";
 
 const YEAR_TABS = [
   { y: 0, label: "Oggi" },
@@ -100,7 +102,35 @@ function Alternatives({ alt, onPick }) {
   );
 }
 
+// Sezioni riservate al piano Premium (mostrate chiuse, con il lucchetto).
+const LOCKED = [
+  { title: "Situazione attuale", icon: "fa-clipboard-check", text: "distanze, copertura e compatibilità" },
+  { title: "Previsione a 1, 3 e 5 anni", icon: "fa-tree", text: "sviluppo, sovraffollamento, radici e ombra" },
+  { title: "Problemi futuri", icon: "fa-triangle-exclamation", text: "cosa potrebbe andare storto" },
+  { title: "Suggerimenti migliorativi", icon: "fa-lightbulb", text: "specie da aumentare, ridurre e alternative" },
+  { title: "Rischi di manutenzione e sovraffollamento", icon: "fa-gauge", text: "quanto lavoro ti chiederà" },
+];
+
+function PremiumTeaser() {
+  return (
+    <div className="fc-premium">
+      <p className="fc-premium-head">
+        <i className="fa-solid fa-lock" /> <strong>Valutazione completa con Premium</strong>
+      </p>
+      <ul>
+        {LOCKED.map((l) => (
+          <li key={l.title}>
+            <i className={`fa-solid ${l.icon}`} /> <strong>{l.title}</strong>: {l.text}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function ForecastPanel({ project, bed, analysis, year, onYear, onSelectBed, onStartViewer, onOpenOrientation, onPickPlant }) {
+  const { user } = useSession();
+  const full = planFeatures(user).fullForecast;
   const beds = project.beds.filter((b) => (b.plants ?? []).length);
   if (!bed) {
     return (
@@ -122,50 +152,74 @@ export default function ForecastPanel({ project, bed, analysis, year, onYear, on
     );
   }
 
+  const setup = (
+    <>
+        <div className="fc-setup">
+          <div className="fc-setup-row">
+            <i className="fa-solid fa-eye" />
+            <span>
+              <strong>Da dove la guardi</strong>
+              <small>{project.viewer ? "segnato sul disegno (puoi trascinarlo)" : "non indicato: considero l'aiuola vista da tutti i lati"}</small>
+            </span>
+            <button type="button" className="button is-small" onClick={onStartViewer}>
+              {project.viewer ? "Sposta" : "Segna"}
+            </button>
+          </div>
+          <div className="fc-setup-row">
+            <i className="fa-solid fa-sun" />
+            <span>
+              <strong>Esposizione</strong>
+              <small>{project.northDeg != null ? describeOrientation(project.northDeg) : "non indicata: considero il nord in alto nel disegno"}</small>
+            </span>
+            <button type="button" className="button is-small" onClick={onOpenOrientation}>
+              {project.northDeg != null ? "Cambia" : "Indica"}
+            </button>
+          </div>
+        </div>
+
+        <div className="fc-years" role="tablist" aria-label="Anno da vedere sul disegno">
+          {YEAR_TABS.map((t) => (
+            <button key={t.y} type="button" role="tab" aria-selected={year === t.y} className={year === t.y ? "is-active" : ""} onClick={() => onYear(t.y)}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <p className="fc-legend">
+          Sul disegno le piante hanno la misura prevista.{" "}
+          {year > 0 && (
+            <>
+              <span className="fc-dot is-risk" /> a rischio <span className="fc-dot is-dominant" /> dominante <span className="fc-dot is-dead" /> da sostituire
+            </>
+          )}
+        </p>
+    </>
+  );
   const a = analysis;
+  if (!full) {
+    return (
+      <div className="forecast">
+        <h3 className="gp-heading">Come crescerà «{bed.name}»</h3>
+        {setup}
+        {!a?.ok ? (
+          <p className="panel-note">{a?.reason ?? "Analisi non disponibile."}</p>
+        ) : (
+          <>
+            <Section title="Voto estetico" icon="fa-star">
+              <Score label="Voto estetico attuale" value={a.scores.aestheticNow} why={partsText(a.scores.why.aestheticNow)} />
+              <Score label="Voto estetico a 3 anni" value={a.scores.aesthetic3} why={partsText(a.scores.why.aesthetic3)} />
+              <Score label="Voto estetico a 5 anni" value={a.scores.aesthetic5} why={partsText(a.scores.why.aesthetic5)} />
+            </Section>
+            <PremiumTeaser />
+          </>
+        )}
+      </div>
+    );
+  }
   return (
     <div className="forecast">
       <h3 className="gp-heading">Come crescerà «{bed.name}»</h3>
 
-      <div className="fc-setup">
-        <div className="fc-setup-row">
-          <i className="fa-solid fa-eye" />
-          <span>
-            <strong>Da dove la guardi</strong>
-            <small>{project.viewer ? "segnato sul disegno (puoi trascinarlo)" : "non indicato: considero l'aiuola vista da tutti i lati"}</small>
-          </span>
-          <button type="button" className="button is-small" onClick={onStartViewer}>
-            {project.viewer ? "Sposta" : "Segna"}
-          </button>
-        </div>
-        <div className="fc-setup-row">
-          <i className="fa-solid fa-sun" />
-          <span>
-            <strong>Esposizione</strong>
-            <small>{project.northDeg != null ? describeOrientation(project.northDeg) : "non indicata: considero il nord in alto nel disegno"}</small>
-          </span>
-          <button type="button" className="button is-small" onClick={onOpenOrientation}>
-            {project.northDeg != null ? "Cambia" : "Indica"}
-          </button>
-        </div>
-      </div>
-
-      <div className="fc-years" role="tablist" aria-label="Anno da vedere sul disegno">
-        {YEAR_TABS.map((t) => (
-          <button key={t.y} type="button" role="tab" aria-selected={year === t.y} className={year === t.y ? "is-active" : ""} onClick={() => onYear(t.y)}>
-            {t.label}
-          </button>
-        ))}
-      </div>
-      <p className="fc-legend">
-        Sul disegno le piante hanno la misura prevista.{" "}
-        {year > 0 && (
-          <>
-            <span className="fc-dot is-risk" /> a rischio <span className="fc-dot is-dominant" /> dominante <span className="fc-dot is-dead" /> da sostituire
-          </>
-        )}
-      </p>
-
+      {setup}
       {!a?.ok ? (
         <p className="panel-note">{a?.reason ?? "Analisi non disponibile."}</p>
       ) : (

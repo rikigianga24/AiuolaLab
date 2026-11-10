@@ -2139,3 +2139,93 @@ p.fc-k {
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
+
+/* ---------- Piani: quota IA e funzioni Premium ---------- */
+.ai-quota {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin: 0.6rem 0;
+}
+
+.ai-quota i {
+  color: var(--sage-dark);
+}
+
+.ai-quota small {
+  display: block;
+  margin-top: 0.15rem;
+}
+
+.ai-login {
+  font-size: 0.85rem;
+  background: var(--sage-soft);
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+  margin: 0.6rem 0;
+}
+
+.ai-login a {
+  color: var(--terracotta-dark);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.fc-premium {
+  border: 1px dashed rgba(192, 100, 59, 0.5);
+  border-radius: 12px;
+  background: #fbf3ec;
+  padding: 0.7rem 0.8rem;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.fc-premium-head {
+  margin: 0 0 0.4rem;
+  color: var(--terracotta-dark);
+}
+
+.fc-premium ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fc-premium li {
+  margin: 0.3rem 0;
+  color: var(--ink-soft);
+}
+
+.fc-premium li i {
+  width: 1.1rem;
+  color: #9c8f7c;
+}
+
+/* riquadro "Condividi" nel pannello Progetto */
+.share-box {
+  margin: 1rem 0;
+  padding: 0.8rem;
+  border-radius: 12px;
+  background: #f3f6ec;
+  border: 1px solid rgba(86, 101, 59, 0.2);
+}
+
+.share-box .gp-heading {
+  margin-top: 0;
+}
+
+.share-link {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0.5rem 0;
+}
+
+.share-link .input {
+  flex: 1;
+  min-width: 0;
+}
+
+.share-stop {
+  margin-top: 0.4rem;
+  color: #8a2b16 !important;
+  text-decoration: underline;
+}

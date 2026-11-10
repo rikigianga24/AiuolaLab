@@ -9,6 +9,7 @@ async function request(path, { method = "GET", body, headers } = {}) {
   if (!res.ok) {
     const err = new Error(data.error || `Errore ${res.status}`);
     err.status = res.status;
+    err.data = data;
     throw err;
   }
   return data;
@@ -33,6 +34,7 @@ export const getPlant = (id) => request(`/plants/${encodeURIComponent(id)}`);
 export const getPlantPhotos = (name, full = false) =>
   request(`/plants/photos?name=${encodeURIComponent(name)}${full ? "&full=1" : ""}`);
 export const suggestBed = (payload) => request("/suggest", { method: "POST", body: payload });
+export const getAiQuota = () => request("/suggest/quota");
 
 export const projectsApi = (ownerKey) => {
   const headers = { "X-Owner-Key": ownerKey };
@@ -42,8 +44,13 @@ export const projectsApi = (ownerKey) => {
     create: (name, data) => request("/projects", { method: "POST", body: { name, data }, headers }),
     update: (id, name, data) => request(`/projects/${id}`, { method: "PUT", body: { name, data }, headers }),
     remove: (id) => request(`/projects/${id}`, { method: "DELETE", headers }),
+    share: (id) => request(`/projects/${id}/share`, { method: "POST", body: {}, headers }),
+    unshare: (id) => request(`/projects/${id}/share`, { method: "DELETE", headers }),
   };
 };
+
+// Progetto condiviso con un link (sola lettura, nessun account).
+export const getSharedProject = (token) => request(`/shared/${encodeURIComponent(token)}`);
 
 // ---- account ----
 export const authApi = {

@@ -79,6 +79,41 @@ CREATE TABLE IF NOT EXISTS app_settings (
   updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Piano dell'utente: 'free' (gratis) o 'premium'. Si cambia a mano dal
+-- pannello di Supabase (Table Editor > users > colonna plan).
+ALTER TABLE users ADD COLUMN IF NOT EXISTS plan TEXT NOT NULL DEFAULT 'free';
+DO $$ BEGIN
+  ALTER TABLE users ADD CONSTRAINT users_plan_check CHECK (plan IN ('free', 'premium'));
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+-- Proposte del consulente IA effettivamente chieste a Google: servono per
+-- le quote per utente e per il tetto giornaliero di tutta l'app.
+-- google_day è il giorno secondo Google (fuso di Los Angeles).
+CREATE TABLE IF NOT EXISTS ai_usage (
+  id             BIGSERIAL PRIMARY KEY,
+  user_id        UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  google_day     DATE NOT NULL,
+  input_tokens   INTEGER,
+  output_tokens  INTEGER,
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS ai_usage_user_idx ON ai_usage (user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS ai_usage_day_idx ON ai_usage (google_day);
+
+-- Proposte già fatte: una richiesta identica riceve la stessa risposta
+-- senza consumare richieste a Google.
+CREATE TABLE IF NOT EXISTS ai_cache (
+  cache_key   TEXT PRIMARY KEY,
+  data        JSONB NOT NULL,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Condivisione con un link: chi ha il link vede il progetto in sola lettura.
+-- Il token è casuale; togliendolo (NULL) il link smette di funzionare.
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS share_token TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS projects_share_token_idx ON projects (share_token) WHERE share_token IS NOT NULL;
+
 -- Row Level Security: su Supabase le tabelle dello schema "public" sono
 -- esposte anche dalla sua API REST. Attivando RLS senza regole l'API non
 -- vede niente; il server di AiuolaLab si collega come proprietario delle
@@ -91,8 +126,12 @@ ALTER TABLE auth_tokens ENABLE ROW LEVEL SECURITY;
 ALTER TABLE push_subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notification_log ENABLE ROW LEVEL SECURITY;
 ALTER TABLE app_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ai_usage ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ai_cache ENABLE ROW LEVEL SECURITY;
 
 -- Pulizia periodica (eseguita all'avvio).
 DELETE FROM sessions WHERE expires_at < now();
 DELETE FROM auth_tokens WHERE expires_at < now();
 DELETE FROM notification_log WHERE sent_at < now() - interval '400 days';
+DELETE FROM ai_usage WHERE created_at < now() - interval '90 days';
+DELETE FROM ai_cache WHERE created_at < now() - interval '30 days';

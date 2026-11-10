@@ -20,13 +20,21 @@ export const config = {
     baseUrl: env.PERENUAL_API_BASE || "https://perenual.com/api/v2",
   },
 
-  // Consulente IA (Claude). La chiave resta solo lato server.
-  anthropic: {
-    enabled: Boolean(env.ANTHROPIC_API_KEY),
-    model: env.ANTHROPIC_MODEL || "claude-opus-5-5",
+  // Consulente IA (Google Gemini). La chiave resta solo lato server.
+  // Serve anche il database: le proposte sono riservate a chi ha un account
+  // e contate per utente (vedi src/lib/plans.js).
+  gemini: {
+    apiKey: env.GEMINI_API_KEY || null,
+    enabled: Boolean(env.GEMINI_API_KEY),
+    model: env.GEMINI_MODEL || "gemini-2.5-flash",
+    // token massimi di "ragionamento" per proposta ("auto" = decide il modello)
+    thinkingBudget: env.GEMINI_THINKING_BUDGET === "auto" ? null : Number(env.GEMINI_THINKING_BUDGET) || 1024,
+    timeoutMs: 90_000,
+    // Tetto di proposte al giorno per tutta l'app, un po' sotto il limite
+    // del piano gratuito di Google (il giorno di Google finisce a mezzanotte
+    // di Los Angeles, cioè verso le 9 del mattino in Italia).
+    dailyLimit: Number(env.AI_DAILY_LIMIT) || 230,
   },
-  // Limite di richieste al consulente IA per IP all'ora (controllo costi).
-  suggestRateLimitPerHour: Number(env.SUGGEST_RATE_LIMIT) || 20,
 
   // Indirizzo pubblico dell'app (link nelle email, controllo di origine).
   // su Render RENDER_EXTERNAL_URL è impostato in automatico

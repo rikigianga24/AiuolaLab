@@ -124,5 +124,6 @@ export const publicUser = (u) =>
     google: Boolean(u.google_sub),
     marketingConsent: u.marketing_consent,
     createdAt: u.created_at,
+    plan: u.plan ?? "free",
     settings: u.settings ?? {},
   };
