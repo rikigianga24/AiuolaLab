@@ -2059,3 +2059,83 @@ p.fc-k {
   justify-content: flex-end;
   gap: 0.4rem;
 }
+
+/* ---- prezzi e budget ---- */
+.price-badge {
+  display: inline-block;
+  color: #4f7942;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+}
+
+.plant-icons small.price-badge {
+  color: #4f7942;
+}
+
+.budget-table {
+  width: 100%;
+  margin-bottom: 0.75rem;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.budget-table th {
+  text-align: left;
+  font-weight: 500;
+  padding: 0.2rem 0;
+}
+
+.budget-table td {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  padding: 0.2rem 0;
+}
+
+.budget-table tfoot th,
+.budget-table tfoot td {
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+  padding-top: 0.4rem;
+  font-weight: 700;
+  font-size: 1.02rem;
+}
+
+.budget-detail {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.budget-detail h4 {
+  margin: 0.6rem 0 0.25rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.budget-detail ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.budget-detail li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  padding: 0.2rem 0;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
+}
+
+.budget-detail li .grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.budget-detail li small {
+  display: block;
+  color: #5c6658;
+}
+
+.budget-detail li > span:last-child {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}

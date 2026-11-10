@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import PlantSafety from "./PlantSafety";
 import { STYLE_BY_ID, stylesFor } from "../../lib/gardenStyles";
+import { PRICE_TIERS, priceTier } from "../../lib/budget";
 import { COLORS, CYCLE, GROUPS, SEASONS, SOIL_PH, SOIL_TEXTURE, SUNLIGHT, WATERING, formatRangeCm, hardinessInfo } from "../../lib/labels";
 
 const list = (values, dict) =>
@@ -9,6 +10,7 @@ const list = (values, dict) =>
 export default function PlantFacts({ plant }) {
   const cold = hardinessInfo(plant.hardiness);
   const styles = plant.cropId ? [] : stylesFor(plant);
+  const price = PRICE_TIERS[priceTier(plant)];
   return (
     <dl className="plant-facts">
       {plant.description && <dd className="facts-wide facts-note-text">{plant.description}</dd>}
@@ -18,6 +20,10 @@ export default function PlantFacts({ plant }) {
           <dd>{GROUPS[plant.group]}</dd>
         </>
       )}
+      <dt>Prezzo</dt>
+      <dd>
+        <span className="price-badge" title="Prezzo indicativo di una pianta in vaso da vivaio">{price.short}</span> {price.label} · {price.range}
+      </dd>
       <dt>Esposizione</dt>
       <dd>{list(plant.sunlight, SUNLIGHT)}</dd>
       <dt>Acqua</dt>

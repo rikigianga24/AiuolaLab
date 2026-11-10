@@ -79,7 +79,7 @@ function remoteStore() {
       return { ...r.data, id: r.data.localId ?? newId(), type: r.data.type ?? "garden", remoteId: r.id, name: r.name, updatedAt: r.updatedAt };
     },
     async save(project) {
-      const data = { beds: project.beds, localId: project.id, type: project.type, faucet: project.faucet ?? null, irrigation: project.irrigation ?? null };
+      const data = { beds: project.beds, localId: project.id, type: project.type, faucet: project.faucet ?? null, irrigation: project.irrigation ?? null, budget: project.budget ?? null };
       const r = project.remoteId
         ? await api.update(project.remoteId, project.name, data).catch((err) => {
             if (err.status === 404) return api.create(project.name, data);

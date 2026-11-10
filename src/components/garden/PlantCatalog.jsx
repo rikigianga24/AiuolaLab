@@ -12,6 +12,7 @@ import { matchesLocal } from "../../lib/plantFilters";
 import { GARDEN_STYLES } from "../../lib/gardenStyles";
 import FavButton from "../plants/FavButton";
 import PlantGallery from "../plants/PlantGallery";
+import { PRICE_TIERS, priceTier } from "../../lib/budget";
 
 const EMPTY = { q: "", style: "", group: "", sunlight: "", watering: "", ph: "", color: "", season: "" };
 const STYLE_OPTIONS = Object.fromEntries(GARDEN_STYLES.map((s) => [s.id, s.name]));
@@ -181,6 +182,9 @@ export default function PlantCatalog({ selectedBed, onPickPlant }) {
                       <i key={s} className={`fa-solid ${SUNLIGHT[s].icon}`} title={SUNLIGHT[s].label} />
                     ))}
                     {plant.cycle && CYCLE[plant.cycle] && <small>{CYCLE[plant.cycle]}</small>}
+                    <small className="price-badge" title={`Prezzo ${PRICE_TIERS[priceTier(plant)].label.toLowerCase()} (${PRICE_TIERS[priceTier(plant)].range})`}>
+                      {PRICE_TIERS[priceTier(plant)].short}
+                    </small>
                   </span>
                 </button>
                 <FavButton size="small" active={favs.isFav(String(plant.id))} onToggle={() => favs.toggle(favPlant(full))} name={plant.commonName} />

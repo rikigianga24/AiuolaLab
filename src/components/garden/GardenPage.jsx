@@ -779,6 +779,7 @@ export default function GardenPage() {
         onOpenProject={openProject}
         onNewProject={newProject}
         onRenameProject={renameProject}
+        onBudgetSettings={(patch) => setProject((pr) => ({ ...pr, budget: { ...pr.budget, ...patch } }))}
         notify={notify}
         forecast={forecast}
         forecastYear={forecastYear}

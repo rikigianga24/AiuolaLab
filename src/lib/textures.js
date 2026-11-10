@@ -172,6 +172,46 @@ function soilTexture() {
   return canvas;
 }
 
+// Telo pacciamante in nylon nero: trama fitta, pieghe morbide e fori di impianto.
+function nylonTexture() {
+  const size = 512;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  const rand = rng(57);
+  ctx.fillStyle = "#1f2120";
+  ctx.fillRect(0, 0, size, size);
+  // trama del tessuto
+  for (let i = 0; i < size; i += 4) {
+    ctx.fillStyle = i % 8 ? "rgba(255,255,255,0.035)" : "rgba(0,0,0,0.25)";
+    ctx.fillRect(0, i, size, 2);
+    ctx.fillRect(i, 0, 2, size);
+  }
+  // pieghe e riflessi
+  for (let i = 0; i < 14; i++) {
+    const y = rand() * size, h = 20 + rand() * 50;
+    const g = ctx.createLinearGradient(0, y - h, 0, y + h);
+    g.addColorStop(0, "rgba(255,255,255,0)");
+    g.addColorStop(0.5, `rgba(200,210,205,${0.05 + rand() * 0.07})`);
+    g.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = g;
+    for (const dy of [-size, 0, size]) {
+      ctx.save();
+      ctx.translate(0, dy);
+      ctx.fillRect(0, y - h, size, h * 2);
+      ctx.restore();
+    }
+  }
+  // un po' di terra rimasta sopra
+  for (let i = 0; i < 900; i++) {
+    ctx.fillStyle = `rgba(110, 80, 55, ${0.15 + rand() * 0.3})`;
+    ctx.beginPath();
+    ctx.arc(rand() * size, rand() * size, 0.6 + rand() * 1.6, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  return canvas;
+}
+
 // Coperture disponibili: etichetta, lato della piastrella in metri, generatore.
 export const SURFACES = {
   bark: { label: "Corteccia", tileM: 1.2, make: () => mulchTexture() },
@@ -193,6 +233,7 @@ export const SURFACES = {
     make: () =>
       stoneTexture({ seed: 31, base: "#4a2418", colors: ["#8a3b24", "#a2482b", "#6e2d1c", "#b5583a", "#5a2618"], count: 3200, minR: 3, maxR: 8, flat: 0.5, gloss: 0.12, shadow: 0.5 }),
   },
+  nylon: { label: "Telo di nylon", tileM: 1.2, make: nylonTexture },
   soil: { label: "Terra nuda", tileM: 1.2, make: soilTexture },
 };
 
