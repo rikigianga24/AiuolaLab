@@ -62,9 +62,30 @@ export function PrivacyPage() {
         interrogati dal nostro server: questi servizi non ricevono il tuo indirizzo IP né dati del tuo account, ma solo le
         coordinate approssimate o il testo della ricerca.
       </p>
+      <h2>Trasferimento dei dati negli Stati Uniti</h2>
       <p>
-        Per i fornitori fuori dall'Unione Europea il trasferimento avviene con le garanzie previste dal GDPR (decisione di
-        adeguatezza UE-USA o clausole contrattuali standard).
+        Alcuni dei fornitori indicati sopra sono società con sede negli <strong>Stati Uniti</strong>, o che fanno parte di gruppi
+        statunitensi. I tuoi dati possono quindi essere trasferiti negli USA, o essere accessibili da lì, anche quando i server si
+        trovano nell'Unione Europea. In particolare:
+      </p>
+      <ul>
+        <li>Google (consulente IA Gemini e, se lo usi, accesso con Google): riceve i dati dell'aiuola e le preferenze che scrivi, oppure la tua email e un identificativo dell'account;</li>
+        <li>i fornitori di hosting e di database, se hanno sede o capogruppo negli USA: possono trattare tutti i dati del servizio;</li>
+        <li>i servizi di notifica dei browser (Google, Apple, Mozilla): ricevono il testo delle notifiche e l'indirizzo tecnico del dispositivo;</li>
+        <li>iNaturalist e Wikimedia Commons, solo se acconsenti a vedere le foto delle piante: vedono l'indirizzo IP del tuo dispositivo.</li>
+      </ul>
+      <p>
+        Questi trasferimenti avvengono solo con le garanzie previste dal GDPR (capo V):
+      </p>
+      <ul>
+        <li>per i fornitori aderenti al <strong>EU-U.S. Data Privacy Framework</strong>, sulla base della decisione di adeguatezza della Commissione europea del 10 luglio 2023 (art. 45 GDPR);</li>
+        <li>negli altri casi, sulla base delle <strong>clausole contrattuali standard</strong> approvate dalla Commissione europea (art. 46 GDPR), con le eventuali misure aggiuntive (per esempio la cifratura delle connessioni);</li>
+        <li>per i contenuti esterni che carichi solo su tua richiesta (le foto delle piante), anche sul tuo consenso esplicito (art. 49.1.a GDPR).</li>
+      </ul>
+      <p>
+        Negli Stati Uniti le autorità pubbliche possono, in alcuni casi previsti dalla legge, chiedere l'accesso ai dati, e la tutela
+        può essere diversa da quella europea. Riduciamo al minimo i dati inviati: per esempio, al consulente IA non mandiamo né il tuo
+        nome né la tua email. Puoi chiedere informazioni sulle garanzie adottate, o una copia, scrivendo a {LEGAL.email}.
       </p>
 
       <h2>Per quanto tempo</h2>
