@@ -1,0 +1,257 @@
+/* Pagina /prezzi: piani a confronto. */
+
+.pr-toggle {
+  display: flex;
+  width: fit-content;
+  margin: 0 auto 1.6rem;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--cream-dark);
+  border: 1px solid var(--line);
+}
+
+.pr-toggle button {
+  border: none;
+  background: transparent;
+  color: var(--ink-soft);
+  font: inherit;
+  font-weight: 600;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.pr-toggle button.is-active {
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 2px 6px rgba(80, 60, 30, 0.12);
+}
+
+.pr-save {
+  display: inline-block;
+  margin-left: 0.3rem;
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  background: var(--sage-soft);
+  color: var(--sage-dark);
+  font-size: 0.8rem;
+}
+
+.pr-plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.2rem;
+  max-width: 860px;
+  margin: 0 auto;
+  align-items: stretch;
+}
+
+.pr-plan {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.pr-plan.is-premium {
+  border: 2px solid var(--terracotta);
+}
+
+.pr-badge {
+  position: absolute;
+  top: -0.8rem;
+  right: 1.2rem;
+  background: var(--terracotta);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+}
+
+.pr-price {
+  font-family: var(--font-title);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.1;
+  margin-bottom: 0.4rem;
+}
+
+.pr-price small {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
+.pr-equiv {
+  display: block;
+  font-family: system-ui, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--sage-dark);
+  margin-top: 0.3rem;
+}
+
+.pr-sub {
+  color: var(--ink-soft);
+  margin-bottom: 0.8rem;
+}
+
+.pr-list {
+  list-style: none;
+  margin: 0 0 1.2rem;
+  padding: 0;
+  flex: 1;
+}
+
+.pr-list li {
+  position: relative;
+  padding-left: 1.6rem;
+  margin-bottom: 0.45rem;
+}
+
+.pr-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0.2rem;
+  color: var(--sage-dark);
+  font-weight: 700;
+}
+
+.pr-cta {
+  width: 100%;
+}
+
+.pr-cta[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.pr-consent {
+  margin-bottom: 0.8rem;
+}
+
+.pr-active {
+  font-weight: 700;
+  color: var(--sage-dark);
+}
+
+.pr-legal {
+  max-width: 860px;
+  margin: 1.2rem auto 0;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+.pr-title {
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  margin: 2.6rem 0 1rem;
+}
+
+.pr-table-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0.6rem 0.4rem;
+}
+
+.pr-table {
+  background: transparent;
+}
+
+.pr-table thead th {
+  font-family: var(--font-title);
+  color: var(--ink);
+  text-align: center;
+  border-bottom-color: var(--line);
+  width: 7.5rem;
+}
+
+.pr-table thead th:first-child {
+  width: auto;
+}
+
+.pr-table tbody th {
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.pr-table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.pr-table td,
+.pr-table tbody th {
+  border-bottom-color: var(--line);
+}
+
+.pr-table .pr-group th {
+  font-weight: 700;
+  color: var(--terracotta-dark);
+  font-size: 0.82rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding-top: 1.1rem;
+}
+
+.pr-yes {
+  color: var(--sage-dark);
+}
+
+.pr-no {
+  color: rgba(111, 78, 55, 0.4);
+}
+
+.pr-text {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.pr-faq {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* scheda Abbonamento nell'account */
+.billing-status {
+  margin-bottom: 0.6rem;
+}
+
+.billing-box {
+  margin-top: 0.8rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 12px;
+  background: var(--cream);
+  font-size: 0.88rem;
+}
+
+@media (max-width: 560px) {
+  .pr-table thead th {
+    width: 5.2rem;
+  }
+
+  .pr-table th,
+  .pr-table td {
+    padding: 0.5em 0.4em;
+    font-size: 0.86rem;
+  }
+
+  .pr-text {
+    font-size: 0.74rem;
+  }
+
+  .pr-price {
+    font-size: 1.9rem;
+  }
+}

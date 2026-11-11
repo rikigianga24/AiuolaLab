@@ -98,9 +98,26 @@ export const config = {
   // Indirizzo che riceve i messaggi del modulo "Contatti". Senza, la
   // pagina mostra solo l'email indicata nelle pagine legali.
   supportEmail: env.SUPPORT_EMAIL || null,
+
+  // Abbonamento Premium con Paddle (rivenditore: incassa, applica l'IVA e
+  // manda le ricevute). Servono tutte e cinque le voci, più il database;
+  // senza, i pulsanti per abbonarsi non compaiono. PADDLE_ENV=production
+  // per i pagamenti veri, altrimenti si usa l'ambiente di prova (sandbox).
+  paddle: {
+    enabled: Boolean(
+      env.PADDLE_API_KEY && env.PADDLE_CLIENT_TOKEN && env.PADDLE_WEBHOOK_SECRET && env.PADDLE_PRICE_MONTHLY && env.PADDLE_PRICE_YEARLY,
+    ),
+    environment: env.PADDLE_ENV === "production" ? "production" : "sandbox",
+    apiKey: env.PADDLE_API_KEY || null,
+    // il "client-side token" non è segreto: serve al browser per aprire il pagamento
+    clientToken: env.PADDLE_CLIENT_TOKEN || null,
+    webhookSecret: env.PADDLE_WEBHOOK_SECRET || null,
+    prices: { month: env.PADDLE_PRICE_MONTHLY || null, year: env.PADDLE_PRICE_YEARLY || null },
+  },
 };
 
 // Versione dell'informativa privacy accettata alla registrazione.
-export const PRIVACY_VERSION = "2026-11";
-// Versione dei termini di utilizzo accettati alla registrazione.
-export const TERMS_VERSION = "2026-11";
+export const PRIVACY_VERSION = "2026-11b";
+// Versione dei termini di utilizzo accettati alla registrazione (e al
+// momento dell'abbonamento).
+export const TERMS_VERSION = "2026-11b";

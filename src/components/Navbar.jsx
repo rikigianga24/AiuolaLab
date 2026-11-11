@@ -73,6 +73,9 @@ function UserMenu({ user, onNavigate }) {
           <button role="menuitem" onClick={() => go("/gardencanvas")}>
             <i className="fa-solid fa-folder-open" /> I miei progetti
           </button>
+          <button role="menuitem" onClick={() => go("/prezzi")}>
+            <i className="fa-solid fa-seedling" /> {user.plan === "premium" ? "Il tuo Premium" : "Passa a Premium"}
+          </button>
           <hr />
           <button role="menuitem" className="is-exit" onClick={exit}>
             <i className="fa-solid fa-right-from-bracket" /> Esci

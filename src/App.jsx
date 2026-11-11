@@ -31,6 +31,7 @@ const SharedPage = lazyPage(() => import("./components/SharedPage"));
 const GuidePage = lazyPage(() => import("./components/GuidePage"));
 const CalendarPage = lazyPage(() => import("./components/CalendarPage"));
 const ContactPage = lazyPage(() => import("./components/ContactPage"));
+const PricingPage = lazyPage(() => import("./components/PricingPage"));
 const StylesPage = lazyPage(() => import("./components/StylesPage"));
 const StylePage = lazyPage(() => import("./components/StylesPage"), "StylePage");
 const CookiePage = lazyPage(() => import("./components/LegalPages"), "CookiePage");
@@ -68,6 +69,7 @@ function Layout() {
             <Route path="/cookie" element={<CookiePage />} />
             <Route path="/termini" element={<TermsPage />} />
             <Route path="/contatti" element={<ContactPage />} />
+            <Route path="/prezzi" element={<PricingPage />} />
             <Route path="*" element={<Home />} />
           </Routes>
         </Suspense>

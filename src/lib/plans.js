@@ -17,7 +17,22 @@ export const PLANS = {
   },
 };
 
-export const planOf = (user) => (user && PLANS[user.plan] ? user.plan : "free");
+// Prezzi dell'abbonamento Premium, IVA inclusa, in centesimi di euro.
+// Sono quelli mostrati nella pagina /prezzi: devono coincidere con i prezzi
+// creati su Paddle (all'avvio il server li confronta e avvisa se sono diversi).
+export const PRICES = {
+  month: { cents: 399, label: "mese" },
+  year: { cents: 3000, label: "anno" },
+};
+
+/** «3,99 €» a partire dai centesimi. */
+export const formatEuro = (cents) =>
+  `${(cents / 100).toLocaleString("it-IT", { minimumFractionDigits: cents % 100 ? 2 : 0, maximumFractionDigits: 2 })} €`;
+
+/** Risparmio dell'annuale rispetto a 12 mensilità, in percentuale intera. */
+export const yearlySaving = () => Math.round((1 - PRICES.year.cents / (PRICES.month.cents * 12)) * 100);
+
+export const planOf =(user) => (user && PLANS[user.plan] ? user.plan : "free");
 export const planFeatures = (user) => PLANS[planOf(user)];
 
 // Descrizione breve della quota, es. «1 proposta ogni 2 giorni».

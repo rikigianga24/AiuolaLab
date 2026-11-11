@@ -42,7 +42,12 @@ function QuotaNote({ quota }) {
   return (
     <p className="ai-quota">
       <i className="fa-solid fa-ticket" /> Piano <strong>{quota.planLabel}</strong> ({quota.label}): {state}
-      {quota.plan === "free" && <small> Con Premium: {quotaLabel(PLANS.premium.ai)}.</small>}
+      {quota.plan === "free" && (
+        <small>
+          {" "}
+          Con <Link to="/prezzi">Premium</Link>: {quotaLabel(PLANS.premium.ai)}.
+        </small>
+      )}
     </p>
   );
 }

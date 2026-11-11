@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate, useLocation, useSearchParams } from "react-router-dom";
-import { accountApi, authApi } from "../lib/api";
+import { accountApi, authApi, billingApi } from "../lib/api";
+import { PRICES, formatEuro } from "../lib/plans";
+import ConfirmDialog from "./ConfirmDialog";
 import { CLIMATES } from "../lib/irrigation";
 import { currentSubscription, disablePush, enablePush, pushSupported } from "../lib/push";
 import { useSession } from "../lib/session";
@@ -9,6 +11,7 @@ import { PETS } from "../lib/plantInfo";
 import { PageHero } from "./decor";
 import StylePicker from "./StylePicker";
 import "../styles/pages.css";
+import "../styles/pricing.css";
 
 function Notice({ kind = "info", children }) {
   return <div className={`notification is-${kind} is-light`}>{children}</div>;
@@ -138,6 +141,148 @@ function PushSetup() {
   );
 }
 
+const dateLabel = (iso) => new Date(iso).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
+
+// Scheda «Abbonamento»: piano attuale, rinnovo, disdetta e recesso.
+function BillingCard() {
+  const { features, refresh } = useSession();
+  const [billing, setBilling] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [confirm, setConfirm] = useState(null);
+  const [msg, setMsg] = useState(null);
+
+  useEffect(() => {
+    billingApi
+      .get()
+      .then(setBilling)
+      .catch(() => setBilling({ plan: "free", subscription: null }));
+  }, []);
+
+  const run = async (fn) => {
+    setBusy(true);
+    setMsg(null);
+    setConfirm(null);
+    try {
+      await fn();
+    } catch (err) {
+      setMsg({ kind: "danger", text: err.message });
+    } finally {
+      setBusy(false);
+    }
+  };
+  const update = async (r, text) => {
+    setBilling((b) => ({ ...b, subscription: r.subscription, plan: r.subscription?.active ? "premium" : b.manualPremium ? "premium" : "free" }));
+    setMsg({ kind: "success", text });
+    refresh();
+  };
+  const openPortal = (which = "url") =>
+    run(async () => {
+      const r = await billingApi.portal();
+      window.location.assign(r[which] ?? r.url);
+    });
+
+  if (!billing) return <p className="panel-note">Caricamento…</p>;
+  const sub = billing.subscription;
+  const active = sub?.active;
+  const price = sub?.interval && PRICES[sub.interval];
+
+  return (
+    <>
+      <p className="billing-status">
+        Piano <strong>{billing.plan === "premium" ? "Premium" : "Gratis"}</strong>{" "}
+        {active && price && <span className="tag is-success is-light">{sub.interval === "year" ? "annuale" : "mensile"}</span>}
+        {!active && billing.manualPremium && <span className="tag is-info is-light">offerto da AiuolaLab</span>}
+      </p>
+
+      {active && sub.status === "past_due" && (
+        <Notice kind="warning">
+          L'ultimo pagamento non è andato a buon fine e Paddle sta riprovando. Aggiorna il metodo di pagamento per non perdere Premium.
+        </Notice>
+      )}
+      {active && (
+        <p className="panel-note">
+          {sub.cancelAt
+            ? `Hai disdetto il rinnovo: Premium resta attivo fino al ${dateLabel(sub.cancelAt)}, poi torni al piano Gratis.`
+            : sub.currentPeriodEnd
+              ? `Si rinnova il ${dateLabel(sub.currentPeriodEnd)}${price ? ` a ${formatEuro(price.cents)}` : ""}. Puoi disdire quando vuoi.`
+              : "Abbonamento attivo."}
+        </p>
+      )}
+      {!active && sub?.withdrawnAt && (
+        <p className="panel-note">Recesso registrato il {dateLabel(sub.withdrawnAt)}: il rimborso arriva sul metodo di pagamento usato, di solito entro 5-10 giorni lavorativi.</p>
+      )}
+
+      <div className="buttons mt-3">
+        {!active && !billing.manualPremium && (
+          <Link className="button is-small is-primary" to="/prezzi">
+            <i className="fa-solid fa-seedling" />&nbsp; Scopri Premium
+          </Link>
+        )}
+        {active && features.billing && (
+          <>
+            <button className="button is-small" onClick={() => openPortal(sub.status === "past_due" ? "paymentMethodUrl" : "url")} disabled={busy}>
+              <i className="fa-solid fa-credit-card" />&nbsp; Pagamento e ricevute
+            </button>
+            {sub.cancelAt ? (
+              <button className="button is-small is-primary" disabled={busy} onClick={() => run(async () => update(await billingApi.resume(), "Fatto: l'abbonamento si rinnoverà normalmente."))}>
+                Riattiva il rinnovo
+              </button>
+            ) : (
+              <button className="button is-small is-light" disabled={busy} onClick={() => setConfirm("cancel")}>
+                Disdici il rinnovo
+              </button>
+            )}
+          </>
+        )}
+      </div>
+
+      {active && sub.canWithdraw && features.billing && (
+        <div className="billing-box">
+          <p>
+            <strong>Diritto di recesso.</strong> Fino al {dateLabel(sub.withdrawUntil)} puoi recedere dall'abbonamento: termina subito e ti rimborsiamo
+            l'intero importo.
+          </p>
+          <button className="button is-small is-danger is-light mt-2" disabled={busy} onClick={() => setConfirm("withdraw")}>
+            Recedi e chiedi il rimborso
+          </button>
+        </div>
+      )}
+      {msg && <Notice kind={msg.kind}>{msg.text}</Notice>}
+
+      {confirm === "cancel" && (
+        <ConfirmDialog
+          title="Disdire il rinnovo?"
+          message={`Premium resta attivo fino al ${sub.currentPeriodEnd ? dateLabel(sub.currentPeriodEnd) : "termine del periodo pagato"}, poi non ti verrà addebitato più nulla. Puoi ripensarci fino a quel giorno.`}
+          confirmLabel="Disdici il rinnovo"
+          onCancel={() => setConfirm(null)}
+          onConfirm={() =>
+            run(async () => update(await billingApi.cancel(), "Rinnovo disdetto. Premium resta attivo fino alla fine del periodo pagato."))
+          }
+        />
+      )}
+      {confirm === "withdraw" && (
+        <ConfirmDialog
+          title="Recedere dall'abbonamento?"
+          message="L'abbonamento Premium termina subito e chiediamo a Paddle il rimborso completo di quanto hai pagato. Il tuo account e i tuoi progetti restano, con il piano Gratis. Ti mandiamo una conferma via email."
+          confirmLabel="Recedi dal contratto"
+          onCancel={() => setConfirm(null)}
+          onConfirm={() =>
+            run(async () => {
+              const r = await billingApi.withdraw();
+              await update(
+                r,
+                r.refundRequested
+                  ? "Recesso registrato. Il rimborso completo è stato chiesto a Paddle: arriva di solito entro 5-10 giorni lavorativi."
+                  : "Recesso registrato e abbonamento terminato. Il rimborso verrà completato da noi a mano nei prossimi giorni: ti scriveremo via email.",
+              );
+            })
+          }
+        />
+      )}
+    </>
+  );
+}
+
 export function PetsChooser() {
   const { settings, updateSettings } = useSession();
   const pets = settings.pets ?? [];
@@ -206,6 +351,11 @@ function AccountSettings() {
             Esci
           </button>
         </div>
+      </div>
+
+      <div className="card-country">
+        <h2 className="card-title">Abbonamento</h2>
+        <BillingCard />
       </div>
 
       <div className="card-country">
@@ -287,7 +437,8 @@ function AccountSettings() {
         ) : (
           <div className="delete-box mt-2">
             <p>
-              Verranno cancellati definitivamente l'account e tutti i progetti salvati online.{" "}
+              Verranno cancellati definitivamente l'account e tutti i progetti salvati online. Se hai un abbonamento Premium viene disdetto subito,
+              senza rimborso del periodo restante (nei primi 14 giorni puoi prima recedere con il rimborso completo).{" "}
               {noPassword ? "Scrivi ELIMINA per confermare." : "Inserisci la password per confermare."}
             </p>
             <input
