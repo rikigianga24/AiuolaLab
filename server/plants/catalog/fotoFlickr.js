@@ -520,6 +520,136 @@ export const FOTO_FLICKR = {
    "title": "'Euonymus' - Emerald 'n' Gold, Golden Spindle, at Nuthurst, West Sussex, England"
   }
  ],
+ "Foeniculum vulgare 'Purpureum'": [
+  {
+   "id": "01131765-98e0-4ce0-855e-f33acb24ae2e",
+   "url": "https://live.staticflickr.com/65535/53903625223_db0966d089_b.jpg",
+   "landing": "https://www.flickr.com/photos/150012178@N06/53903625223",
+   "creator": "Acabashi",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Foeniculum vulgare Purpureum Bronze Fennel in Nuthurst West Sussex England 01 sharper"
+  },
+  {
+   "id": "79c6cbf8-9b8a-40f0-9c3a-ac3301001b45",
+   "url": "https://live.staticflickr.com/65535/53903370961_093c20e10a_b.jpg",
+   "landing": "https://www.flickr.com/photos/150012178@N06/53903370961",
+   "creator": "Acabashi",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Foeniculum vulgare Purpureum Bronze Fennel in Nuthurst West Sussex England 02 sharper"
+  }
+ ],
+ "Phlox paniculata 'Starfire'": [
+  {
+   "id": "e10a0ba5-178f-42cf-9b7a-cf19a5457f1c",
+   "url": "https://live.staticflickr.com/4107/5147252557_f73198f927_b.jpg",
+   "landing": "https://www.flickr.com/photos/49169223@N00/5147252557",
+   "creator": "daryl_mitchell",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Starfire Phlox"
+  }
+ ],
+ "Gardenia jasminoides 'Kleim's Hardy'": [
+  {
+   "id": "5138036f-5164-4ce1-a13c-5305e996b96a",
+   "url": "https://live.staticflickr.com/4074/4850015092_982142ee60_b.jpg",
+   "landing": "https://www.flickr.com/photos/24495410@N03/4850015092",
+   "creator": "MeganEHansen",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Gardenia 'Kleims Hardy'"
+  },
+  {
+   "id": "2d1908ba-78bd-4a22-86b6-c14bc1ca3bb8",
+   "url": "https://live.staticflickr.com/4114/4886592644_1ac5abe739_b.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/4886592644",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Gardenia 'Kleim's Hardy'"
+  },
+  {
+   "id": "a7929439-c6cf-403b-803b-aafdfbeee52f",
+   "url": "https://live.staticflickr.com/4080/4850010330_412dfb82d5_b.jpg",
+   "landing": "https://www.flickr.com/photos/24495410@N03/4850010330",
+   "creator": "MeganEHansen",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Gardenia 'Kleims Hardy'"
+  },
+  {
+   "id": "e665f95a-068a-4751-a690-f0ef15ac2e6c",
+   "url": "https://live.staticflickr.com/7072/7132425403_67b5b359f0_b.jpg",
+   "landing": "https://www.flickr.com/photos/53625232@N00/7132425403",
+   "creator": "jalexartis",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Kleims Hardy Gardenia--more blooms"
+  }
+ ],
+ "Geranium 'Ann Folkard'": [
+  {
+   "id": "799234d3-4959-4b21-bc6d-37d3d14363dd",
+   "url": "https://live.staticflickr.com/6149/5942534107_49037f1664_b.jpg",
+   "landing": "https://www.flickr.com/photos/71153021@N00/5942534107",
+   "creator": "MarilynJane",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Geranium - Ann Folkard"
+  },
+  {
+   "id": "3d70ecbe-a616-43b0-b538-9d342a2bf561",
+   "url": "https://live.staticflickr.com/7392/27900534665_4087316a28_b.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/27900534665",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Geranium 'Ann Folkard'"
+  }
+ ],
+ "Helianthus annuus 'Velvet Queen'": [
+  {
+   "id": "70f5c0f1-3352-4838-9d76-976591c971ad",
+   "url": "https://live.staticflickr.com/65535/51399035027_7393ac6c4b_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/51399035027",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Helianthus annuus 'Velvet Queen' 8/2021 Sunflower-"
+  },
+  {
+   "id": "69103b00-e57f-49ac-bfbd-f9568ea63732",
+   "url": "https://live.staticflickr.com/5265/5890782963_a93a9a5407_b.jpg",
+   "landing": "https://www.flickr.com/photos/61218143@N04/5890782963",
+   "creator": "Babij",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "IMGP5108 Helianthus annuus 'Velvet Queen' - Słonecznik ozdobny"
+  },
+  {
+   "id": "ba651ea2-2a96-4228-a882-2581a30a0b8e",
+   "url": "https://live.staticflickr.com/65535/51399034012_7a06ca9815_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/51399034012",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Helianthus annuus 'Velvet Queen' 8/2021 Sunflower-"
+  }
+ ],
  "Astrantia major 'Claret'": [
   {
    "id": "b8a60fd7-190f-4a84-83fd-cc0f63a353bc",
@@ -930,6 +1060,166 @@ export const FOTO_FLICKR = {
    "title": "Photinia 'Red Robin' buds"
   }
  ],
+ "Gaura lindheimeri 'Whirling Butterflies'": [
+  {
+   "id": "b3cd8a89-28dd-4449-a84d-edadd7e5885b",
+   "url": "https://live.staticflickr.com/5202/5298631166_34ddb7eba2_b.jpg",
+   "landing": "https://www.flickr.com/photos/8568946@N06/5298631166",
+   "creator": "patrick_standish",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Whirling butterflies"
+  },
+  {
+   "id": "11c7c7ae-0561-4f9e-a510-225799623647",
+   "url": "https://live.staticflickr.com/2390/1556569457_875947b520_b.jpg",
+   "landing": "https://www.flickr.com/photos/8568946@N06/1556569457",
+   "creator": "patrick_standish",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Whirling Butterflies"
+  },
+  {
+   "id": "3b549416-e508-42b1-959f-a8098ed90e4e",
+   "url": "https://live.staticflickr.com/6163/6187029824_f2a5cee619.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/6187029824",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Gaura 'Whirling Butterflies'"
+  }
+ ],
+ "Geranium 'Orion'": [
+  {
+   "id": "5c43995c-48e7-4f2e-8415-9ccf3eb5aa4a",
+   "url": "https://live.staticflickr.com/7286/27783326801_d0c3cd3b4f_b.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/27783326801",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Geranium 'Orion'"
+  }
+ ],
+ "Helianthus 'Lemon Queen'": [
+  {
+   "id": "d4a1c4e5-b0f8-4f6e-9dbf-221f0f5f2254",
+   "url": "https://live.staticflickr.com/65535/48833368571_d5fcc36576_b.jpg",
+   "landing": "https://www.flickr.com/photos/55827596@N05/48833368571",
+   "creator": "umbrellahead56",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Helianthus 'Lemon Queen'"
+  },
+  {
+   "id": "2a912ee1-361b-411f-ab7e-a1c7a7f36e09",
+   "url": "https://live.staticflickr.com/7292/9880669173_c499f28ec9_b.jpg",
+   "landing": "https://www.flickr.com/photos/63457884@N04/9880669173",
+   "creator": "Bochum1805",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Septembersolros, Helianthus 'Lemon queen'"
+  },
+  {
+   "id": "dc59ebe9-cc7b-4bd9-be40-66dde744d55e",
+   "url": "https://live.staticflickr.com/4178/34130403630_644b5afc38_b.jpg",
+   "landing": "https://www.flickr.com/photos/149641146@N03/34130403630",
+   "creator": "alexvanessen",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Helianthus 'Lemon Queen'"
+  }
+ ],
+ "Heuchera 'Lime Marmalade'": [
+  {
+   "id": "bbeab67b-9f4c-467e-a8cc-bad1d7b96e84",
+   "url": "https://live.staticflickr.com/4259/35359463100_30326c50cc_b.jpg",
+   "landing": "https://www.flickr.com/photos/24495410@N03/35359463100",
+   "creator": "MeganEHansen",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Heuchera 'Lime Marmalade'"
+  },
+  {
+   "id": "19d6f7bf-bdac-4f69-b060-cd4df2bad8bb",
+   "url": "https://live.staticflickr.com/8469/29684717895_b505c8a1a7_b.jpg",
+   "landing": "https://www.flickr.com/photos/81392060@N06/29684717895",
+   "creator": "Valleybrook Gardens",
+   "license": "pdm",
+   "version": "1.0",
+   "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+   "title": "Heuchera Lime Marmalade"
+  },
+  {
+   "id": "6493419b-dd51-4f4e-820b-3448ad308ab2",
+   "url": "https://live.staticflickr.com/7622/16501500473_b22b7e2128_b.jpg",
+   "landing": "https://www.flickr.com/photos/38477752@N04/16501500473",
+   "creator": "je_wyer",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Heuchera 'Lime Marmalade' at Avonbank Nurseries 1 April 2015-3.jpg"
+  },
+  {
+   "id": "a91c9f7a-b337-44dc-a1c6-aaac4b1a2d22",
+   "url": "https://live.staticflickr.com/259/19090621769_5e6d79f653.jpg",
+   "landing": "https://www.flickr.com/photos/81392060@N06/19090621769",
+   "creator": "Valleybrook Gardens",
+   "license": "pdm",
+   "version": "1.0",
+   "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+   "title": "19cm Color Craze Heuchera Lime Marmalade"
+  }
+ ],
+ "Iris sibirica 'Caesar's Brother'": [
+  {
+   "id": "9489a609-d602-42df-9c97-8d15a139cf24",
+   "url": "https://live.staticflickr.com/4199/34611239540_0f73a07338_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/34611239540",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Iris sibirica 'Caesar's Brother', 2017"
+  },
+  {
+   "id": "4d9e1bad-b0ea-4dcc-95e1-90623efbfafb",
+   "url": "https://live.staticflickr.com/4196/34611215590_6fdefca009_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/34611215590",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Iris sibirica 'Caesar's Brother', 2017"
+  },
+  {
+   "id": "c609dae3-dd14-48c7-afa9-4e6eb805ba97",
+   "url": "https://live.staticflickr.com/3863/14161516857_80de42de24_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/14161516857",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Iris sibirica 'Caesar's Brother' 2014"
+  },
+  {
+   "id": "8e63046d-e270-420e-b95c-5371a9feed0d",
+   "url": "https://live.staticflickr.com/3883/14353601756_cedf454cdd_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/14353601756",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Iris sibirica 'Caesar's Brother' 2014"
+  }
+ ],
  "Campsis x tagliabuana 'Madame Galen'": [
   {
    "id": "465f3737-99c7-4b48-8ca6-300f05b9f22b",
@@ -1160,6 +1450,170 @@ export const FOTO_FLICKR = {
    "version": "2.0",
    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
    "title": "宿根天人菊 Gaillardia aristata 'Burgunder' [波蘭 Krakow Jagiellonian University Botanic Garden, Poland]"
+  }
+ ],
+ "Geranium pratense 'Mrs Kendall Clark'": [
+  {
+   "id": "d2257280-3ebf-4154-9692-65445ac4c2df",
+   "url": "https://live.staticflickr.com/5219/5385416333_15b2d7e467_b.jpg",
+   "landing": "https://www.flickr.com/photos/16436271@N02/5385416333",
+   "creator": "john shortland",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Geranium pratense 'Mrs Kendall Clark'"
+  },
+  {
+   "id": "67841c4e-f2ea-4dc0-ae09-788fc0228957",
+   "url": "https://live.staticflickr.com/7313/9200950230_02a40a4571_b.jpg",
+   "landing": "https://www.flickr.com/photos/52582306@N03/9200950230",
+   "creator": "阿橋花譜 KHQ Flower Guide",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "草原老鸛草 Geranium pratense Mrs Kendall Clark [巴黎植物園 Jardin des Plantes, Paris]"
+  }
+ ],
+ "Geranium x oxonianum 'Wargrave Pink'": [
+  {
+   "id": "d7441dbf-7a79-458e-a4b2-d1baf5071b00",
+   "url": "https://live.staticflickr.com/3688/9156015935_7bdb7623ea_b.jpg",
+   "landing": "https://www.flickr.com/photos/52582306@N03/9156015935",
+   "creator": "阿橋花譜 KHQ Flower Guide",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "老鸛草屬 Geranium endressii Wargrave Pink [比利時 Leuven Botanical Garden, Belgium]"
+  },
+  {
+   "id": "f8818cd9-c36e-49f6-b632-bb43c40cabcd",
+   "url": "https://live.staticflickr.com/8796/29836888382_c1a4c88461_b.jpg",
+   "landing": "https://www.flickr.com/photos/38477752@N04/29836888382",
+   "creator": "je_wyer",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Geranium 'Wargrave Pink' at NT Hidcote 17 Sep 2016.jpg"
+  }
+ ],
+ "Wisteria sinensis 'Alba'": [
+  {
+   "id": "9251571c-0f7d-462b-aecf-bcd32453d3be",
+   "url": "https://live.staticflickr.com/5070/5697658552_069f550de9.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/5697658552",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Wisteria sinensis 'Alba'"
+  },
+  {
+   "id": "dfaba8e2-f7ae-4755-95f6-06ebf747b086",
+   "url": "https://live.staticflickr.com/5145/5697658800_af06f3be21.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/5697658800",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Wisteria sinensis 'Alba'"
+  }
+ ],
+ "Hosta 'Frances Williams'": [
+  {
+   "id": "70d42609-b393-4fd9-b13c-9a984155ffc0",
+   "url": "https://live.staticflickr.com/65535/53066745849_dae330bcb7_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/53066745849",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Hosta 'Frances Williams' 23W29 Hosta R3-"
+  },
+  {
+   "id": "0e194aa2-fb45-415f-b938-6d98f0888a7d",
+   "url": "https://live.staticflickr.com/65535/53066746679_aed3319759_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/53066746679",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Hosta 'Frances Williams' 23W29 Hosta R3-"
+  },
+  {
+   "id": "dde7f886-0baf-4df7-ad55-d22e0e6df7c2",
+   "url": "https://live.staticflickr.com/65535/52328997447_0b80a3bfed_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/52328997447",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Hosta 'Frances Williams' WW35 Hosta R3-"
+  },
+  {
+   "id": "ad30da64-bdd3-4a16-8840-baac4d3135b2",
+   "url": "https://live.staticflickr.com/6121/5966980407_5a2d3ffc85_b.jpg",
+   "landing": "https://www.flickr.com/photos/61218143@N04/5966980407",
+   "creator": "Babij",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "IMGP5711 Hosta sieboldiana 'Frances Williams' - Funkia"
+  }
+ ],
+ "Kniphofia 'Little Maid'": [
+  {
+   "id": "9abcb514-b037-4353-8c0a-c255c71acd26",
+   "url": "https://live.staticflickr.com/4113/4844618555_0405ab1544.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/4844618555",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Kniphofia 'Little Maid'"
+  }
+ ],
+ "Lupinus 'Gallery Blue'": [
+  {
+   "id": "4e1dae33-fb2b-424c-85ef-6c7f09302183",
+   "url": "https://live.staticflickr.com/1748/27812232937_45074d3451_b.jpg",
+   "landing": "https://www.flickr.com/photos/55620187@N05/27812232937",
+   "creator": "karen_hine",
+   "license": "pdm",
+   "version": "1.0",
+   "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+   "title": "Lupinus Mini Gallery Blue with honeybee"
+  },
+  {
+   "id": "5110283f-25c4-4b4c-999a-e71328d3dcd7",
+   "url": "https://live.staticflickr.com/1728/42680683141_6ab357f01c_b.jpg",
+   "landing": "https://www.flickr.com/photos/55620187@N05/42680683141",
+   "creator": "karen_hine",
+   "license": "pdm",
+   "version": "1.0",
+   "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+   "title": "Lupinus Mini Gallery Blue with bumblebee"
+  },
+  {
+   "id": "bb482d4b-aea6-406a-850c-262943095047",
+   "url": "https://live.staticflickr.com/7425/26990707500_f714248427_b.jpg",
+   "landing": "https://www.flickr.com/photos/81392060@N06/26990707500",
+   "creator": "Valleybrook Gardens",
+   "license": "pdm",
+   "version": "1.0",
+   "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+   "title": "Lupinus Gallery Blue"
+  }
+ ],
+ "Lupinus 'My Castle'": [
+  {
+   "id": "53937edd-7f59-4669-9875-bddda5c05a91",
+   "url": "https://live.staticflickr.com/400/18655627893_b702df147c.jpg",
+   "landing": "https://www.flickr.com/photos/81392060@N06/18655627893",
+   "creator": "Valleybrook Gardens",
+   "license": "pdm",
+   "version": "1.0",
+   "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+   "title": "15cm Lupinus My Castle"
   }
  ]
 };
