@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
+import { rateLimit } from "../auth.js";
 import { getPlantPhotos } from "../plants/photos.js";
 import { STYLE_IDS } from "../../src/lib/gardenStyles.js";
 import { getPlant, providerName, searchPlants } from "../plants/service.js";
@@ -35,7 +36,10 @@ router.get("/", async (req, res, next) => {
 // Foto da iNaturalist: /api/plants/photos?name=Lavandula%20angustifolia[&full=1]
 const PhotoQuery = z.object({ name: z.string().trim().min(2).max(120), full: z.enum(["0", "1"]).optional() });
 
-router.get("/photos", async (req, res) => {
+// per IP, largo: il catalogo chiede molte foto mentre si scorre
+const photoLimiter = rateLimit({ max: 600, windowMs: 10 * 60 * 1000 });
+
+router.get("/photos", photoLimiter, async (req, res) => {
   const parsed = PhotoQuery.safeParse(req.query);
   if (!parsed.success) return res.status(400).json({ error: "Nome non valido" });
   try {

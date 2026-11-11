@@ -59,3 +59,9 @@ test("i meta finiscono nell'HTML, con i caratteri speciali protetti", () => {
 test("pagina dei termini di utilizzo", () => {
   assert.match(pageMeta("/termini").title, /^Termini di utilizzo/);
 });
+
+test("nel nome di un progetto i segni come $& e $' restano testo", () => {
+  const out = renderIndex(HTML, sharedMeta("Orto $& $' $`"), { origin: "https://esempio.it", pathname: "/condiviso/abc" });
+  assert.match(out, /<title>«Orto \$&amp; \$' \$`» · progetto su AiuolaLab<\/title>/);
+  assert.equal(out.match(/<title>/g).length, 1);
+});

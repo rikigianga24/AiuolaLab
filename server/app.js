@@ -34,6 +34,8 @@ export function createApp() {
     res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
     res.setHeader("X-Frame-Options", "DENY");
     res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(self)");
+    // in produzione il sito è solo HTTPS: il browser non prova più l'HTTP
+    if (config.isProduction) res.setHeader("Strict-Transport-Security", "max-age=15552000");
     next();
   });
 

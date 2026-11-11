@@ -16,6 +16,10 @@ function available(req, res, next) {
   next();
 }
 
+// Una proposta alla volta per utente: senza questo, più richieste partite
+// insieme leggerebbero tutte la quota prima che la prima la consumi.
+const inFlight = new Set();
+
 const globalMessage = "Il consulente IA ha finito le proposte disponibili per oggi: riprova domani mattina.";
 
 function quotaMessage(q) {
@@ -45,6 +49,10 @@ router.post("/", available, async (req, res, next) => {
     return next(err);
   }
 
+  if (inFlight.has(req.user.id)) {
+    return res.status(429).json({ error: "Sto già preparando una proposta: aspetta che sia pronta." });
+  }
+  inFlight.add(req.user.id);
   let reservation = null;
   try {
     // Stessa richiesta già fatta (da chiunque): risposta salvata, non consuma quota.
@@ -70,6 +78,8 @@ router.post("/", available, async (req, res, next) => {
       return res.status(err.status).json({ error: err.quotaExhausted ? globalMessage : err.message, quota });
     }
     next(err);
+  } finally {
+    inFlight.delete(req.user.id);
   }
 });
 

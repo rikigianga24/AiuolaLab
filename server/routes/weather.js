@@ -3,6 +3,7 @@
 // contatta servizi esterni e le risposte vengono messe in cache.
 import { Router } from "express";
 import { z } from "zod";
+import { rateLimit } from "../auth.js";
 import { config } from "../config.js";
 import { dailySummary, weatherAlerts } from "../../src/lib/weather.js";
 
@@ -13,7 +14,17 @@ const userAgent = () =>
 
 const forecastCache = new Map(); // "lat,lon" -> { expires, lastModified, data }
 const geoCache = new Map();
-let lastGeocode = 0;
+// Nominatim chiede al massimo 1 richiesta al secondo per tutta l'app:
+// le richieste passano in fila una alla volta.
+let geocodeQueue = Promise.resolve();
+const geocodeTurn = () => {
+  const turn = geocodeQueue.then(() => new Promise((r) => setTimeout(r, 1100)));
+  const mine = geocodeQueue;
+  geocodeQueue = turn;
+  return mine;
+};
+// per IP: basta a chi cerca il proprio comune, ferma chi la usa a raffica
+const geocodeLimiter = rateLimit({ max: 30, windowMs: 10 * 60 * 1000 });
 
 export async function getForecast(lat, lon) {
   // MET chiede massimo 4 decimali; 2 bastano (circa 1 km) e migliorano la cache
@@ -71,16 +82,13 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.get("/geocode", async (req, res, next) => {
+router.get("/geocode", geocodeLimiter, async (req, res, next) => {
   const q = z.string().trim().min(2).max(100).safeParse(req.query.q);
   if (!q.success) return res.status(400).json({ error: "Scrivi il nome di un comune" });
   const key = q.data.toLowerCase();
   if (geoCache.has(key)) return res.json(geoCache.get(key));
   try {
-    // Nominatim: massimo 1 richiesta al secondo
-    const wait = lastGeocode + 1100 - Date.now();
-    if (wait > 0) await new Promise((r) => setTimeout(r, wait));
-    lastGeocode = Date.now();
+    await geocodeTurn();
     const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&accept-language=it&countrycodes=it,sm,va,ch&q=${encodeURIComponent(q.data)}`;
     const r = await fetch(url, { headers: { "User-Agent": userAgent() } });
     if (!r.ok) return res.status(502).json({ error: "Ricerca località non disponibile" });

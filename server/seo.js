@@ -43,10 +43,12 @@ export function renderIndex(html, meta, { origin, pathname }) {
     `<meta name="twitter:card" content="summary_large_image" />`,
     meta.noindex ? `<meta name="robots" content="noindex" />` : `<link rel="canonical" href="${esc(url)}" />`,
   ].join("\n    ");
+  // sostituzioni con una funzione: nel nome di un progetto condiviso
+  // caratteri come "$&" o "$'" verrebbero altrimenti interpretati
   return html
-    .replace(/<title>[^<]*<\/title>/, `<title>${esc(meta.title)}</title>`)
-    .replace(/<meta name="description" content="[^"]*" \/>/, `<meta name="description" content="${esc(meta.description)}" />`)
-    .replace("</head>", `    ${tags}\n  </head>`);
+    .replace(/<title>[^<]*<\/title>/, () => `<title>${esc(meta.title)}</title>`)
+    .replace(/<meta name="description" content="[^"]*" \/>/, () => `<meta name="description" content="${esc(meta.description)}" />`)
+    .replace("</head>", () => `    ${tags}\n  </head>`);
 }
 
 export function sitemapXml(origin) {

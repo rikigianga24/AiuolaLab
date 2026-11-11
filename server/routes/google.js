@@ -112,13 +112,26 @@ router.get("/callback", async (req, res, next) => {
     // 1) account già collegato a Google
     let { rows } = await query("SELECT * FROM users WHERE google_sub = $1", [claims.sub]);
     let user = rows[0];
-    // 2) account con la stessa email (verificata da Google): lo collego
+    // 2) account con la stessa email (verificata da Google): lo collego.
+    // Se l'email dell'account non era mai stata confermata, l'account
+    // potrebbe averlo creato qualcun altro con l'indirizzo di questa
+    // persona: tolgo la password e chiudo le sue sessioni, così chi l'ha
+    // creato non può più entrare (attacco di "pre-registrazione").
     if (!user) {
       ({ rows } = await query(
-        "UPDATE users SET google_sub = $2, email_verified_at = COALESCE(email_verified_at, now()) WHERE email = $1 AND google_sub IS NULL RETURNING *",
+        `WITH prev AS (
+           SELECT id, email_verified_at IS NULL AS unverified FROM users
+           WHERE email = $1 AND google_sub IS NULL FOR UPDATE
+         )
+         UPDATE users u SET google_sub = $2,
+           password_hash = CASE WHEN prev.unverified THEN NULL ELSE u.password_hash END,
+           email_verified_at = COALESCE(u.email_verified_at, now())
+         FROM prev WHERE u.id = prev.id
+         RETURNING u.*, prev.unverified AS was_unverified`,
         [email, claims.sub],
       ));
       user = rows[0];
+      if (user?.was_unverified) await query("DELETE FROM sessions WHERE user_id = $1", [user.id]);
     }
     // 3) nuovo account: serve l'accettazione dell'informativa
     let created = false;
