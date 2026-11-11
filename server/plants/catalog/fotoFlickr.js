@@ -252,6 +252,112 @@ export const FOTO_FLICKR = {
    "title": "Ceanothus 'Concha', Baccharis 'Dodge Ely' and Salvia apiana"
   }
  ],
+ "Clematis 'Étoile Violette'": [
+  {
+   "id": "6bcc0419-9f70-4c99-80ec-cd481fcada29",
+   "url": "https://live.staticflickr.com/65535/48749539991_90c4d38d79_b.jpg",
+   "landing": "https://www.flickr.com/photos/150012178@N06/48749539991",
+   "creator": "Acabashi",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "'Clematis viticella' Étoile Violette at Nuthurst, West Sussex, England"
+  },
+  {
+   "id": "5e998687-128a-4d51-a797-4251fbc14b4f",
+   "url": "https://live.staticflickr.com/65535/48749208448_2d7d9bb97d_b.jpg",
+   "landing": "https://www.flickr.com/photos/150012178@N06/48749208448",
+   "creator": "Acabashi",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "'Clematis viticella' Étoile Violette in Nuthurst, West Sussex, England"
+  },
+  {
+   "id": "9260a338-7a2b-494b-b668-aaca8e8b9bb0",
+   "url": "https://live.staticflickr.com/65535/53673244856_9a89b217f2_b.jpg",
+   "landing": "https://www.flickr.com/photos/150012178@N06/53673244856",
+   "creator": "Acabashi",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "'Clematis viticella' Étoile Violette at Goodnestone Park Kent England 2"
+  },
+  {
+   "id": "34c21b05-e735-49f5-a0e1-2decc19cf529",
+   "url": "https://live.staticflickr.com/65535/53673460808_9e0ace04d5_b.jpg",
+   "landing": "https://www.flickr.com/photos/150012178@N06/53673460808",
+   "creator": "Acabashi",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "'Clematis viticella' Étoile Violette at Goodnestone Park Kent England 1"
+  }
+ ],
+ "Cornus alba 'Sibirica'": [
+  {
+   "id": "99756987-dc0b-4ace-b160-b865c47051ac",
+   "url": "https://live.staticflickr.com/1685/24259078059_c5b229e958_b.jpg",
+   "landing": "https://www.flickr.com/photos/138014579@N08/24259078059",
+   "creator": "Plant Image Library",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Cornus alba 'Sibirica'"
+  },
+  {
+   "id": "5ca8370f-6f72-496a-88ee-9829441426ce",
+   "url": "https://live.staticflickr.com/8616/29866511873_dd52b90542_b.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/29866511873",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Cornus alba 'Sibirica'"
+  },
+  {
+   "id": "37f2bbad-0c41-4ef0-820b-73ae87fb04da",
+   "url": "https://live.staticflickr.com/5075/5856903487_d36576986b_b.jpg",
+   "landing": "https://www.flickr.com/photos/61218143@N04/5856903487",
+   "creator": "Babij",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "IMGP6013 Cornus alba 'Sibirica' - Dereń biały odm. syberyjska"
+  }
+ ],
+ "Cosmos bipinnatus 'Purity'": [
+  {
+   "id": "265747e0-3b85-4e45-aa86-9d607aa58426",
+   "url": "https://live.staticflickr.com/1980/43100289500_a661c32fe6_b.jpg",
+   "landing": "https://www.flickr.com/photos/47125576@N00/43100289500",
+   "creator": "Topotom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "White Purity Cosmos"
+  },
+  {
+   "id": "980485d2-e335-4a0c-8ab5-6ec71655b3b5",
+   "url": "https://live.staticflickr.com/6144/6008988184_f1782df2bf_b.jpg",
+   "landing": "https://www.flickr.com/photos/40385177@N07/6008988184",
+   "creator": "cristina.sanvito",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "cosmos purity"
+  },
+  {
+   "id": "69ba0818-cc75-4d0a-8523-5718d91d53d0",
+   "url": "https://live.staticflickr.com/8170/7988442629_7c66528744_b.jpg",
+   "landing": "https://www.flickr.com/photos/40385177@N07/7988442629",
+   "creator": "cristina.sanvito",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "cosmos purity"
+  }
+ ],
  "Astrantia major 'Claret'": [
   {
    "id": "b8a60fd7-190f-4a84-83fd-cc0f63a353bc",
@@ -336,6 +442,124 @@ export const FOTO_FLICKR = {
    "version": "2.0",
    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
    "title": "高花金魚草 Antirrhinum majus Double Madame Butterfly [香港嘉道理農場 Kadoorie Farm, Hong Kong]"
+  }
+ ],
+ "Lonicera periclymenum 'Graham Thomas'": [
+  {
+   "id": "c46ac55e-d9ac-45a7-9781-38585b9d8d84",
+   "url": "https://live.staticflickr.com/5485/9177579410_341f84492c.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/9177579410",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Lonicera 'Graham Thomas'"
+  },
+  {
+   "id": "a64fdbaf-628b-4b02-a4f9-b5f2592d0254",
+   "url": "https://live.staticflickr.com/310/18989268352_cc5f692525_b.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/18989268352",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Lonicera 'Graham Thomas'"
+  }
+ ],
+ "Cerinthe major 'Purpurascens'": [
+  {
+   "id": "07005165-0639-4af5-b2d1-a9e6307a3a1f",
+   "url": "https://live.staticflickr.com/3116/2816166746_6544831d87_b.jpg",
+   "landing": "https://www.flickr.com/photos/7876691@N03/2816166746",
+   "creator": "echoforsberg",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Boraginaceae Cerinthe major 'Purpurascens' 2"
+  },
+  {
+   "id": "f38e8bd8-b71b-48bb-96f6-da1f176d27cc",
+   "url": "https://live.staticflickr.com/3075/2815315843_a93256c748_b.jpg",
+   "landing": "https://www.flickr.com/photos/7876691@N03/2815315843",
+   "creator": "echoforsberg",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Boraginaceae Cerinthe major 'Purpurascens'"
+  },
+  {
+   "id": "03268177-221d-4fc9-805b-b6cdffe5815d",
+   "url": "https://live.staticflickr.com/2465/3998139937_b9a537d949_b.jpg",
+   "landing": "https://www.flickr.com/photos/26698606@N03/3998139937",
+   "creator": "peganum",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Cerinthe major purpurascens dark"
+  }
+ ],
+ "Campsis x tagliabuana 'Madame Galen'": [
+  {
+   "id": "465f3737-99c7-4b48-8ca6-300f05b9f22b",
+   "url": "https://live.staticflickr.com/4332/35872419103_37f0a6585f_b.jpg",
+   "landing": "https://www.flickr.com/photos/20664893@N00/35872419103",
+   "creator": "wlcutler",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "CampsisXtagliabuanaMadameGalen_UBCBG_Cutler_20170810_P1300706"
+  },
+  {
+   "id": "b4d4f2ef-5d2e-4bd9-af7f-e818ff6c4ddd",
+   "url": "https://live.staticflickr.com/4422/35872419433_e3856411b7_b.jpg",
+   "landing": "https://www.flickr.com/photos/20664893@N00/35872419433",
+   "creator": "wlcutler",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "CampsisXtagliabuanaMadameGalen_UBCBG_Cutler_20170810_P1300705"
+  }
+ ],
+ "Calamagrostis x acutiflora 'Karl Foerster'": [
+  {
+   "id": "1b6af717-b987-4405-90b9-b2662c9e5bcc",
+   "url": "https://live.staticflickr.com/2586/3973205399_2868137498_b.jpg",
+   "landing": "https://www.flickr.com/photos/49169223@N00/3973205399",
+   "creator": "daryl_mitchell",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Karl Foerster Grass"
+  },
+  {
+   "id": "3451bda9-5ea2-4f38-b3ec-75ca8f627350",
+   "url": "https://live.staticflickr.com/7474/28738423576_f2e1b76436_b.jpg",
+   "landing": "https://www.flickr.com/photos/131880272@N06/28738423576",
+   "creator": "cultivar413",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "160725 476 Chi Bot Gdn Evaluation Gdn - Calamagrostis 'Karl Foerster', Hydrangea paniculata Limelight®, Platanus x acerifolia Ovation™"
+  },
+  {
+   "id": "f77b392f-e86c-4f7f-a31c-7d918ececdd1",
+   "url": "https://live.staticflickr.com/3493/3973972810_7a6a5824b7_b.jpg",
+   "landing": "https://www.flickr.com/photos/49169223@N00/3973972810",
+   "creator": "daryl_mitchell",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Karl Foerster Closeup"
+  },
+  {
+   "id": "0c33433f-69c5-4479-a6e6-62be38f46a32",
+   "url": "https://live.staticflickr.com/2492/3850363181_93f8797d96_b.jpg",
+   "landing": "https://www.flickr.com/photos/8568946@N06/3850363181",
+   "creator": "patrick_standish",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Feather Reed Grass"
   }
  ]
 };
