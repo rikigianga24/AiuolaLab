@@ -12,6 +12,7 @@
 import { config } from "../config.js";
 import { hasDatabase, query } from "../db.js";
 import { FOTO_VARIETA } from "./catalog/fotoVarieta.js";
+import { flickrPhotosFor } from "./flickr.js";
 import { FOTO_MANUALI, categoryCandidates, parseVariety } from "./varieties.js";
 import { commonsCategoryPhotos, findVarietyCategory, findWikimediaPhotos } from "./wikimedia.js";
 
@@ -292,6 +293,9 @@ async function getVarietyPhotos(scientificName, v, { full = false, fetchImpl = f
         console.warn("[photos] foto varietà:", err.message);
       }
     }
+    // foto Flickr scelte a mano per questa varietà, dopo quelle di Commons
+    const flickr = flickrPhotosFor(scientificName);
+    if (flickr.length) photos = [...photos, ...flickr].slice(0, full ? MAX_PHOTOS : 1);
     let result;
     if (photos.length) {
       result = {
@@ -300,8 +304,8 @@ async function getVarietyPhotos(scientificName, v, { full = false, fetchImpl = f
         match: "variety",
         taxon: null,
         photos,
-        source: "Wikimedia Commons",
-        category: { name: category, url: `https://commons.wikimedia.org/wiki/Category:${encodeURIComponent(category.replace(/ /g, "_"))}` },
+        source: photos[0].source,
+        category: category && { name: category, url: `https://commons.wikimedia.org/wiki/Category:${encodeURIComponent(category.replace(/ /g, "_"))}` },
       };
     } else {
       const base = await getSpeciesPhotos(v.base || v.genus, { full, fetchImpl, priority });

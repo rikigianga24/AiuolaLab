@@ -9,7 +9,7 @@ export function PhotoConsent({ compact = false }) {
     <div className={`photo-consent ${compact ? "is-compact" : ""}`}>
       <i className="fa-solid fa-camera" aria-hidden="true" />
       <p>
-        Le foto vere arrivano da <strong>iNaturalist</strong> e <strong>Wikimedia Commons</strong>, archivi di foto libere scattate da
+        Le foto vere arrivano da <strong>iNaturalist</strong>, <strong>Wikimedia Commons</strong> e <strong>Flickr</strong>, archivi di foto libere scattate da
         appassionati. Per vederle il tuo browser si collega ai loro server.
       </p>
       <button type="button" className="btn-country is-sage is-small" onClick={() => setConsent({ external: true })}>

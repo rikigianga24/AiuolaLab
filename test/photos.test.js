@@ -240,3 +240,22 @@ test("foto: miniature di Commons in cache corrette alle larghezze standard", asy
   assert.equal(fixed.photos[0].large, "https://u.org/a/1280px-X.jpg");
   assert.equal(fixed.photos[1].thumb, "t");
 });
+
+test("Flickr: misure, licenze e foto scelte valide", async () => {
+  const { flickrPhoto, flickrSized } = await import("../server/plants/flickr.js");
+  const { FOTO_FLICKR } = await import("../server/plants/catalog/fotoFlickr.js");
+  const { CATALOG } = await import("../server/plants/catalog/index.js");
+  assert.equal(flickrSized("https://live.staticflickr.com/1421/648894749_c76bb8c40d_b.jpg", "z"), "https://live.staticflickr.com/1421/648894749_c76bb8c40d_z.jpg");
+  assert.equal(flickrSized("https://live.staticflickr.com/3413/3212350675_50eefaf587.jpg", "n"), "https://live.staticflickr.com/3413/3212350675_50eefaf587_n.jpg");
+  assert.equal(flickrSized("https://example.org/x.jpg", "n"), null);
+  const base = { id: "a", url: "https://live.staticflickr.com/1/2_ab_b.jpg", landing: "https://www.flickr.com/photos/x/2", creator: "Anna", version: "2.0" };
+  assert.equal(flickrPhoto({ ...base, license: "by" }).license, "CC BY 2.0");
+  assert.equal(flickrPhoto({ ...base, license: "by" }).source, "Flickr");
+  assert.equal(flickrPhoto({ ...base, license: "by-nc" }), null);
+  assert.equal(flickrPhoto({ ...base, license: "by-nd" }), null);
+  const names = new Set(CATALOG.map((p) => p.scientificName));
+  for (const [name, list] of Object.entries(FOTO_FLICKR)) {
+    assert.ok(names.has(name), `fotoFlickr: ${name} non è nel catalogo`);
+    for (const p of list) assert.ok(flickrPhoto(p), `fotoFlickr: foto non valida per ${name}`);
+  }
+});

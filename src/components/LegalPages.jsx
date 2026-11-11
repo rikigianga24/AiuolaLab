@@ -98,7 +98,7 @@ export function PrivacyPage() {
         <li>i servizi di notifica dei browser (Google, Apple, Mozilla): ricevono il testo delle notifiche e l'indirizzo tecnico del dispositivo;</li>
         <li>Sentry e Umami: ricevono le informazioni tecniche sugli errori e le statistiche anonime di visita;</li>
         <li>Paddle (pagamenti, solo se ti abboni): ha sede nel Regno Unito e può usare fornitori negli Stati Uniti per i dati del pagamento;</li>
-        <li>iNaturalist e Wikimedia Commons, solo se acconsenti a vedere le foto delle piante: vedono l'indirizzo IP del tuo dispositivo.</li>
+        <li>iNaturalist, Wikimedia Commons e Flickr (SmugMug Inc.), solo se acconsenti a vedere le foto delle piante: vedono l'indirizzo IP del tuo dispositivo.</li>
       </ul>
       <p>
         Questi trasferimenti avvengono solo con le garanzie previste dal GDPR (capo V):
@@ -203,7 +203,8 @@ export function CookiePage() {
       <h2>Contenuti esterni (solo con consenso)</h2>
       <p>
         Le foto delle piante sono ospitate da iNaturalist e da Wikimedia Commons (archivi di foto con licenza libera, gestiti da
-        organizzazioni statunitensi senza scopo di lucro) e, per alcune schede del catalogo, da Perenual. Per mostrarle il tuo browser si collega ai
+        organizzazioni statunitensi senza scopo di lucro), da Flickr (SmugMug Inc., Stati Uniti) per alcune varietà, di cui
+        usiamo solo foto con licenza libera scelte una per una, e, per alcune schede del catalogo, da Perenual. Per mostrarle il tuo browser si collega ai
         loro server, che possono così vedere il tuo indirizzo IP. Senza consenso le foto non vengono caricate e al loro posto vedi le
         nostre illustrazioni. Sotto ogni foto sono indicati autore e licenza.
       </p>
