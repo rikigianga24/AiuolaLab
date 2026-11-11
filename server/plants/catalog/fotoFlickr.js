@@ -650,6 +650,178 @@ export const FOTO_FLICKR = {
    "title": "Helianthus annuus 'Velvet Queen' 8/2021 Sunflower-"
   }
  ],
+ "Wisteria floribunda 'Multijuga'": [
+  {
+   "id": "37221eaf-0af7-45a1-90d6-5af898553d7f",
+   "url": "https://live.staticflickr.com/5025/5684509235_f7d52c47e3_b.jpg",
+   "landing": "https://www.flickr.com/photos/26698606@N03/5684509235",
+   "creator": "peganum",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Wisteria floribunda Multijuga"
+  },
+  {
+   "id": "218fc355-8b2e-4f0c-83e6-82c4bf4348f8",
+   "url": "https://live.staticflickr.com/5063/5684510583_ba0bf5123d_b.jpg",
+   "landing": "https://www.flickr.com/photos/26698606@N03/5684510583",
+   "creator": "peganum",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Wisteria floribunda Multijuga"
+  },
+  {
+   "id": "a3e9385c-364b-45b3-b236-555166d4591f",
+   "url": "https://live.staticflickr.com/5147/5684511541_c0f00b5c33_b.jpg",
+   "landing": "https://www.flickr.com/photos/26698606@N03/5684511541",
+   "creator": "peganum",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Wisteria floribunda Multijuga"
+  }
+ ],
+ "Imperata cylindrica 'Red Baron'": [
+  {
+   "id": "0ff57149-0c0c-4166-a855-1eb2afe76b44",
+   "url": "https://live.staticflickr.com/4098/4931222696_c2f9fc4cc7_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/4931222696",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Imperata 'Red Baron' Japanese Blood grass"
+  }
+ ],
+ "Malva sylvestris 'Zebrina'": [
+  {
+   "id": "15becc4c-c5de-483d-b3d3-a0736e2d7eef",
+   "url": "https://live.staticflickr.com/8632/28946312086_52e6f2986a_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/28946312086",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Malva ''Zebrina', 2016"
+  },
+  {
+   "id": "e6631f16-ce24-4c22-aaae-a70093327bee",
+   "url": "https://live.staticflickr.com/8589/28946286636_71d43aa68c_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/28946286636",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Malva ''Zebrina', 2016"
+  },
+  {
+   "id": "04307f7f-f605-441b-b341-26b24d5c4cb6",
+   "url": "https://live.staticflickr.com/8475/28978549985_3212bd8274_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/28978549985",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Malva ''Zebrina', 2016"
+  },
+  {
+   "id": "20bc6291-e879-4b92-8173-07ef8c8c11f6",
+   "url": "https://live.staticflickr.com/492/19868621354_af0eb4286b_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/19868621354",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Malva 'Zebrina', 2015"
+  }
+ ],
+ "Hydrangea paniculata 'Vanille Fraise'": [
+  {
+   "id": "af5a01d9-d646-405a-84b6-a3ee730fcfa9",
+   "url": "https://live.staticflickr.com/7378/9952015316_7529deff67_b.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/9952015316",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Hydrangea paniculata 'Vanille Fraise'"
+  },
+  {
+   "id": "95a11551-2498-4c18-a39e-81cac1dd1fde",
+   "url": "https://live.staticflickr.com/3766/9952016484_3d3e4b8021_b.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/9952016484",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Hydrangea paniculata 'Vanille Fraise'"
+  },
+  {
+   "id": "ee4c0b88-3e91-4c42-beb9-d4e234a6148f",
+   "url": "https://live.staticflickr.com/3910/15167370781_350c365258_b.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/15167370781",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Hydrangea paniculata 'Vanille Fraise'"
+  },
+  {
+   "id": "fa873abf-f7f0-4520-ac84-1e0433378a55",
+   "url": "https://live.staticflickr.com/5565/15167369901_9c2bec6537_b.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/15167369901",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Hydrangea paniculata 'Vanille Fraise'"
+  }
+ ],
+ "Panicum virgatum 'Shenandoah'": [
+  {
+   "id": "cbcc7c3c-469b-474d-8f4a-d104f547b268",
+   "url": "https://live.staticflickr.com/6164/6204723244_04d7f63b2e_b.jpg",
+   "landing": "https://www.flickr.com/photos/26698606@N03/6204723244",
+   "creator": "peganum",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Panicum virgatum Shenandoah"
+  },
+  {
+   "id": "d55f04cb-5c12-48b5-9a50-c624107f4913",
+   "url": "https://live.staticflickr.com/6175/6204730800_eb86507250_b.jpg",
+   "landing": "https://www.flickr.com/photos/26698606@N03/6204730800",
+   "creator": "peganum",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Panicum virgatum Shenandoah"
+  },
+  {
+   "id": "662eca5f-07bf-400a-8998-93aaf4201aea",
+   "url": "https://live.staticflickr.com/6166/6204211393_5fda1b2ea5_b.jpg",
+   "landing": "https://www.flickr.com/photos/26698606@N03/6204211393",
+   "creator": "peganum",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Panicum virgatum Shenandoah"
+  }
+ ],
+ "Ipomoea batatas 'Marguerite'": [
+  {
+   "id": "5d1cda59-bd7f-4a71-8c1f-b1044d83f1c3",
+   "url": "https://live.staticflickr.com/6069/6153820071_e0f3b12541.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/6153820071",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Ipomoea batatas 'Marguerite' and Euphorbia 'Diamond Frost'"
+  }
+ ],
  "Astrantia major 'Claret'": [
   {
    "id": "b8a60fd7-190f-4a84-83fd-cc0f63a353bc",
@@ -1220,6 +1392,94 @@ export const FOTO_FLICKR = {
    "title": "Iris sibirica 'Caesar's Brother' 2014"
   }
  ],
+ "Molinia caerulea subsp. arundinacea 'Transparent'": [
+  {
+   "id": "32974e5f-4ba2-4c0f-a5c0-ff057a383133",
+   "url": "https://live.staticflickr.com/6176/6162496021_f22da94e91_b.jpg",
+   "landing": "https://www.flickr.com/photos/82479320@N00/6162496021",
+   "creator": "chuck b.",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Molinia litoralis 'Transparent'"
+  }
+ ],
+ "Pennisetum orientale 'Karley Rose'": [
+  {
+   "id": "e6fbb52f-a2c0-48b5-91f7-2293b3ab108d",
+   "url": "https://live.staticflickr.com/6062/6062685690_8412485297_b.jpg",
+   "landing": "https://www.flickr.com/photos/51464530@N00/6062685690",
+   "creator": "alexlomas",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Pennisetum orientale cv. Karley Rose"
+  },
+  {
+   "id": "010cd8a7-9146-4146-b617-729ba1b313a2",
+   "url": "https://live.staticflickr.com/6207/6062684744_7a6cc398e3_b.jpg",
+   "landing": "https://www.flickr.com/photos/51464530@N00/6062684744",
+   "creator": "alexlomas",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Pennisetum orientale cv. Karley Rose"
+  }
+ ],
+ "Penstemon 'Sour Grapes'": [
+  {
+   "id": "673171d6-f23b-4876-a239-38bbe74573a6",
+   "url": "https://live.staticflickr.com/4272/34886411141_54fa3438d1_b.jpg",
+   "landing": "https://www.flickr.com/photos/32179778@N00/34886411141",
+   "creator": "M. Martin Vicente",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "penstemon 'Sour Grapes'"
+  },
+  {
+   "id": "333af23e-0387-446c-9bb9-bf59cdd1917b",
+   "url": "https://live.staticflickr.com/65535/51441928577_c17642b28b_b.jpg",
+   "landing": "https://www.flickr.com/photos/32179778@N00/51441928577",
+   "creator": "M. Martin Vicente",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "penstemon 'Sour Grapes'"
+  }
+ ],
+ "Lathyrus odoratus 'Cupani'": [
+  {
+   "id": "74c7ccc0-2b74-40ef-9583-7a3fb580ba8a",
+   "url": "https://live.staticflickr.com/5487/11552856634_32a5f69ab2_b.jpg",
+   "landing": "https://www.flickr.com/photos/92899351@N08/11552856634",
+   "creator": "Martin Cooper Ipswich",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Sweet Pea 'Cupani'"
+  },
+  {
+   "id": "d501840d-ddd5-476d-bda6-a84c5c82cac5",
+   "url": "https://live.staticflickr.com/5741/23920160796_b03a811d3b_b.jpg",
+   "landing": "https://www.flickr.com/photos/92899351@N08/23920160796",
+   "creator": "Martin Cooper Ipswich",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Enjoying Cupani"
+  },
+  {
+   "id": "d4413da7-3674-46e5-9449-a75645d1fedc",
+   "url": "https://live.staticflickr.com/3342/3617865014_333871fb56_b.jpg",
+   "landing": "https://www.flickr.com/photos/26698606@N03/3617865014",
+   "creator": "peganum",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Lathyrus odoratus Cupani"
+  }
+ ],
  "Campsis x tagliabuana 'Madame Galen'": [
   {
    "id": "465f3737-99c7-4b48-8ca6-300f05b9f22b",
@@ -1614,6 +1874,72 @@ export const FOTO_FLICKR = {
    "version": "1.0",
    "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
    "title": "15cm Lupinus My Castle"
+  }
+ ],
+ "Tropaeolum majus 'Empress of India'": [
+  {
+   "id": "32406b2a-5baf-4b90-a7fa-d18308308437",
+   "url": "https://live.staticflickr.com/6078/6160436067_be01c26e87_b.jpg",
+   "landing": "https://www.flickr.com/photos/42919152@N04/6160436067",
+   "creator": "chipmunk_1",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "20110918 Nasturtium, Tropaeolum majus 'Empress of India'"
+  },
+  {
+   "id": "2632ee1b-8d1f-4163-a3b7-9296bc865f80",
+   "url": "https://live.staticflickr.com/8034/7994512244_8b45d4e62b_b.jpg",
+   "landing": "https://www.flickr.com/photos/42919152@N04/7994512244",
+   "creator": "chipmunk_1",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "20120916 Nasturtium, Tropaeolum majus 'Empress of India'"
+  }
+ ],
+ "Hydrangea macrophylla 'Mariesii Perfecta'": [
+  {
+   "id": "f95a93b0-55fc-4c3a-8a43-66588a752786",
+   "url": "https://live.staticflickr.com/7449/10447173305_018504aa14_b.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/10447173305",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Hydrangea macrophylla 'Mariesii Perfecta'"
+  }
+ ],
+ "Paeonia lactiflora 'Karl Rosenfield'": [
+  {
+   "id": "aff16095-32b9-4940-9a53-e0bb6dca88e4",
+   "url": "https://live.staticflickr.com/65535/49985640528_fde92d2605_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/49985640528",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Paeonia 'Karl Rosenfield' (Rosenfield, 1908) 2020 photo"
+  },
+  {
+   "id": "3fe55d99-7bf0-43d9-afd8-6f608f14d16e",
+   "url": "https://live.staticflickr.com/2929/14387734975_558b3a8929_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/14387734975",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Peony Karl Rosenfield 2014, Nichols"
+  },
+  {
+   "id": "5699b2c8-eaa5-42fb-bd1a-63cf4cb452bf",
+   "url": "https://live.staticflickr.com/65535/49986154011_be841be30b_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/49986154011",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Paeonia 'Karl Rosenfield' (Rosenfield, 1908) 2020 photo"
   }
  ]
 };
