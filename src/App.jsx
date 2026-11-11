@@ -17,6 +17,7 @@ import SharedPage from "./components/SharedPage";
 import GuidePage from "./components/GuidePage";
 import CalendarPage from "./components/CalendarPage";
 import CookieBanner from "./components/CookieBanner";
+import ContactPage from "./components/ContactPage";
 import { CookiePage, PrivacyPage, TermsPage } from "./components/LegalPages";
 import { SessionProvider, useSession } from "./lib/session";
 import { setArtStyle } from "./lib/artStyle";
@@ -51,6 +52,7 @@ function Layout() {
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/cookie" element={<CookiePage />} />
           <Route path="/termini" element={<TermsPage />} />
+          <Route path="/contatti" element={<ContactPage />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </main>

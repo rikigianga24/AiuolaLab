@@ -123,11 +123,18 @@ function senderForBrevo() {
   return sender;
 }
 
-async function sendViaBrevo(to, subject, content, fetchImpl = fetch) {
+async function sendViaBrevo(to, subject, content, fetchImpl = fetch, replyTo) {
   const r = await fetchImpl("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
     headers: { "api-key": config.mail.brevoApiKey, "content-type": "application/json", accept: "application/json" },
-    body: JSON.stringify({ sender: senderForBrevo(), to: [{ email: to }], subject, htmlContent: content.html, textContent: content.text }),
+    body: JSON.stringify({
+      sender: senderForBrevo(),
+      to: [{ email: to }],
+      ...(replyTo ? { replyTo: { email: replyTo } } : {}),
+      subject,
+      htmlContent: content.html,
+      textContent: content.text,
+    }),
     signal: AbortSignal.timeout(15_000),
   });
   if (!r.ok) {
@@ -136,10 +143,11 @@ async function sendViaBrevo(to, subject, content, fetchImpl = fetch) {
   }
 }
 
-export async function sendMail(to, subject, content, { fetchImpl } = {}) {
+// replyTo: a chi va la risposta (per esempio chi scrive dal modulo Contatti).
+export async function sendMail(to, subject, content, { fetchImpl, replyTo } = {}) {
   try {
-    if (config.mail.brevoApiKey) await sendViaBrevo(to, subject, content, fetchImpl);
-    else if (transport) await transport.sendMail({ from: config.mail.from, to, subject, html: content.html, text: content.text });
+    if (config.mail.brevoApiKey) await sendViaBrevo(to, subject, content, fetchImpl, replyTo);
+    else if (transport) await transport.sendMail({ from: config.mail.from, to, subject, html: content.html, text: content.text, ...(replyTo ? { replyTo } : {}) });
     else return false;
     return true;
   } catch (err) {

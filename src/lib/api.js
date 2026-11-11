@@ -50,6 +50,7 @@ export const projectsApi = (ownerKey) => {
 };
 
 // Progetto condiviso con un link (sola lettura, nessun account).
+export const sendContact = (payload) => request("/contact", { method: "POST", body: payload });
 export const getSharedProject = (token) => request(`/shared/${encodeURIComponent(token)}`);
 
 // ---- account ----

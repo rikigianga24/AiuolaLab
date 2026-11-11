@@ -24,7 +24,7 @@ const SessionContext = createContext(null);
 export function SessionProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [features, setFeatures] = useState({ accounts: false, mail: false, push: false, google: false, vapidPublicKey: null });
+  const [features, setFeatures] = useState({ accounts: false, mail: false, push: false, google: false, contact: false, vapidPublicKey: null });
   const [settings, setSettings] = useState(() => merge(DEFAULT_SETTINGS, load(SETTINGS_KEY, {})));
   const pending = useRef(null);
   const timer = useRef(null);
@@ -35,7 +35,7 @@ export function SessionProvider({ children }) {
 
   const refresh = useCallback(async () => {
     const health = await getHealth();
-    setFeatures({ accounts: Boolean(health.accounts), mail: Boolean(health.mail), push: Boolean(health.push), google: Boolean(health.google), vapidPublicKey: health.vapidPublicKey ?? null });
+    setFeatures({ accounts: Boolean(health.accounts), mail: Boolean(health.mail), push: Boolean(health.push), google: Boolean(health.google), contact: Boolean(health.contact), vapidPublicKey: health.vapidPublicKey ?? null });
     if (!health.accounts) {
       setUser(null);
       setLoading(false);

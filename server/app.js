@@ -5,7 +5,8 @@ import compression from "compression";
 import express from "express";
 import { sameOrigin, sessionMiddleware } from "./auth.js";
 import { config } from "./config.js";
-import { hasDatabase } from "./db.js";
+import { hasDatabase, query } from "./db.js";
+import { reportError } from "./monitor.js";
 import { mailEnabled, pushEnabled } from "./notify.js";
 import { providerName } from "./plants/service.js";
 import accountRouter from "./routes/account.js";
@@ -16,6 +17,7 @@ import sharedRouter from "./routes/shared.js";
 import { metaFor, renderIndex, robotsTxt, siteOrigin, sitemapXml } from "./seo.js";
 import suggestRouter from "./routes/suggest.js";
 import weatherRouter from "./routes/weather.js";
+import contactRouter, { contactEnabled } from "./routes/contact.js";
 import googleRouter, { googleEnabled } from "./routes/google.js";
 
 export function createApp() {
@@ -48,7 +50,29 @@ export function createApp() {
       push: pushEnabled(),
       google: googleEnabled(),
       vapidPublicKey: pushEnabled() ? config.push.publicKey : null,
+      contact: contactEnabled(),
+      // registro degli errori e statistiche (spenti senza configurazione)
+      sentryDsn: config.sentry.dsn,
+      sentryEnvironment: config.sentry.environment,
+      analytics: config.analytics,
     });
+  });
+
+  // Per i servizi di controllo (UptimeRobot e simili): 200 se il sito e il
+  // database rispondono, 503 se il database configurato non risponde.
+  app.get("/api/uptime", async (req, res) => {
+    res.set("Cache-Control", "no-store");
+    if (!hasDatabase()) return res.json({ ok: true, database: "non configurato" });
+    try {
+      await Promise.race([
+        query("SELECT 1"),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 5000).unref()),
+      ]);
+      res.json({ ok: true, database: "ok" });
+    } catch (err) {
+      console.warn("[uptime] database non raggiungibile:", err.message);
+      res.status(503).json({ ok: false, database: "non raggiungibile" });
+    }
   });
 
   app.use("/api/auth/google", googleRouter);
@@ -59,6 +83,7 @@ export function createApp() {
   app.use("/api/shared", sharedRouter);
   app.use("/api/suggest", suggestRouter);
   app.use("/api/weather", weatherRouter);
+  app.use("/api/contact", contactRouter);
 
   app.use("/api", (req, res) => res.status(404).json({ error: "Endpoint non trovato" }));
 
@@ -86,7 +111,10 @@ export function createApp() {
   // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => {
     const status = err.status && err.status >= 400 && err.status < 600 ? err.status : 500;
-    if (status >= 500) console.error(err);
+    if (status >= 500) {
+      console.error(err);
+      reportError(err, "api");
+    }
     res.status(status).json({ error: status === 500 ? "Errore interno del server" : err.message });
   });
 

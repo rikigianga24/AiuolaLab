@@ -8,6 +8,7 @@ import { emailLayout, mailEnabled, pushEnabled, sendMail, sendPush } from "./not
 import { userSettings } from "./routes/account.js";
 import { getForecast } from "./routes/weather.js";
 import { dailyMessage, streakWeeks } from "./pushMessages.js";
+import { reportError } from "./monitor.js";
 
 const TZ = "Europe/Rome";
 const parts = (d = new Date()) =>
@@ -144,13 +145,18 @@ export async function runScheduler(now = new Date()) {
       await runForUser(user, now);
     } catch (err) {
       console.warn(`[scheduler] utente ${user.id}:`, err.message);
+      reportError(err, "notifiche");
     }
   }
 }
 
 export function startScheduler() {
   if (!config.schedulerEnabled) return;
-  const tick = () => runScheduler().catch((err) => console.warn("[scheduler]", err.message));
+  const tick = () =>
+    runScheduler().catch((err) => {
+      console.warn("[scheduler]", err.message);
+      reportError(err, "notifiche");
+    });
   setTimeout(tick, 15_000);
   setInterval(tick, 10 * 60 * 1000).unref();
   console.log("[scheduler] Notifiche programmate attive.");
