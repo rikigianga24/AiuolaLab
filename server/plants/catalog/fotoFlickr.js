@@ -358,6 +358,38 @@ export const FOTO_FLICKR = {
    "title": "cosmos purity"
   }
  ],
+ "Lamprocapnos spectabilis 'Alba'": [
+  {
+   "id": "d29bede6-fc0c-4847-8ca0-a7f9d0d8cf22",
+   "url": "https://live.staticflickr.com/5062/5597102584_d83276cfc9_b.jpg",
+   "landing": "https://www.flickr.com/photos/50823119@N08/5597102584",
+   "creator": "D.Eickhoff",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Lamprocapnos spectabilis"
+  },
+  {
+   "id": "31e2b844-31a1-4e10-b736-a1e13e8139d5",
+   "url": "https://live.staticflickr.com/7297/9237445963_0d638c9841_b.jpg",
+   "landing": "https://www.flickr.com/photos/52582306@N03/9237445963",
+   "creator": "阿橋花譜 KHQ Flower Guide",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "荷包牡丹 Dicentra (Lamprocapnos) spectabilis v alba [比利時 Leuven Botanical Garden, Belgium]"
+  },
+  {
+   "id": "a080d8b6-46c8-4f34-be81-afc088df2537",
+   "url": "https://live.staticflickr.com/65535/52089291523_7d0de90819_b.jpg",
+   "landing": "https://www.flickr.com/photos/25507134@N00/52089291523",
+   "creator": "Tauralbus",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "20220429_Terrasse_016"
+  }
+ ],
  "Astrantia major 'Claret'": [
   {
    "id": "b8a60fd7-190f-4a84-83fd-cc0f63a353bc",
@@ -510,6 +542,74 @@ export const FOTO_FLICKR = {
    "title": "南歐鐵線蓮 Clematis viticella Purpurea Plena Elegans [牛津大學植物園 Oxford Botanic Garden]"
   }
  ],
+ "Cosmos bipinnatus 'Cupcakes'": [
+  {
+   "id": "f3542ce2-f90e-45f3-95a6-76fd8dd7a4ad",
+   "url": "https://live.staticflickr.com/65535/53900387522_94dd55d7e1_b.jpg",
+   "landing": "https://www.flickr.com/photos/193316968@N06/53900387522",
+   "creator": "chris.rycroft",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Cosmos 'Cupcakes Blush'"
+  }
+ ],
+ "Daphne odora 'Aureomarginata'": [
+  {
+   "id": "4b48425d-6e0a-4c45-9870-20b616a21918",
+   "url": "https://live.staticflickr.com/2710/4518794606_8d3e6fe3ba.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/4518794606",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Daphne odora 'Aureomarginata'"
+  },
+  {
+   "id": "0cc8ea59-e907-4526-895c-4aac6f6d5f5d",
+   "url": "https://live.staticflickr.com/7196/6830359200_31ac2c6059_b.jpg",
+   "landing": "https://www.flickr.com/photos/26698606@N03/6830359200",
+   "creator": "peganum",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Daphne odora Aureomarginata"
+  },
+  {
+   "id": "bf74b12f-d73b-4fef-9f5e-5b5c7de87d35",
+   "url": "https://live.staticflickr.com/2754/4503434605_a0f8a55b0c.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/4503434605",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Daphne odora 'Aureomarginata'"
+  }
+ ],
+ "Dahlia 'Wizard of Oz'": [
+  {
+   "id": "fe044e88-56a6-426b-b113-15586d3de762",
+   "url": "https://live.staticflickr.com/4299/35689929300_9b37cf77c6_b.jpg",
+   "landing": "https://www.flickr.com/photos/21186555@N07/35689929300",
+   "creator": "Ray in Manila",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Dalhia (Wizard of Oz), Pompon Dahlias"
+  }
+ ],
+ "Deschampsia cespitosa 'Goldtau'": [
+  {
+   "id": "87c76d3a-12f7-449d-abc8-16263ea6f2c0",
+   "url": "https://live.staticflickr.com/65535/48281008232_931745239d_b.jpg",
+   "landing": "https://www.flickr.com/photos/75796607@N00/48281008232",
+   "creator": "westher",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Deschampsia cespitosa ‘Goldtau’ (Ruwe smele) - Vlinderhof - Utrecht"
+  }
+ ],
  "Campsis x tagliabuana 'Madame Galen'": [
   {
    "id": "465f3737-99c7-4b48-8ca6-300f05b9f22b",
@@ -616,6 +716,52 @@ export const FOTO_FLICKR = {
    "version": "2.0",
    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
    "title": "Clematis montana var. grandiflora - Anemone Clematis - circa 1840"
+  }
+ ],
+ "Crocosmia x crocosmiiflora 'George Davison'": [
+  {
+   "id": "88a4504c-3aff-4c22-b94f-5ab860ae3443",
+   "url": "https://live.staticflickr.com/8312/8063298971_7fa4b5be35_b.jpg",
+   "landing": "https://www.flickr.com/photos/10978503@N00/8063298971",
+   "creator": "Glen Bowman",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Crocosmia x crocosmiiflora 'George Davison' - National Botanic Garden of Wales, Llanarthney, Carmarthenshire, Wales"
+  }
+ ],
+ "Dahlia 'Gallery'": [
+  {
+   "id": "778ebc28-f649-44f1-a057-dd47a8d762be",
+   "url": "https://live.staticflickr.com/3380/3564594818_5365694d67_b.jpg",
+   "landing": "https://www.flickr.com/photos/71365354@N00/3564594818",
+   "creator": "Gail Frederick",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "'Gallery Art Fair' Dahlia, 'Gallery Bellini' Dahlia, 'Gallery Rivera' Dahlia & Gazania"
+  }
+ ],
+ "Delphinium 'Galahad'": [
+  {
+   "id": "4025e0b1-9448-4b96-9eb1-3061336fa15c",
+   "url": "https://live.staticflickr.com/5080/5912726737_74a449735b_b.jpg",
+   "landing": "https://www.flickr.com/photos/61218143@N04/5912726737",
+   "creator": "Babij",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "IMGP9102 Delphinium Pacific Giant 'Galahad' - Ostróżka"
+  },
+  {
+   "id": "1e4defb0-b16f-4bcc-b7f3-ff3d7582783d",
+   "url": "https://live.staticflickr.com/6023/5913289108_05562459c2_b.jpg",
+   "landing": "https://www.flickr.com/photos/61218143@N04/5913289108",
+   "creator": "Babij",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "IMGP9104 Delphinium Pacific Giant 'Galahad' - Ostróżka"
   }
  ]
 };
