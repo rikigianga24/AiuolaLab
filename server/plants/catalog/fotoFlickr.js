@@ -498,6 +498,18 @@ export const FOTO_FLICKR = {
    "title": "Cerinthe major purpurascens dark"
   }
  ],
+ "Clematis viticella 'Purpurea Plena Elegans'": [
+  {
+   "id": "bb7e53a4-8f99-41b2-a79d-3c0e90889d06",
+   "url": "https://live.staticflickr.com/7408/9204822701_73f0759b19_b.jpg",
+   "landing": "https://www.flickr.com/photos/52582306@N03/9204822701",
+   "creator": "阿橋花譜 KHQ Flower Guide",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "南歐鐵線蓮 Clematis viticella Purpurea Plena Elegans [牛津大學植物園 Oxford Botanic Garden]"
+  }
+ ],
  "Campsis x tagliabuana 'Madame Galen'": [
   {
    "id": "465f3737-99c7-4b48-8ca6-300f05b9f22b",
@@ -560,6 +572,50 @@ export const FOTO_FLICKR = {
    "version": "2.0",
    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
    "title": "Feather Reed Grass"
+  }
+ ],
+ "Cistus x hybridus 'Corbariensis'": [
+  {
+   "id": "06df9294-31dd-4cbe-b861-12cdd2a005d2",
+   "url": "https://live.staticflickr.com/7099/7258793450_f88679cbde.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/7258793450",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Cistus x corbariensis"
+  }
+ ],
+ "Clematis montana 'Grandiflora'": [
+  {
+   "id": "b4009592-6184-44e8-8cdf-b06e43306fe3",
+   "url": "https://live.staticflickr.com/65535/52090859926_0e72d33657_b.jpg",
+   "landing": "https://www.flickr.com/photos/16176711@N02/52090859926",
+   "creator": "conall..",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Clematis montana var. grandiflora"
+  },
+  {
+   "id": "9b03b589-5cf0-4fc2-bd93-f41731f8b5eb",
+   "url": "https://live.staticflickr.com/5469/7091592473_fcf9751402.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/7091592473",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Clematis montana 'Grandiflora'"
+  },
+  {
+   "id": "b31ca4c9-4f2e-4f06-be80-f1fba08c17cb",
+   "url": "https://live.staticflickr.com/3885/14669631894_a456cb4987_b.jpg",
+   "landing": "https://www.flickr.com/photos/97123293@N07/14669631894",
+   "creator": "Swallowtail Garden Seeds",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Clematis montana var. grandiflora - Anemone Clematis - circa 1840"
   }
  ]
 };
