@@ -4,7 +4,7 @@ import PlantSafety from "./PlantSafety";
 import { STYLE_BY_ID, stylesFor } from "../../lib/gardenStyles";
 import { PRICE_TIERS, priceTier } from "../../lib/budget";
 import { FERTILIZERS, fertilizerPlan, monthsText, npkText } from "../../lib/fertilizers";
-import { COLORS, CYCLE, GROUPS, SEASONS, SOIL_PH, SOIL_TEXTURE, SUNLIGHT, WATERING, formatRangeCm, hardinessInfo } from "../../lib/labels";
+import { COLORS, CYCLE, GROUPS, SEASONS, SOIL_PH, SOIL_TEXTURE, SUNLIGHT, WATERING, floweringLabel, formatRangeCm, growthText, hardinessInfo } from "../../lib/labels";
 
 const list = (values, dict) =>
   values?.length ? values.map((v) => (typeof dict[v] === "string" ? dict[v] : dict[v]?.label ?? v)).join(", ") : "n.d.";
@@ -31,7 +31,10 @@ export default function PlantFacts({ plant }) {
       <dt>Esposizione</dt>
       <dd>{list(plant.sunlight, SUNLIGHT)}</dd>
       <dt>Acqua</dt>
-      <dd>{plant.watering ? WATERING[plant.watering].label : "n.d."}</dd>
+      <dd>
+        {plant.watering ? WATERING[plant.watering].label : "n.d."}
+        {plant.waterNote && <span className="facts-detail">{plant.waterNote}</span>}
+      </dd>
       <dt>Terreno</dt>
       <dd>
         {list(plant.soil?.ph, SOIL_PH)}
@@ -41,6 +44,12 @@ export default function PlantFacts({ plant }) {
       <dd>{formatRangeCm(plant.heightCm)}</dd>
       <dt>Larghezza</dt>
       <dd>{formatRangeCm(plant.spreadCm)}</dd>
+      {plant.growth && (
+        <>
+          <dt>Crescita</dt>
+          <dd>{growthText(plant)}</dd>
+        </>
+      )}
       <dt>Fiori</dt>
       <dd className="color-dots">
         {plant.flowerColors?.length
@@ -53,7 +62,13 @@ export default function PlantFacts({ plant }) {
           : "n.d."}
       </dd>
       <dt>Fioritura</dt>
-      <dd>{list(plant.floweringSeasons, SEASONS)}</dd>
+      <dd>
+        {plant.floweringMonths?.length
+          ? floweringLabel(plant.floweringMonths)
+          : plant.floweringMonths && plant.highlights?.length
+            ? "coltivata per le foglie"
+            : list(plant.floweringSeasons, SEASONS)}
+      </dd>
       {plant.cycle && (
         <>
           <dt>Ciclo</dt>
@@ -100,6 +115,18 @@ export default function PlantFacts({ plant }) {
                 {STYLE_BY_ID[id].short}
               </Link>
             ))}
+          </dd>
+        </>
+      )}
+      {plant.highlights?.length > 0 && (
+        <>
+          <dt>Da sapere</dt>
+          <dd>
+            <ul className="facts-highlights">
+              {plant.highlights.map((h) => (
+                <li key={h}>{h}</li>
+              ))}
+            </ul>
           </dd>
         </>
       )}

@@ -121,3 +121,59 @@ export function hardinessInfo(hardiness) {
   const text = c > 0 ? `Va riparata sotto i ${temp}` : `Resiste fino a ${temp}`;
   return { celsius: c, temp, text, level };
 }
+
+// ---- dettagli delle schede: mesi di fioritura e crescita ----
+
+const MONTH_NAMES = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"];
+const MONTH_SHORT = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
+
+/** Mesi in sequenze continue, anche a cavallo d'anno: [11,12,1,2] -> [[11,2]]. */
+export function monthRuns(months = []) {
+  const set = new Set(months);
+  if (!set.size) return [];
+  if (set.size === 12) return [[1, 12]];
+  const runs = [];
+  // si parte da un mese il cui precedente manca, così dicembre-gennaio resta unito
+  const start = [...set].sort((a, b) => a - b).find((m) => !set.has(m === 1 ? 12 : m - 1));
+  let cur = null;
+  for (let i = 0, m = start; i < 12; i++, m = (m % 12) + 1) {
+    if (set.has(m)) {
+      if (cur) cur[1] = m;
+      else runs.push((cur = [m, m]));
+    } else cur = null;
+  }
+  return runs;
+}
+
+/** [5,6,9,10] -> "maggio–giugno e settembre–ottobre"; short: "mag–giu, set–ott". */
+export function floweringLabel(months = [], { short = false } = {}) {
+  const names = short ? MONTH_SHORT : MONTH_NAMES;
+  const runs = monthRuns(months);
+  if (!runs.length) return "";
+  if (runs.length === 1 && runs[0][0] === 1 && runs[0][1] === 12) return "tutto l'anno";
+  const parts = runs.map(([a, b]) => (a === b ? names[a - 1] : `${names[a - 1]}–${names[b - 1]}`));
+  if (short) return parts.join(", ");
+  return parts.length > 1 ? `${parts.slice(0, -1).join(", ")} e ${parts.at(-1)}` : parts[0];
+}
+
+export const GROWTH_RATE = {
+  slow: { label: "Lenta", icon: "fa-gauge-simple-low" },
+  medium: { label: "Media", icon: "fa-gauge-simple" },
+  fast: { label: "Rapida", icon: "fa-gauge-simple-high" },
+};
+
+const WOODY = new Set(["arbusti", "rampicanti", "rose"]);
+
+/** Frase su quanto e quanto in fretta cresce la pianta. */
+export function growthText(plant) {
+  const g = plant?.growth;
+  if (!g) return "";
+  const rate = GROWTH_RATE[g.rate]?.label ?? "";
+  let how = g.text;
+  if (!how) {
+    if (plant.cycle === "annual") how = g.rate === "fast" ? "completa il ciclo in una stagione" : "cresce in una stagione";
+    else if (WOODY.has(plant.group)) how = { slow: "servono 5 anni o più per la dimensione adulta", medium: "adulta in 3-5 anni", fast: "adulta in 2-3 anni" }[g.rate];
+    else how = { slow: "servono 3-4 anni per un bel cespo", medium: "adulta in 2-3 anni", fast: "piena dimensione già il primo o il secondo anno" }[g.rate];
+  }
+  return `${rate}: ${how}`;
+}

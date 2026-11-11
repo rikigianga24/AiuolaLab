@@ -59,3 +59,11 @@ export function useInView(margin = "300px") {
   }, [seen, margin]);
   return [ref, seen];
 }
+
+// Link a una ricerca di immagini sul web per vedere la varietà esatta: le
+// foto trovate così non si possono mostrare nell'app (copyright), ma
+// l'utente può guardarle sul sito d'origine.
+export function webImagesUrl(name) {
+  const q = String(name ?? "").replace(/['‘’"“”]/g, "").replace(/\s+/g, " ").trim();
+  return `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(q)}`;
+}

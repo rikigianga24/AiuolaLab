@@ -5,7 +5,7 @@ import { useConsent } from "../lib/consent";
 import { CROPS, CROP_BY_ID, FAMILIES, cropAsPlant, monthsLabel } from "../lib/crops";
 import { GARDEN_STYLES, STYLE_BY_ID } from "../lib/gardenStyles";
 import { favCrop, favPlant, useFavorites } from "../lib/favorites";
-import { COLORS, SEASONS, SUNLIGHT, WATERING, hardinessInfo } from "../lib/labels";
+import { COLORS, SEASONS, SUNLIGHT, WATERING, floweringLabel, hardinessInfo } from "../lib/labels";
 import { useInView, usePlantPhotos } from "../lib/photos";
 import { flowerHexes, getIconUrl, iconTypeFor } from "../lib/plantIcons";
 import { useDebounced } from "../hooks/useDebounced";
@@ -51,7 +51,9 @@ function CardPhoto({ item }) {
   const consent = useConsent();
   const [ref, inView] = useInView();
   const { data } = usePlantPhotos(item.sci, { enabled: Boolean(consent?.external) && inView });
-  const photo = data?.photos?.[0];
+  // per una varietà senza foto proprie meglio il disegno (col colore giusto)
+  // di una foto generica del genere: una rosa rossa non è una rosa qualsiasi
+  const photo = data?.variety && data.match !== "variety" ? null : data?.photos?.[0];
   return (
     <div className="dc-photo" ref={ref}>
       <img className="dc-icon" src={item.icon} alt="" />
@@ -117,7 +119,11 @@ function PlantCard({ item, fav, onToggleFav, onOpen }) {
             {p.flowerColors.map((c) => (
               <span key={c} className="dot" style={{ background: COLORS[c]?.hex }} title={COLORS[c]?.label} />
             ))}
-            <span>Fiorisce in {p.floweringSeasons?.map((s) => SEASONS[s]?.toLowerCase()).join(", ") || "—"}</span>
+            <span>
+              {p.floweringMonths?.length
+                ? `Fiorisce ${floweringLabel(p.floweringMonths, { short: true })}`
+                : `Fiorisce in ${p.floweringSeasons?.map((s) => SEASONS[s]?.toLowerCase()).join(", ") || "—"}`}
+            </span>
           </p>
         )}
         {item.crop && <p className="dc-flowers">{FAMILIES[item.crop.family]}</p>}
@@ -158,7 +164,7 @@ function PlantSheet({ item, fav, onToggleFav, onClose }) {
         <button type="button" className="sheet-close" onClick={onClose} aria-label="Chiudi">
           <i className="fa-solid fa-xmark" />
         </button>
-        <PlantGallery name={item.sci} fallbackImage={plant.image?.regular} />
+        <PlantGallery name={item.sci} fallbackImage={plant.image?.regular} icon={item.icon} />
         <div className="sheet-head">
           <div>
             <h2 id="sheet-title">{item.name}</h2>

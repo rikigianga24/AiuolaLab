@@ -633,6 +633,24 @@
   font-style: italic;
 }
 
+.facts-detail {
+  display: block;
+  margin-top: 0.15rem;
+  color: #4a5a4c;
+  line-height: 1.4;
+}
+
+.facts-highlights {
+  margin: 0;
+  padding-left: 1.1rem;
+  list-style: disc;
+  line-height: 1.4;
+}
+
+.facts-highlights li + li {
+  margin-top: 0.2rem;
+}
+
 /* ===== Ispettore aiuola ===== */
 
 .stats-row {
