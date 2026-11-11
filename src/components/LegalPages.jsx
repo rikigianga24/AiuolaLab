@@ -66,6 +66,7 @@ export function PrivacyPage() {
         <li>hosting dell'applicazione: {LEGAL.hosting};</li>
         <li>database: {LEGAL.database};</li>
         <li>invio delle email: {LEGAL.mailProvider};</li>
+        <li>dominio e indirizzo {LEGAL.email}: {LEGAL.domain}, che inoltra i messaggi che ci scrivi alla nostra casella su {LEGAL.mailbox};</li>
         <li>consulente IA: Google (servizio Gemini, Stati Uniti), che riceve solo i dati dell'aiuola e le preferenze che scrivi, non la tua email né il tuo nome. Con il servizio gratuito di Google questi testi possono essere usati da Google per migliorare i suoi prodotti: non scrivere dati personali nel campo «Altre richieste»;</li>
         <li>notifiche push: il servizio di notifiche del tuo browser (per esempio Google, Apple o Mozilla), che riceve il testo della notifica;</li>
         <li>registro degli errori: Sentry (Functional Software Inc., Stati Uniti, con dati conservati nell'Unione Europea), che riceve solo le informazioni tecniche sugli errori descritte sopra;</li>
@@ -92,7 +93,8 @@ export function PrivacyPage() {
       </p>
       <ul>
         <li>Google (consulente IA Gemini e, se lo usi, accesso con Google): riceve i dati dell'aiuola e le preferenze che scrivi, oppure la tua email e un identificativo dell'account;</li>
-        <li>i fornitori di hosting e di database, se hanno sede o capogruppo negli USA: possono trattare tutti i dati del servizio;</li>
+        <li>Render (hosting) e Supabase (database), società statunitensi: i dati sono conservati a Francoforte (Germania), ma possono essere accessibili dagli USA;</li>
+        <li>Google (Gmail), dove riceviamo i messaggi che ci scrivi: vede il tuo indirizzo email e il testo del messaggio;</li>
         <li>i servizi di notifica dei browser (Google, Apple, Mozilla): ricevono il testo delle notifiche e l'indirizzo tecnico del dispositivo;</li>
         <li>Sentry e Umami: ricevono le informazioni tecniche sugli errori e le statistiche anonime di visita;</li>
         <li>Paddle (pagamenti, solo se ti abboni): ha sede nel Regno Unito e può usare fornitori negli Stati Uniti per i dati del pagamento;</li>
