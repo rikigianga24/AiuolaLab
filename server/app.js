@@ -26,6 +26,20 @@ export function createApp() {
   const app = express();
   app.disable("x-powered-by");
   app.set("trust proxy", 1);
+
+  // Dominio proprio (es. aiuolalab.it in APP_URL): chi apre ancora il vecchio
+  // indirizzo ...onrender.com viene spostato sul dominio con un 301, che dice
+  // anche a Google di usare il nuovo indirizzo. Le chiamate /api restano
+  // raggiungibili su entrambi (webhook di Paddle, servizi di controllo).
+  const appHost = new URL(config.appUrl).host;
+  if (!appHost.endsWith(".onrender.com")) {
+    app.use((req, res, next) => {
+      const host = req.get("host") || "";
+      if (!host.endsWith(".onrender.com") || req.path.startsWith("/api/")) return next();
+      if (req.method !== "GET" && req.method !== "HEAD") return next();
+      res.redirect(301, `${config.appUrl}${req.originalUrl}`);
+    });
+  }
   // File compressi (gzip): codice e grafica pesano circa un quarto.
   app.use(compression());
   // Avvisi di Paddle: servono i byte originali per controllare la firma,
