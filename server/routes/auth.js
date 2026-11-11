@@ -98,8 +98,10 @@ router.post("/login", limiter, async (req, res, next) => {
   try {
     const { rows } = await query("SELECT * FROM users WHERE email = $1", [body.data.email]);
     const user = rows[0];
-    // stesso tempo di risposta anche se l'utente non esiste
-    const ok = user ? await verifyPassword(body.data.password, user.password_hash) : await hashPassword("x").then(() => false);
+    // stesso tempo di risposta anche se l'utente non esiste o entra solo con Google
+    const ok = user?.password_hash
+      ? await verifyPassword(body.data.password, user.password_hash)
+      : await hashPassword("x").then(() => false);
     if (!ok) return res.status(401).json({ error: "Email o password non corrette." });
     await createSession(res, user.id);
     res.json({ user: publicUser(user) });

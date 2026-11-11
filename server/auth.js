@@ -105,6 +105,12 @@ export function sameOrigin(req, res, next) {
 // Limite semplice per IP (tentativi di accesso, richieste di reset...).
 export function rateLimit({ max, windowMs }) {
   const hits = new Map();
+  // ogni tanto si dimenticano gli IP che non si vedono da tempo, altrimenti
+  // l'elenco crescerebbe senza limiti
+  setInterval(() => {
+    const cutoff = Date.now() - windowMs;
+    for (const [ip, list] of hits) if (!list.some((t) => t > cutoff)) hits.delete(ip);
+  }, windowMs).unref();
   return (req, res, next) => {
     const now = Date.now();
     const list = (hits.get(req.ip) || []).filter((t) => t > now - windowMs);
