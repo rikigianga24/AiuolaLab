@@ -1,12 +1,12 @@
 // Dati del titolare del trattamento da mostrare nelle pagine legali.
-// DA COMPLETARE prima della pubblicazione.
 export const LEGAL = {
-  owner: "[Nome e cognome o ragione sociale del titolare]",
-  address: "[Indirizzo completo]",
-  email: "[email per le richieste privacy]",
+  owner: "Riccardo Giangani",
+  address: "Via S. Cristina 25, 52043 Castiglion Fiorentino (AR), Italia",
+  email: "info@aiuolalab.it",
   vat: "", // partita IVA, se presente
   updated: "11 novembre 2026",
-  hosting: "[nome del fornitore di hosting, es. Render / Railway / Vercel]",
-  database: "[nome del fornitore del database, es. Supabase (regione UE)]",
-  mailProvider: "[nome del fornitore email, es. Brevo]",
+  hosting: "Render (Render Services, Inc., Stati Uniti)",
+  database: "Supabase (Supabase, Inc., Stati Uniti)",
+  mailProvider: "Brevo (Sendinblue SAS, Francia)",
+  domain: "IONOS (IONOS SE, Germania)",
 };
