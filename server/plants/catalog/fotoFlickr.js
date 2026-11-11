@@ -133,5 +133,209 @@ export const FOTO_FLICKR = {
    "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
    "title": "aquilegia yellow queen"
   }
+ ],
+ "Ocimum basilicum 'Genovese'": [
+  {
+   "id": "d64570b9-f275-47f6-a6e9-4a9e51cc9dbd",
+   "url": "https://live.staticflickr.com/5718/20748523898_6022406394_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/20748523898",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Ocimum basilicum 'Genovese', 2015"
+  },
+  {
+   "id": "6513e221-3b73-446e-b392-4d2bfa1592fd",
+   "url": "https://live.staticflickr.com/730/20748511908_cdfdfc7232_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/20748511908",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Ocimum basilicum 'Genovese', 2015"
+  },
+  {
+   "id": "c91f469b-42fe-49b7-bc56-41e8419f92ce",
+   "url": "https://live.staticflickr.com/3730/19751646344_1f13bd468c_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/19751646344",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Ocimum basilicum 'Genovese', 2015"
+  }
+ ],
+ "Calendula officinalis 'Indian Prince'": [
+  {
+   "id": "d73cda7a-e666-49d3-8ae6-b27a78718d55",
+   "url": "https://live.staticflickr.com/65535/48861609581_afee46bfe9_b.jpg",
+   "landing": "https://www.flickr.com/photos/131880272@N06/48861609581",
+   "creator": "cultivar413",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "190909 033 Chicago Botanic Gdn - Fruit Veg Island, Calendula officinalis 'Indian Prince' Pot Marigold"
+  },
+  {
+   "id": "1b995051-5b4c-46fb-829b-5d7bd38e642d",
+   "url": "https://live.staticflickr.com/65535/48861610016_6ac27d095c_b.jpg",
+   "landing": "https://www.flickr.com/photos/131880272@N06/48861610016",
+   "creator": "cultivar413",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "190909 034 Chicago Botanic Gdn - Fruit Veg Island, Calendula officinalis 'Indian Prince' Pot Marigold"
+  },
+  {
+   "id": "4592903a-d94a-416a-89ab-8c1b9d11cdbb",
+   "url": "https://live.staticflickr.com/5325/9875924276_ed8f3a469b_b.jpg",
+   "landing": "https://www.flickr.com/photos/63457884@N04/9875924276",
+   "creator": "Bochum1805",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Ringblomma 'Indian prince' Calendula officinalis och röda blad från vingad benved, Euonymus alatus"
+  }
+ ],
+ "Campanula glomerata 'Superba'": [
+  {
+   "id": "7f1d7c0a-f785-4eca-a519-e6bc73bcfe46",
+   "url": "https://live.staticflickr.com/4871/32667146598_78c540e8c1_b.jpg",
+   "landing": "https://www.flickr.com/photos/52582306@N03/32667146598",
+   "creator": "阿橋花譜 KHQ Flower Guide",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "北疆風鈴草 Campanula glomerata 'Superba' [紐西蘭威靈頓植物園 Wellington Botanic Garden, New Zealand]"
+  },
+  {
+   "id": "ab045dcd-b14c-4223-9b22-a3fc9dd859ed",
+   "url": "https://live.staticflickr.com/5102/5594410870_37c38bb9c7_b.jpg",
+   "landing": "https://www.flickr.com/photos/46821817@N08/5594410870",
+   "creator": "FarOutFlora",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Campanula glomerata 'Superba'"
+  }
+ ],
+ "Ceanothus 'Concha'": [
+  {
+   "id": "4bc842fa-1df7-4ba9-9e38-5b9dbf8deb13",
+   "url": "https://live.staticflickr.com/4160/33680382713_df4e33a9ee_b.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/33680382713",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Ceanothus 'Concha'"
+  },
+  {
+   "id": "29d32b38-3d72-4b74-b6ba-52045bcc2284",
+   "url": "https://live.staticflickr.com/8736/16982823441_63c0448d29_b.jpg",
+   "landing": "https://www.flickr.com/photos/47484186@N06/16982823441",
+   "creator": "UC Davis Arboretum & Public Garden",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Ceanothus 'Concha', concha ceanothus"
+  },
+  {
+   "id": "91132402-4b1d-47bd-a20b-a73ac29254c3",
+   "url": "https://live.staticflickr.com/3814/12423755505_59db067475_b.jpg",
+   "landing": "https://www.flickr.com/photos/24284031@N00/12423755505",
+   "creator": "campsjc",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Ceanothus 'Concha', Baccharis 'Dodge Ely' and Salvia apiana"
+  }
+ ],
+ "Astrantia major 'Claret'": [
+  {
+   "id": "b8a60fd7-190f-4a84-83fd-cc0f63a353bc",
+   "url": "https://live.staticflickr.com/6173/6162512081_99844aec49_b.jpg",
+   "landing": "https://www.flickr.com/photos/82479320@N00/6162512081",
+   "creator": "chuck b.",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Astrantia major 'Claret'"
+  }
+ ],
+ "Bergenia 'Bressingham White'": [
+  {
+   "id": "d8607154-99eb-4ca2-a324-0b79a6555929",
+   "url": "https://live.staticflickr.com/65535/48382468542_3c4d127798_b.jpg",
+   "landing": "https://www.flickr.com/photos/32179778@N00/48382468542",
+   "creator": "M. Martin Vicente",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "bergenia 'bressingham white'"
+  },
+  {
+   "id": "8d0c3b97-2818-414d-88ec-fb8867896c95",
+   "url": "https://live.staticflickr.com/65535/48382326061_a02c698b14_b.jpg",
+   "landing": "https://www.flickr.com/photos/32179778@N00/48382326061",
+   "creator": "M. Martin Vicente",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "bergenia 'bressingham white'"
+  }
+ ],
+ "Antirrhinum majus 'Madame Butterfly'": [
+  {
+   "id": "27a12f78-ba88-41e6-bc35-5fade3c82cad",
+   "url": "https://live.staticflickr.com/3814/9244334877_030a513b23_b.jpg",
+   "landing": "https://www.flickr.com/photos/52582306@N03/9244334877",
+   "creator": "阿橋花譜 KHQ Flower Guide",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "高花金魚草 Antirrhinum majus Double Madame Butterfly [香港花展 Hong Kong Flower Show]"
+  },
+  {
+   "id": "800e7d2e-c142-4a61-876e-905479fd5cd8",
+   "url": "https://live.staticflickr.com/3753/9207639786_41a2c160c3_b.jpg",
+   "landing": "https://www.flickr.com/photos/52582306@N03/9207639786",
+   "creator": "阿橋花譜 KHQ Flower Guide",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "高花金魚草 Antirrhinum majus Double Madame Butterfly [香港花展 Hong Kong Flower Show]"
+  },
+  {
+   "id": "8a10e87d-6c75-46a9-86fa-840fdbd02e4a",
+   "url": "https://live.staticflickr.com/5453/9193443342_14db9df552_b.jpg",
+   "landing": "https://www.flickr.com/photos/52582306@N03/9193443342",
+   "creator": "阿橋花譜 KHQ Flower Guide",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "高花金魚草 Antirrhinum majus Double Madame Butterfly [香港花展 Hong Kong Flower Show]"
+  },
+  {
+   "id": "48da3837-ebda-4bfd-b3a8-76cb63205ce4",
+   "url": "https://live.staticflickr.com/3811/9240277970_827fd46b53_b.jpg",
+   "landing": "https://www.flickr.com/photos/52582306@N03/9240277970",
+   "creator": "阿橋花譜 KHQ Flower Guide",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "高花金魚草 Antirrhinum majus Double Madame Butterfly [香港花展 Hong Kong Flower Show]"
+  },
+  {
+   "id": "6248d7e9-5a3d-4a6e-afe8-ceb8787e5e52",
+   "url": "https://live.staticflickr.com/7407/9216129360_f86d52cd6e_b.jpg",
+   "landing": "https://www.flickr.com/photos/52582306@N03/9216129360",
+   "creator": "阿橋花譜 KHQ Flower Guide",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "高花金魚草 Antirrhinum majus Double Madame Butterfly [香港嘉道理農場 Kadoorie Farm, Hong Kong]"
+  }
  ]
 };
