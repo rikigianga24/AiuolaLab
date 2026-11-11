@@ -433,3 +433,8 @@ body {
     padding: 0.35rem 0.6rem;
   }
 }
+
+/* spazio riservato mentre si scarica una pagina, così il piè di pagina non salta */
+.page-loading {
+  min-height: 70vh;
+}
