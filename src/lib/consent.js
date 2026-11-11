@@ -3,12 +3,13 @@
 // AiuolaLab usa solo strumenti tecnici (cookie di sessione per l'accesso,
 // memoria del browser per salvare i progetti), che non richiedono consenso.
 // L'unico contenuto di terze parti caricato dal browser sono le foto delle
-// piante (iNaturalist, Wikimedia Commons e Perenual): si mostrano solo se l'utente lo consente.
+// piante (iNaturalist, Wikimedia Commons, Flickr e Perenual): si mostrano solo se l'utente lo consente.
 import { useSyncExternalStore } from "react";
 import { load, save } from "./storage.js";
 
 const KEY = "aiuolalab.consent";
-export const CONSENT_VERSION = 1;
+// 2: aggiunto Flickr tra le fonti delle foto (si chiede di nuovo il consenso)
+export const CONSENT_VERSION = 2;
 
 export const CATEGORIES = {
   necessary: {
@@ -18,7 +19,7 @@ export const CATEGORIES = {
   },
   external: {
     label: "Contenuti esterni",
-    description: "Foto vere delle piante caricate dai server di iNaturalist, Wikimedia Commons e Perenual: il tuo browser si collega ai loro servizi, che possono vedere il tuo indirizzo IP.",
+    description: "Foto vere delle piante caricate dai server di iNaturalist, Wikimedia Commons, Flickr e Perenual: il tuo browser si collega ai loro servizi, che possono vedere il tuo indirizzo IP.",
   },
 };
 
