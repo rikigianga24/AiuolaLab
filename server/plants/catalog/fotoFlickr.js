@@ -822,6 +822,148 @@ export const FOTO_FLICKR = {
    "title": "Ipomoea batatas 'Marguerite' and Euphorbia 'Diamond Frost'"
   }
  ],
+ "Penstemon 'Apple Blossom'": [
+  {
+   "id": "60092695-595c-47c6-9333-40d05ca156df",
+   "url": "https://live.staticflickr.com/4542/37774384794_fb74aaa776_b.jpg",
+   "landing": "https://www.flickr.com/photos/131880272@N06/37774384794",
+   "creator": "cultivar413",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Penstemon 'Apple Blossom' at Waterwise Botanicals Nursery, Bonsall, CA USA 171114"
+  },
+  {
+   "id": "f4a4c137-e15c-47e2-bb21-4c2ec14d6c49",
+   "url": "https://live.staticflickr.com/6129/6009780326_bf52ff8742_b.jpg",
+   "landing": "https://www.flickr.com/photos/32179778@N00/6009780326",
+   "creator": "M. Martin Vicente",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "penstemon 'Apple Blossom'"
+  }
+ ],
+ "Rosa 'Susan Williams-Ellis'": [
+  {
+   "id": "a289047f-26c7-4b73-87fe-06a26dbb3b43",
+   "url": "https://live.staticflickr.com/65535/51363605870_c82b8bb34a_b.jpg",
+   "landing": "https://www.flickr.com/photos/27439865@N05/51363605870",
+   "creator": "tgrauros",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Rose Susan Williams-Ellis_rose garden_Göteborg_P8210080"
+  }
+ ],
+ "Rudbeckia laciniata 'Herbstsonne'": [
+  {
+   "id": "f03ac76d-665f-4757-9056-d775fa936173",
+   "url": "https://live.staticflickr.com/3542/3803338003_cc88f2a117_b.jpg",
+   "landing": "https://www.flickr.com/photos/26698606@N03/3803338003",
+   "creator": "peganum",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Rudbeckia Herbstsonne"
+  },
+  {
+   "id": "193b79d3-103f-4079-b9f8-9df49af21dba",
+   "url": "https://live.staticflickr.com/4146/4986143683_840f76e514_b.jpg",
+   "landing": "https://www.flickr.com/photos/26698606@N03/4986143683",
+   "creator": "peganum",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Rudbeckia Herbstsonne"
+  }
+ ],
+ "Solanum crispum 'Glasnevin'": [
+  {
+   "id": "a22ef444-3963-48df-9680-2a0a6bce161b",
+   "url": "https://live.staticflickr.com/8826/18246083586_1c6662a909_b.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/18246083586",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Solanum 'Glasnevin Blue'"
+  }
+ ],
+ "Nicotiana alata 'Lime Green'": [
+  {
+   "id": "b15a1e08-852c-4fba-b13e-bce1a8dc374f",
+   "url": "https://live.staticflickr.com/65535/50268878678_88325cb6f9_b.jpg",
+   "landing": "https://www.flickr.com/photos/52450054@N04/50268878678",
+   "creator": "Judy Gallagher",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "238/366 Lime Green Tobacco - Nicotiana alata 'Lime Green', Green Spring Gardens, Alexandria, Virginia"
+  },
+  {
+   "id": "8f7269fa-cfdd-4114-bb9e-0394c416fb30",
+   "url": "https://live.staticflickr.com/5230/5617844795_9bcb082aa3_b.jpg",
+   "landing": "https://www.flickr.com/photos/46821817@N08/5617844795",
+   "creator": "FarOutFlora",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Nicotiana alata 'Lime Green'"
+  },
+  {
+   "id": "7d41a79e-f9c9-47c2-aad2-e6a76e61786a",
+   "url": "https://live.staticflickr.com/4140/4910508679_988dc6f00e_b.jpg",
+   "landing": "https://www.flickr.com/photos/75796607@N00/4910508679",
+   "creator": "westher",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Siertabak (Nicotiana alata 'Lime Green') en wonderboom (Ricinus communis) - Voortuin - Vijfhuizen {augustus 2010}"
+  }
+ ],
+ "Zinnia elegans 'Benary's Giant'": [
+  {
+   "id": "4f51aaf4-fe51-40ce-89c5-2d3ee6e0831a",
+   "url": "https://live.staticflickr.com/7619/16835684029_154d799c1d_b.jpg",
+   "landing": "https://www.flickr.com/photos/97123293@N07/16835684029",
+   "creator": "Swallowtail Garden Seeds",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Benary's Giant Lime zinnia"
+  },
+  {
+   "id": "152b1297-a337-489e-8c94-e9d5def4628c",
+   "url": "https://live.staticflickr.com/6011/6002696777_ac03dbe365_b.jpg",
+   "landing": "https://www.flickr.com/photos/96885113@N00/6002696777",
+   "creator": "McAli333",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Benary's Giant Lilac Zinnia | Garden, August 2011"
+  },
+  {
+   "id": "33d36471-6887-445c-9bd5-5e1beec0acca",
+   "url": "https://live.staticflickr.com/6011/6003244994_d98a051669_b.jpg",
+   "landing": "https://www.flickr.com/photos/96885113@N00/6003244994",
+   "creator": "McAli333",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Macro, Benary's Giant Lilac Zinnia | Garden, August 2011"
+  },
+  {
+   "id": "1c70ab2f-9691-467f-b52c-989e70579a63",
+   "url": "https://live.staticflickr.com/6121/6003250112_84b3c42e00_b.jpg",
+   "landing": "https://www.flickr.com/photos/96885113@N00/6003250112",
+   "creator": "McAli333",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Benary's Giant Lilac Zinnia | Garden, August 2011"
+  }
+ ],
  "Astrantia major 'Claret'": [
   {
    "id": "b8a60fd7-190f-4a84-83fd-cc0f63a353bc",
@@ -1480,6 +1622,96 @@ export const FOTO_FLICKR = {
    "title": "Lathyrus odoratus Cupani"
   }
  ],
+ "Salvia guaranitica 'Black and Blue'": [
+  {
+   "id": "d4ccdd70-c670-4734-9e3a-55cffc9829c0",
+   "url": "https://live.staticflickr.com/7558/28017695461_775b3a84ef_b.jpg",
+   "landing": "https://www.flickr.com/photos/52450054@N04/28017695461",
+   "creator": "Judy Gallagher",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Black and Blue Sage - Salvia guaranitica, Woodbridge, Virginia"
+  },
+  {
+   "id": "694f7b92-0847-4c41-a354-7a26a0dfc4f1",
+   "url": "https://live.staticflickr.com/8146/7487862622_5a66db00be_b.jpg",
+   "landing": "https://www.flickr.com/photos/70961631@N05/7487862622",
+   "creator": "The Greenery Nursery",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Black & Blue Salvia in full bloom!"
+  },
+  {
+   "id": "0a3cff96-1626-48a3-8ffd-49589d661221",
+   "url": "https://live.staticflickr.com/1874/43731309425_5a794a5cb8_b.jpg",
+   "landing": "https://www.flickr.com/photos/149372353@N02/43731309425",
+   "creator": "PlantRight1",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Salvia 'Black and Blue' at Sloat Nursery"
+  }
+ ],
+ "Solanum laxum 'Album'": [
+  {
+   "id": "836b48bd-f273-4488-bd16-e4d47f8ffde0",
+   "url": "https://live.staticflickr.com/4091/4831477283_5aa221110d.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/4831477283",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Solanum jasminoides 'Album'"
+  }
+ ],
+ "Tagetes tenuifolia 'Lemon Gem'": [
+  {
+   "id": "b2cd8613-96b7-4021-9b20-d7c6b2d9eab3",
+   "url": "https://live.staticflickr.com/6148/5991169255_fca5f1aaf8_b.jpg",
+   "landing": "https://www.flickr.com/photos/61218143@N04/5991169255",
+   "creator": "Babij",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "IMGP5678 Tagetes tenuifolia ‘Lemon Gem’ - Aksamitka wąskolistna"
+  }
+ ],
+ "Scabiosa atropurpurea 'Black Knight'": [
+  {
+   "id": "7db1f1f5-7084-4310-8d3b-2b0fc5397cdf",
+   "url": "https://live.staticflickr.com/4152/5029080999_b34c7f44bf_b.jpg",
+   "landing": "https://www.flickr.com/photos/62528187@N00/5029080999",
+   "creator": "photofarmer",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Scabiosa 'Black Knight'"
+  },
+  {
+   "id": "2b885e32-d519-4813-881e-97a47677b17f",
+   "url": "https://live.staticflickr.com/65535/9193426166_a5eff2ecd0_b.jpg",
+   "landing": "https://www.flickr.com/photos/52582306@N03/9193426166",
+   "creator": "阿橋 KHQ",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "紫盆花 Scabiosa atropurpurea 'Black Knight' [香港花展 Hong Kong Flower Show]"
+  }
+ ],
+ "Veronicastrum virginicum 'Lavendelturm'": [
+  {
+   "id": "96b2700c-9bc3-49b2-bd74-0d9b0e2c0b9e",
+   "url": "https://live.staticflickr.com/8293/7536529396_e318544774_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/7536529396",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Veronicastrum virginicum 'Lavendelturm'"
+  }
+ ],
  "Campsis x tagliabuana 'Madame Galen'": [
   {
    "id": "465f3737-99c7-4b48-8ca6-300f05b9f22b",
@@ -1940,6 +2172,112 @@ export const FOTO_FLICKR = {
    "version": "2.0",
    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
    "title": "Paeonia 'Karl Rosenfield' (Rosenfield, 1908) 2020 photo"
+  }
+ ],
+ "Rudbeckia hirta 'Cherry Brandy'": [
+  {
+   "id": "1a3cb7b2-9448-4f1e-924f-bdf51931f68a",
+   "url": "https://live.staticflickr.com/3751/9656102578_b404d20463_b.jpg",
+   "landing": "https://www.flickr.com/photos/96522761@N06/9656102578",
+   "creator": "Les Serres Fortier",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Rudbeckia Cherry Brandy"
+  },
+  {
+   "id": "0766b06e-6979-4371-a832-4feb12b2797a",
+   "url": "https://live.staticflickr.com/4095/4872584353_e7863aa7c7_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/4872584353",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Rudbeckia Cherry Brandy"
+  },
+  {
+   "id": "da15711b-1535-4b49-937d-0c1c08353bcd",
+   "url": "https://live.staticflickr.com/4124/4837116239_18532ca894_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/4837116239",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Rudbeckia Cherry Brandy"
+  },
+  {
+   "id": "1d672a92-4a37-4f4e-b412-65f494122d67",
+   "url": "https://live.staticflickr.com/7270/7564037448_f904fd1f0b_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/7564037448",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Cherry Brandy Cone Flower"
+  }
+ ],
+ "Petunia 'Surfinia'": [
+  {
+   "id": "73273f21-6fb6-45dd-aacd-2776de56544e",
+   "url": "https://live.staticflickr.com/5347/8859632987_c515c1a337_b.jpg",
+   "landing": "https://www.flickr.com/photos/96522761@N06/8859632987",
+   "creator": "Les Serres Fortier",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Petunia Surfinia Summer Double Rose"
+  },
+  {
+   "id": "76be90da-0d40-4115-879f-a154ce2a5338",
+   "url": "https://live.staticflickr.com/5709/21706160670_4ab322d5b8_b.jpg",
+   "landing": "https://www.flickr.com/photos/22439313@N07/21706160670",
+   "creator": "Jarosław Pocztarski",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Petunia - surfinia"
+  },
+  {
+   "id": "3e645faa-0f66-49f0-b1b5-ccd327745395",
+   "url": "https://live.staticflickr.com/8435/7996207107_4c30dc661d_b.jpg",
+   "landing": "https://www.flickr.com/photos/79792862@N05/7996207107",
+   "creator": "Irene Grassi (sun sand & sea)",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Petunia pendente (Petunia surfinia)"
+  }
+ ],
+ "Parthenocissus tricuspidata 'Veitchii'": [
+  {
+   "id": "ecef2cc9-c61d-4af8-a415-3f041d56f5b5",
+   "url": "https://live.staticflickr.com/5669/30677562751_7c8f4a4af3_b.jpg",
+   "landing": "https://www.flickr.com/photos/131880272@N06/30677562751",
+   "creator": "cultivar413",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "161019 041 Chi Bot Gdn Bulb Garden - Parthenocissus tricuspidata 'Veitchii' Boston Ivy, Pleioblastus pygmaeus Pygmy Bamboo, Tsuga canadensis 'Pendula' Weeping Canadian Hemlock"
+  },
+  {
+   "id": "e2129616-9106-4b95-b8c3-554c7654f0b2",
+   "url": "https://live.staticflickr.com/5466/30465264750_b22a13704c_b.jpg",
+   "landing": "https://www.flickr.com/photos/131880272@N06/30465264750",
+   "creator": "cultivar413",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "161019 042 Chi Bot Gdn Bulb Garden - Parthenocissus tricuspidata 'Veitchii', Pleioblastus pygmaeus, Diascia ‘Piccadilly Dark Orange’, Osteospermum Serenity™ Red"
+  },
+  {
+   "id": "524211c4-7085-4767-a022-fb57dd754364",
+   "url": "https://live.staticflickr.com/5615/30649162032_8a309d26de_b.jpg",
+   "landing": "https://www.flickr.com/photos/131880272@N06/30649162032",
+   "creator": "cultivar413",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "161019 040 Chi Bot Gdn Bulb Garden - Parthenocissus tricuspidata 'Veitchii' Boston Ivy, which is actually native to Japan"
   }
  ]
 };
