@@ -95,7 +95,18 @@ export function createApp() {
   const distDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../dist");
   if (fs.existsSync(distDir)) {
     const indexHtml = fs.readFileSync(path.join(distDir, "index.html"), "utf8");
-    app.use(express.static(distDir, { index: false, maxAge: "1h" }));
+    app.use(
+      express.static(distDir, {
+        index: false,
+        maxAge: "1h",
+        setHeaders(res, filePath) {
+          // i file in assets/ cambiano nome a ogni aggiornamento: il browser può tenerli un anno
+          if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+            res.set("Cache-Control", "public, max-age=31536000, immutable");
+          }
+        },
+      }),
+    );
     // ogni pagina riceve titolo, descrizione e anteprima giusti già nell'HTML
     app.get(/^(?!\/api\/).*/, async (req, res, next) => {
       try {

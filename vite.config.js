@@ -1,9 +1,37 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
+import purgecss from "@fullhuman/postcss-purgecss";
+
+// Bulma e Font Awesome contengono migliaia di classi e icone: nella versione
+// pubblicata teniamo solo quelle che compaiono davvero nel codice dell'app.
+// Gli stili scritti da noi non vengono toccati.
+const LIBRERIE_DA_SFOLTIRE = ["/node_modules/bulma/", "/node_modules/@fortawesome/"];
+
+function sfoltisciLibrerie() {
+  const purge = purgecss({
+    content: ["./index.html", "./src/**/*.{js,jsx}"],
+    // classi composte nel codice (es. `is-${kind}`), che la ricerca non vede intere
+    safelist: {
+      standard: [/^is-(primary|link|info|success|warning|danger|light|dark|white|black|small|medium|large|active)$/],
+      greedy: [/^fa-(solid|regular|brands)$/],
+    },
+  });
+  return {
+    postcssPlugin: "sfoltisci-librerie",
+    OnceExit(root, helpers) {
+      const file = (root.source?.input.file ?? "").replaceAll("\\", "/");
+      if (!LIBRERIE_DA_SFOLTIRE.some((dir) => file.includes(dir))) return;
+      return purge.OnceExit(root, helpers);
+    },
+  };
+}
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  css: {
+    postcss: { plugins: command === "build" ? [sfoltisciLibrerie()] : [] },
+  },
   plugins: [
     react(),
     // App installabile su telefono e desktop (PWA).
@@ -48,4 +76,4 @@ export default defineConfig({
     // In sviluppo le chiamate /api vanno al server Express.
     proxy: { "/api": "http://localhost:3001" },
   },
-});
+}));
