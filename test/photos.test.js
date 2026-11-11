@@ -40,7 +40,8 @@ test("foto: ricerca su iNaturalist con galleria", async () => {
       return { ok: true, json: async () => ({ results: [{ id: 99, name: "Lavandula angustifolia", preferred_common_name: "Lavanda vera", default_photo: photo(10) }] }) };
     return { ok: true, json: async () => ({ results: [{ id: 99, taxon_photos: [{ photo: photo(10) }, { photo: photo(11) }, { photo: photo(12, "cc-by-nc") }] }] }) };
   };
-  const res = await getPlantPhotos("Lavandula angustifolia 'Munstead'", { full: true, fetchImpl: fakeFetch });
+  const res = await getPlantPhotos("Lavandula angustifolia", { full: true, fetchImpl: fakeFetch });
+  assert.equal(res.match, "species");
   assert.equal(res.taxon.commonName, "Lavanda vera");
   assert.deepEqual(res.photos.map((p) => p.id), [10, 11]);
   assert.match(calls[0], /q=Lavandula%20angustifolia/);
@@ -69,8 +70,8 @@ test("foto: riempimento della cache in sottofondo", async () => {
     return { ok: true, json: async () => ({ results: [{ id: 1, name: "Salvia nemorosa", default_photo: { id: 5, url: "https://s.example/photos/5/square.jpg", license_code: "cc0" } }] }) };
   };
   const logs = [];
-  const stats = await warmPhotoCache(["Salvia nemorosa 'Caradonna'", "Salvia nemorosa", "Lavandula angustifolia"], { fetchImpl: okFetch, log: (m) => logs.push(m) });
-  // le varietà si riducono alla specie: due nomi distinti. La lavanda non
+  const stats = await warmPhotoCache(["Salvia nemorosa", "Salvia nemorosa x", "Lavandula angustifolia"], { fetchImpl: okFetch, log: (m) => logs.push(m) });
+  // "Salvia nemorosa x" si riduce alla specie: due nomi distinti. La lavanda non
   // ha risultati su iNaturalist (qui risponde sempre la salvia), quindi si
   // prova anche Wikidata: 3 richieste in tutto.
   assert.equal(stats.total, 2);
@@ -128,8 +129,8 @@ test("Wikimedia: solo licenze libere, autore e miniature", async () => {
   const ok = commonsPhoto(page("cc-by-sa-4.0", "CC BY-SA 4.0"));
   assert.equal(ok.attribution, "© Anna Verdi");
   assert.equal(ok.license, "CC BY-SA 4.0");
-  assert.equal(ok.thumb, "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Rosa.jpg/240px-Rosa.jpg");
-  assert.equal(ok.large, "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Rosa.jpg/1024px-Rosa.jpg");
+  assert.equal(ok.thumb, "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Rosa.jpg/330px-Rosa.jpg");
+  assert.equal(ok.large, "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Rosa.jpg/1280px-Rosa.jpg");
   assert.equal(ok.source, "Wikimedia Commons");
   assert.equal(commonsPhoto(page("pd", "Public domain", { Artist: undefined })).attribution, "Pubblico dominio");
   assert.equal(commonsPhoto(page("cc-by-nc-2.0", "CC BY-NC 2.0")), null);
@@ -168,10 +169,74 @@ test("foto: se iNaturalist non ha foto, si usa Wikimedia Commons", async () => {
       });
     throw new Error("host inatteso " + url);
   };
-  const res = await getPlantPhotos("Pianta rarissima 'Bella'", { fetchImpl });
+  const res = await getPlantPhotos("Pianta rarissima", { fetchImpl });
   assert.equal(res.photos.length, 1);
   assert.equal(res.photos[0].source, "Wikimedia Commons");
   assert.equal(res.source, "Wikimedia Commons");
   assert.deepEqual(hosts, ["api.inaturalist.org", "www.wikidata.org", "www.wikidata.org", "commons.wikimedia.org"]);
   setRequestSpacing(1000);
+});
+
+test("foto: le varietà cercano foto proprie e avvisano se sono generiche", async () => {
+  const { getPlantPhotos, setRequestSpacing } = await import("../server/plants/photos.js");
+  const { categoryCandidates, parseVariety } = await import("../server/plants/varieties.js");
+  setRequestSpacing(5);
+  assert.deepEqual(parseVariety("Echinacea purpurea 'Magnus'"), { genus: "Echinacea", species: "purpurea", cultivar: "Magnus", base: "Echinacea purpurea" });
+  assert.equal(parseVariety("Rosa 'Edith Piaf'").base, "Rosa");
+  assert.equal(parseVariety("Nepeta x faassenii").cultivar, null);
+  assert.ok(categoryCandidates("Calamagrostis x acutiflora 'Karl Foerster'").includes("Calamagrostis × acutiflora 'Karl Foerster'"));
+
+  const urls = [];
+  const json = (body) => ({ ok: true, json: async () => body });
+  const file = (id) => ({
+    pageid: id,
+    title: `File:Foto${id}.jpg`,
+    imageinfo: [{ mime: "image/jpeg", thumburl: `https://upload.wikimedia.org/x/500px-Foto${id}.jpg`, extmetadata: { License: { value: "cc-by-4.0" }, LicenseShortName: { value: "CC BY 4.0" }, Artist: { value: "Anna" } } }],
+  });
+  const fetchImpl = async (url) => {
+    const u = new URL(url);
+    urls.push(decodeURIComponent(url.replace(/\+/g, " ")));
+    if (u.hostname === "commons.wikimedia.org") {
+      // categoria esistente solo per 'Bella Rossa'
+      if (u.searchParams.get("prop") === "categoryinfo")
+        return json({ query: { pages: u.searchParams.get("titles").split("|").map((t) => (t === "Category:Genere specie 'Bella Rossa'" ? { title: t, categoryinfo: { files: 4 } } : { title: t, missing: true })) } });
+      if (u.searchParams.get("list") === "search") {
+        // la ricerca trova categorie con lo stesso nome ma di un altro genere o di un'altra specie: vanno scartate
+        return json({ query: { search: [{ title: "Category:Cantante 'Senza Foto'" }, { title: "Category:Genere altraspecie 'Senza Foto'" }] } });
+      }
+      if (u.searchParams.get("generator") === "categorymembers") return json({ query: { pages: [file(1), file(2)] } });
+    }
+    if (u.hostname === "api.inaturalist.org") return json({ results: [{ id: 7, name: "Genere specie", default_photo: { id: 9, url: "https://s.example/photos/9/square.jpg", license_code: "cc-by" } }] });
+    if (u.hostname === "www.wikidata.org") return json({ query: { search: [] } });
+    throw new Error("host inatteso " + url);
+  };
+
+  const own = await getPlantPhotos("Genere specie 'Bella Rossa'", { full: true, fetchImpl });
+  assert.equal(own.match, "variety");
+  assert.equal(own.variety, "Bella Rossa");
+  assert.deepEqual(own.photos.map((p) => p.id), ["wm:1", "wm:2"]);
+  assert.ok(urls.some((u) => u.includes("gcmtitle=Category:Genere specie 'Bella Rossa'")));
+  assert.ok(!urls.some((u) => u.includes("inaturalist")), "con le foto della varietà non serve iNaturalist");
+
+  const generic = await getPlantPhotos("Genere specie 'Senza Foto'", { fetchImpl });
+  assert.equal(generic.match, "species");
+  assert.equal(generic.variety, "Senza Foto");
+  assert.equal(generic.photos[0].id, 9);
+
+  // varietà già controllata dallo script (null in fotoVarieta.js): nessuna ricerca su Commons
+  urls.length = 0;
+  const known = await getPlantPhotos("Rosa 'Edith Piaf'", { fetchImpl });
+  assert.equal(known.variety, "Edith Piaf");
+  assert.equal(known.match, "genus");
+  assert.ok(!urls.some((u) => u.includes("commons.wikimedia.org") && u.includes("categoryinfo")));
+  setRequestSpacing(1000);
+});
+
+test("foto: miniature di Commons in cache corrette alle larghezze standard", async () => {
+  const { fixCachedSizes } = await import("../server/plants/photos.js");
+  const old = { photos: [{ source: "Wikimedia Commons", thumb: "https://u.org/a/240px-X.jpg", large: "https://u.org/a/1024px-X.jpg" }, { source: "iNaturalist", thumb: "t" }] };
+  const fixed = fixCachedSizes(old);
+  assert.equal(fixed.photos[0].thumb, "https://u.org/a/330px-X.jpg");
+  assert.equal(fixed.photos[0].large, "https://u.org/a/1280px-X.jpg");
+  assert.equal(fixed.photos[1].thumb, "t");
 });

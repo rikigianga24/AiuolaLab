@@ -34,6 +34,7 @@ import { RAMPICANTI } from "./rampicanti.js";
 import { GRAMINACEE } from "./graminacee.js";
 import { AROMATICHE } from "./aromatiche.js";
 import { BALCONE } from "./balcone.js";
+import { DETAILS, DETAIL_ERRORS } from "./dettagli/index.js";
 
 export const SOURCES = {
   rose: ROSE,
@@ -54,6 +55,19 @@ const PH = { a: "acid", n: "neutral", b: "alkaline" };
 const SOIL = { s: "sandy", m: "loamy", c: "clay", k: "chalky" };
 const COLOR = { B: "white", G: "yellow", O: "orange", R: "red", P: "pink", V: "purple", Z: "blue", E: "green" };
 const SEASON = { p: "spring", e: "summer", a: "autumn", i: "winter" };
+
+// mese (1-12) -> stagione, come nel calendario: marzo-maggio primavera...
+export const monthSeason = (m) => (m >= 3 && m <= 5 ? "spring" : m >= 6 && m <= 8 ? "summer" : m >= 9 && m <= 11 ? "autumn" : "winter");
+const SEASON_ORDER = ["spring", "summer", "autumn", "winter"];
+
+/** Aggiunge alla scheda i dettagli (mesi, crescita, acqua, particolarità). */
+export function withDetails(plant, detail) {
+  if (!detail) return { ...plant, floweringMonths: [], growth: null, waterNote: null, highlights: [] };
+  const seasons = detail.floweringMonths.length
+    ? SEASON_ORDER.filter((s) => detail.floweringMonths.some((m) => monthSeason(m) === s))
+    : plant.floweringSeasons;
+  return { ...plant, floweringSeasons: seasons, ...detail };
+}
 
 export const slug = (s) =>
   s
@@ -147,11 +161,13 @@ function build() {
         return;
       }
       seen.add(plant.externalId);
-      plants.push(plant);
+      const detail = DETAILS.get(plant.scientificName);
+      if (!detail) errors.push(`${where}: manca la scheda in dettagli/${group}.js`);
+      plants.push(withDetails(plant, detail));
     });
   }
   plants.sort((a, b) => a.commonName.localeCompare(b.commonName, "it"));
-  return { plants, errors };
+  return { plants, errors: [...errors, ...DETAIL_ERRORS] };
 }
 
 const built = build();

@@ -11,7 +11,9 @@
 // i link e le attribuzioni (tabella plant_cache, provider "inat").
 import { config } from "../config.js";
 import { hasDatabase, query } from "../db.js";
-import { findWikimediaPhotos } from "./wikimedia.js";
+import { FOTO_VARIETA } from "./catalog/fotoVarieta.js";
+import { FOTO_MANUALI, categoryCandidates, parseVariety } from "./varieties.js";
+import { commonsCategoryPhotos, findVarietyCategory, findWikimediaPhotos } from "./wikimedia.js";
 
 const API = "https://api.inaturalist.org/v1";
 const PROVIDER = "inat";
@@ -32,6 +34,17 @@ const userAgent = () => `AiuolaLab/0.3 (${config.appUrl}${config.weatherContact 
 
 const memory = new Map();
 
+// Le voci salvate prima del 2026-11 hanno miniature di Commons a 240 e
+// 1024 px, larghezze che Wikimedia non serve più: si correggono in lettura.
+const fixSize = (url) => url?.replace(/\/240px-/, "/330px-").replace(/\/1024px-/, "/1280px-");
+export function fixCachedSizes(data) {
+  if (!data?.photos?.some((p) => p.source === "Wikimedia Commons")) return data;
+  return {
+    ...data,
+    photos: data.photos.map((p) => (p.source === "Wikimedia Commons" ? { ...p, thumb: fixSize(p.thumb), large: fixSize(p.large) } : p)),
+  };
+}
+
 async function cacheGet(key) {
   if (hasDatabase()) {
     try {
@@ -39,7 +52,7 @@ async function cacheGet(key) {
       const row = rows[0];
       if (!row) return null;
       const ttl = row.data?.photos?.length ? TTL : EMPTY_TTL;
-      return Date.now() - new Date(row.fetched_at).getTime() < ttl ? row.data : null;
+      return Date.now() - new Date(row.fetched_at).getTime() < ttl ? fixCachedSizes(row.data) : null;
     } catch (err) {
       console.warn("[photos] lettura cache fallita:", err.message);
       return null;
@@ -167,19 +180,21 @@ function pickTaxon(results, name) {
   );
 }
 
+// "species" se la foto è della specie, "genus" se c'è solo il genere
+// (es. "Rosa"): serve all'interfaccia per avvisare che la foto è generica.
+const withMatch = (res) => ({ ...res, match: res.name?.includes(" ") ? "species" : "genus" });
+
 /**
- * Foto di una pianta dal nome scientifico.
- * full=false: solo la foto principale (per le schede in elenco).
- * full=true: galleria fino a 8 foto.
+ * Foto della specie (senza varietà).
  * Prima iNaturalist; se non ha foto libere, Wikimedia Commons.
  */
-export async function getPlantPhotos(scientificName, { full = false, fetchImpl = fetch, priority = "high" } = {}) {
+async function getSpeciesPhotos(scientificName, { full = false, fetchImpl = fetch, priority = "high" } = {}) {
   const name = cleanScientificName(scientificName);
   if (!name) return { name, taxon: null, photos: [] };
   const key = `${full ? "full" : "main"}:${name.toLowerCase()}`;
   const cached = await cacheGet(key);
-  if (isComplete(cached)) return cached;
-  if (inflight.has(key)) return inflight.get(key);
+  if (isComplete(cached)) return withMatch(cached);
+  if (inflight.has(key)) return inflight.get(key).then(withMatch);
 
   const job = (async () => {
     const result = { name, taxon: null, photos: [], source: "iNaturalist" };
@@ -229,7 +244,96 @@ export async function getPlantPhotos(scientificName, { full = false, fetchImpl =
   })().finally(() => inflight.delete(key));
 
   inflight.set(key, job);
+  return job.then(withMatch);
+}
+
+// Nome della varietà come lo cerchiamo e lo salviamo in cache.
+const varietyLabel = (v) => `${v.base || v.genus} '${v.cultivar}'`;
+
+/** Categoria di Commons della varietà: scelta a mano, già cercata dallo script, o da cercare. */
+function knownCategory(scientificName) {
+  if (scientificName in FOTO_MANUALI) return FOTO_MANUALI[scientificName];
+  // null = lo script l'ha già cercata senza trovarla
+  if (scientificName in FOTO_VARIETA) return FOTO_VARIETA[scientificName];
+  return undefined;
+}
+
+/**
+ * Foto di una varietà (es. "Rosa 'Edith Piaf'"). Si cercano solo foto di
+ * quella varietà su Wikimedia Commons; se non ce ne sono si restituiscono
+ * le foto della specie o del genere con match "species"/"genus", e
+ * l'interfaccia avvisa che non mostrano la varietà.
+ */
+async function getVarietyPhotos(scientificName, v, { full = false, fetchImpl = fetch, priority = "high" } = {}) {
+  const label = varietyLabel(v);
+  const key = `${full ? "full" : "main"}:v:${label.toLowerCase()}`;
+  const cached = await cacheGet(key);
+  if (cached) return cached;
+  if (inflight.has(key)) return inflight.get(key);
+
+  const job = (async () => {
+    const get = (url) => schedule(() => getJson(url, fetchImpl, "Wikimedia"), priority);
+    let failed = false;
+    let category = knownCategory(scientificName);
+    if (category === undefined) {
+      try {
+        category = await findVarietyCategory({ ...v, candidates: categoryCandidates(scientificName) }, get);
+      } catch (err) {
+        failed = true;
+        console.warn("[photos] categoria varietà:", err.message);
+      }
+    }
+    let photos = [];
+    if (category) {
+      try {
+        photos = await commonsCategoryPhotos(category, get, { max: full ? MAX_PHOTOS : 1 });
+      } catch (err) {
+        failed = true;
+        console.warn("[photos] foto varietà:", err.message);
+      }
+    }
+    let result;
+    if (photos.length) {
+      result = {
+        name: label,
+        variety: v.cultivar,
+        match: "variety",
+        taxon: null,
+        photos,
+        source: "Wikimedia Commons",
+        category: { name: category, url: `https://commons.wikimedia.org/wiki/Category:${encodeURIComponent(category.replace(/ /g, "_"))}` },
+      };
+    } else {
+      const base = await getSpeciesPhotos(v.base || v.genus, { full, fetchImpl, priority });
+      result = { ...base, variety: v.cultivar };
+    }
+    // se Commons non ha risposto si riprova più avanti invece di salvare
+    if (!failed) await cacheSet(key, result);
+    return result;
+  })().finally(() => inflight.delete(key));
+
+  inflight.set(key, job);
   return job;
+}
+
+/**
+ * Foto di una pianta dal nome scientifico.
+ * full=false: solo la foto principale (per le schede in elenco).
+ * full=true: galleria fino a 8 foto.
+ * Il risultato ha match: "variety" (foto della varietà esatta), "species"
+ * oppure "genus" (foto generiche: la varietà non ha foto libere).
+ */
+export async function getPlantPhotos(scientificName, opts = {}) {
+  const v = parseVariety(scientificName);
+  if (v.genus && v.cultivar) return getVarietyPhotos(String(scientificName).trim(), v, opts);
+  return getSpeciesPhotos(scientificName, opts);
+}
+
+/** Chiave di cache della foto principale, per saltare le piante già pronte. */
+function mainKey(scientificName) {
+  const v = parseVariety(scientificName);
+  if (v.genus && v.cultivar) return `main:v:${varietyLabel(v).toLowerCase()}`;
+  return `main:${cleanScientificName(scientificName).toLowerCase()}`;
 }
 
 // ---- riempimento automatico della cache ----
@@ -245,13 +349,17 @@ let warming = false;
 export async function warmPhotoCache(scientificNames, { fetchImpl = fetch, log = console.log } = {}) {
   if (warming) return null;
   warming = true;
-  const names = [...new Set(scientificNames.map(cleanScientificName).filter(Boolean))];
+  // una voce per specie e una per varietà (le varietà hanno foto proprie)
+  const byKey = new Map();
+  for (const n of scientificNames) if (cleanScientificName(n)) byKey.set(mainKey(n), n);
+  const names = [...byKey.values()];
   const stats = { total: names.length, cached: 0, fetched: 0, withPhoto: 0, errors: 0 };
   let consecutiveErrors = 0;
   try {
     log(`[photos] Riempimento cache foto: ${names.length} nomi`);
     for (const name of names) {
-      if (isComplete(await cacheGet(`main:${name.toLowerCase()}`))) {
+      const cached = await cacheGet(mainKey(name));
+      if (mainKey(name).startsWith("main:v:") ? cached : isComplete(cached)) {
         stats.cached++;
         continue;
       }
