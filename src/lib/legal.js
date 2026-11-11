@@ -5,8 +5,9 @@ export const LEGAL = {
   email: "info@aiuolalab.it",
   vat: "", // partita IVA, se presente
   updated: "11 novembre 2026",
-  hosting: "Render (Render Services, Inc., Stati Uniti)",
-  database: "Supabase (Supabase, Inc., Stati Uniti)",
+  hosting: "Render (Render Services, Inc., Stati Uniti; server a Francoforte, Germania)",
+  database: "Supabase (Supabase, Inc., Stati Uniti; dati a Francoforte, Germania)",
   mailProvider: "Brevo (Sendinblue SAS, Francia)",
   domain: "IONOS (IONOS SE, Germania)",
+  mailbox: "Gmail (Google, Stati Uniti)",
 };
