@@ -55,3 +55,7 @@ test("i meta finiscono nell'HTML, con i caratteri speciali protetti", () => {
   assert.match(style, /<link rel="canonical" href="https:\/\/esempio.it\/stili\/italiano" \/>/);
   assert.match(style, /og:image" content="https:\/\/esempio.it\/img\/stili\/italiano-og.jpg"/);
 });
+
+test("pagina dei termini di utilizzo", () => {
+  assert.match(pageMeta("/termini").title, /^Termini di utilizzo/);
+});

@@ -36,6 +36,11 @@ CREATE TABLE IF NOT EXISTS users (
   created_at           TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Termini di utilizzo accettati alla registrazione (versione e data).
+-- Gli account creati prima dei termini restano NULL.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS terms_version TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS terms_accepted_at TIMESTAMPTZ;
+
 -- Accesso con Google: account senza password, collegati con l'id Google.
 ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS google_sub TEXT UNIQUE;

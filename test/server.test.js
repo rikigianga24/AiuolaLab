@@ -113,6 +113,8 @@ test("registrazione, accesso, impostazioni, export e cancellazione", { skip }, a
   r = await api("/api/account/export");
   assert.equal(r.data.account.email, email);
   assert.equal(r.data.projects.length, 1);
+  assert.equal(r.data.account.termsVersion, "2026-11", "versione dei termini accettata registrata");
+  assert.ok(r.data.account.termsAcceptedAt);
 
   // CSRF: richiesta da un'altra origine rifiutata
   r = await api("/api/auth/logout", { method: "POST", headers: { Origin: "https://evil.example" } });
