@@ -19,6 +19,7 @@ export default function Footer() {
           <Link to="/gardencanvas">Progetta</Link>
           <Link to="/calendario">Calendario</Link>
           <Link to="/aboutme">Chi sono</Link>
+          <Link to="/prezzi">Prezzi</Link>
           <Link to="/account">Account</Link>
           <Link to="/contatti">Contatti</Link>
           <Link to="/termini">Termini</Link>

@@ -27,7 +27,40 @@ const FAKE_PROPOSAL = {
   care_tips: ["Poca acqua."],
   warnings: [],
 };
+// Finto Paddle (ambiente di prova): abbonamenti in memoria, chiamate registrate.
+const WEBHOOK_SECRET = crypto.randomBytes(24).toString("hex");
+const paddle = { calls: [], subs: new Map(), transactions: [], fail: false };
+const json = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
+function fakePaddle(url, opts = {}) {
+  const u = new URL(url);
+  const method = opts.method ?? "GET";
+  const body = opts.body ? JSON.parse(opts.body) : null;
+  paddle.calls.push({ method, path: u.pathname, body });
+  if (paddle.fail) return json({ error: { code: "internal_error", detail: "boom" } }, 500);
+  const sub = u.pathname.match(/^\/subscriptions\/([^/]+)(\/cancel)?$/);
+  const touch = (s, patch) => {
+    const next = { ...s, ...patch, updated_at: new Date().toISOString() };
+    paddle.subs.set(s.id, next);
+    return json({ data: next });
+  };
+  if (method === "POST" && u.pathname === "/transactions") return json({ data: { id: `txn_${paddle.calls.length}`, status: "draft" } }, 201);
+  if (method === "GET" && u.pathname === "/transactions") return json({ data: paddle.transactions });
+  if (method === "POST" && u.pathname === "/adjustments") return json({ data: { id: "adj_1", status: "pending_approval" } }, 201);
+  if (method === "POST" && /^\/customers\/[^/]+\/portal-sessions$/.test(u.pathname)) {
+    return json({ data: { urls: { general: { overview: "https://sandbox-customer-portal.paddle.com/x" }, subscriptions: [{ update_subscription_payment_method: "https://sandbox-customer-portal.paddle.com/pm" }] } } }, 201);
+  }
+  if (sub && paddle.subs.has(sub[1])) {
+    const s = paddle.subs.get(sub[1]);
+    if (method === "GET") return json({ data: s });
+    if (sub[2] && body?.effective_from === "immediately") return touch(s, { status: "canceled", scheduled_change: null });
+    if (sub[2]) return touch(s, { scheduled_change: { action: "cancel", effective_at: s.current_billing_period.ends_at } });
+    if (method === "PATCH") return touch(s, { scheduled_change: body.scheduled_change });
+  }
+  return json({ error: { code: "not_found", detail: "non trovato" } }, 404);
+}
+
 globalThis.fetch = async (url, opts) => {
+  if (String(url).startsWith("https://sandbox-api.paddle.com/")) return fakePaddle(url, opts);
   if (!String(url).startsWith("https://generativelanguage.googleapis.com/")) return realFetch(url, opts);
   gemini.calls += 1;
   if (gemini.fail) return new Response(JSON.stringify({ error: { message: "boom" } }), { status: gemini.fail });
@@ -45,6 +78,14 @@ before(async () => {
   process.env.DATABASE_URL = DB;
   process.env.SCHEDULER = "off";
   process.env.GEMINI_API_KEY = "chiave-finta-per-i-test";
+  Object.assign(process.env, {
+    PADDLE_API_KEY: "chiave-finta-per-i-test",
+    PADDLE_CLIENT_TOKEN: "token-finto-per-i-test",
+    PADDLE_WEBHOOK_SECRET: WEBHOOK_SECRET,
+    PADDLE_PRICE_MONTHLY: "pri_mese",
+    PADDLE_PRICE_YEARLY: "pri_anno",
+  });
+  delete process.env.PADDLE_ENV;
   delete process.env.SMTP_HOST;
   const { initDatabase, query } = await import("../server/db.js");
   await initDatabase();
@@ -119,7 +160,7 @@ test("registrazione, accesso, impostazioni, export e cancellazione", { skip }, a
   r = await api("/api/account/export");
   assert.equal(r.data.account.email, email);
   assert.equal(r.data.projects.length, 1);
-  assert.equal(r.data.account.termsVersion, "2026-11", "versione dei termini accettata registrata");
+  assert.equal(r.data.account.termsVersion, "2026-11b", "versione dei termini accettata registrata");
   assert.ok(r.data.account.termsAcceptedAt);
 
   // CSRF: richiesta da un'altra origine rifiutata
@@ -362,4 +403,136 @@ test("pagine per Google: sitemap e robots", { skip }, async () => {
   assert.match(robots.data, /Disallow: \/api\//);
   assert.doesNotMatch(robots.data, /condiviso/);
   assert.match(robots.data, /Sitemap: http:\/\/localhost:\d+\/sitemap.xml/);
+});
+
+// Avviso di Paddle firmato come farebbe Paddle.
+async function webhook(event, { secret = WEBHOOK_SECRET } = {}) {
+  const body = JSON.stringify(event);
+  const ts = Math.floor(Date.now() / 1000);
+  const h1 = crypto.createHmac("sha256", secret).update(`${ts}:${body}`).digest("hex");
+  const res = await fetch(`${base}/api/billing/webhook`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Paddle-Signature": `ts=${ts};h1=${h1}` },
+    body,
+  });
+  return { status: res.status, data: await res.json() };
+}
+
+function paddleSub(id, userId, patch = {}) {
+  const now = Date.now();
+  const sub = {
+    id,
+    status: "active",
+    customer_id: `ctm_${id}`,
+    custom_data: { user_id: userId },
+    started_at: new Date(now - 2 * 86400000).toISOString(),
+    current_billing_period: { starts_at: new Date(now - 2 * 86400000).toISOString(), ends_at: new Date(now + 28 * 86400000).toISOString() },
+    scheduled_change: null,
+    items: [{ price: { id: "pri_mese", billing_cycle: { interval: "month", frequency: 1 } } }],
+    updated_at: new Date(now).toISOString(),
+    ...patch,
+  };
+  paddle.subs.set(id, sub);
+  return sub;
+}
+
+test("abbonamento Premium: pagamento, avvisi di Paddle, disdetta, recesso e cancellazione", { skip }, async () => {
+  const api = client();
+  let r = await api("/api/health");
+  assert.deepEqual(r.data.billing, { environment: "sandbox", clientToken: "token-finto-per-i-test" });
+
+  const email = `premium${Date.now()}@test.aiuolalab`;
+  r = await api("/api/auth/register", { method: "POST", body: { email, password: PASSWORD, privacy: true } });
+  const userId = r.data.user.id;
+  r = await api("/api/billing");
+  assert.equal(r.data.plan, "free");
+  assert.equal(r.data.subscription, null);
+
+  // pagamento: servono i termini accettati
+  r = await api("/api/billing/checkout", { method: "POST", body: { interval: "month" } });
+  assert.equal(r.status, 400);
+  r = await api("/api/billing/checkout", { method: "POST", body: { interval: "year", acceptTerms: true } });
+  assert.equal(r.status, 200);
+  assert.match(r.data.transactionId, /^txn_/);
+  const created = paddle.calls.at(-1);
+  assert.deepEqual(created.body.items, [{ price_id: "pri_anno", quantity: 1 }]);
+  assert.equal(created.body.custom_data.user_id, userId, "Paddle riceve l'id dell'account");
+
+  // avvisi: firma sbagliata scartata, quello vero attiva Premium
+  const sub = paddleSub(`sub_${Date.now()}`, userId);
+  const event = { event_id: `evt_${Date.now()}`, event_type: "subscription.created", data: sub };
+  r = await webhook(event, { secret: "segreto-sbagliato" });
+  assert.equal(r.status, 401);
+  r = await webhook(event);
+  assert.equal(r.status, 200);
+  r = await webhook(event);
+  assert.equal(r.data.duplicate, true, "lo stesso avviso vale una volta");
+  r = await api("/api/auth/me");
+  assert.equal(r.data.user.plan, "premium");
+  r = await api("/api/billing");
+  assert.equal(r.data.subscription.active, true);
+  assert.equal(r.data.subscription.canWithdraw, true);
+  assert.equal(r.data.manualPremium, false);
+
+  // un avviso più vecchio arrivato in ritardo non cambia niente
+  r = await webhook({ event_id: `evt_old_${Date.now()}`, event_type: "subscription.updated", data: { ...sub, status: "canceled", updated_at: new Date(Date.now() - 3600000).toISOString() } });
+  assert.equal(r.status, 200);
+  r = await api("/api/auth/me");
+  assert.equal(r.data.user.plan, "premium");
+
+  r = await api("/api/billing/checkout", { method: "POST", body: { interval: "month", acceptTerms: true } });
+  assert.equal(r.status, 409, "niente secondo abbonamento");
+
+  // disdetta a fine periodo e ripensamento
+  r = await api("/api/billing/cancel", { method: "POST", body: {} });
+  assert.equal(r.status, 200);
+  assert.ok(r.data.subscription.cancelAt);
+  assert.equal(r.data.subscription.active, true, "Premium resta fino a fine periodo");
+  r = await api("/api/billing/resume", { method: "POST", body: {} });
+  assert.equal(r.data.subscription.cancelAt, null);
+  r = await api("/api/billing/portal", { method: "POST", body: {} });
+  assert.match(r.data.url, /^https:\/\/sandbox-customer-portal\.paddle\.com\//);
+
+  // Paddle non risponde: messaggio chiaro, niente cambia
+  paddle.fail = true;
+  r = await api("/api/billing/cancel", { method: "POST", body: {} });
+  assert.equal(r.status, 502);
+  paddle.fail = false;
+
+  // recesso entro 14 giorni: fine immediata e rimborso di quanto pagato
+  paddle.transactions = [{ id: "txn_pagata", status: "completed" }];
+  r = await api("/api/billing/withdraw", { method: "POST", body: {} });
+  assert.equal(r.status, 200);
+  assert.equal(r.data.refundRequested, true);
+  assert.equal(r.data.subscription.active, false);
+  assert.ok(r.data.subscription.withdrawnAt);
+  const refund = paddle.calls.find((c) => c.path === "/adjustments");
+  assert.deepEqual([refund.body.action, refund.body.type, refund.body.transaction_id], ["refund", "full", "txn_pagata"]);
+  r = await api("/api/auth/me");
+  assert.equal(r.data.user.plan, "free");
+
+  // Premium regalato a mano resta indipendente dall'abbonamento
+  await pool.query("UPDATE users SET plan = 'premium' WHERE id = $1", [userId]);
+  r = await api("/api/billing");
+  assert.equal(r.data.plan, "premium");
+  assert.equal(r.data.manualPremium, true);
+  await pool.query("UPDATE users SET plan = 'free' WHERE id = $1", [userId]);
+
+  // un nuovo abbonamento collegato dalla transazione di pagamento
+  const sub2 = paddleSub(`sub2_${Date.now()}`, null, { custom_data: null });
+  r = await webhook({ event_id: `evt_tx_${Date.now()}`, event_type: "transaction.completed", data: { id: "txn_2", subscription_id: sub2.id, custom_data: { user_id: userId } } });
+  assert.equal(r.status, 200);
+  r = await api("/api/auth/me");
+  assert.equal(r.data.user.plan, "premium");
+
+  // cancellare l'account disdice subito l'abbonamento
+  paddle.fail = true;
+  r = await api("/api/account", { method: "DELETE", body: { password: PASSWORD } });
+  assert.equal(r.status, 502, "se Paddle non risponde l'account resta");
+  paddle.fail = false;
+  r = await api("/api/account", { method: "DELETE", body: { password: PASSWORD } });
+  assert.equal(r.status, 200);
+  assert.equal(paddle.subs.get(sub2.id).status, "canceled");
+  const { rows } = await pool.query("SELECT count(*)::int AS n FROM subscriptions WHERE user_id = $1", [userId]);
+  assert.equal(rows[0].n, 0);
 });

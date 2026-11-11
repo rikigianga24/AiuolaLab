@@ -2,6 +2,8 @@
 import { Router } from "express";
 import { z } from "zod";
 import { destroySession, publicUser, requireUser, verifyPassword } from "../auth.js";
+import { cancelAllForUser } from "../billing.js";
+import { reportError } from "../monitor.js";
 import { config } from "../config.js";
 import { query } from "../db.js";
 import { emailLayout, mailEnabled, pushEnabled, sendMail, sendPush } from "../notify.js";
@@ -166,6 +168,11 @@ router.get("/export", async (req, res, next) => {
     ]);
     const { rows: devices } = await query("SELECT created_at FROM push_subscriptions WHERE user_id = $1", [req.user.id]);
     const { rows: aiUsage } = await query("SELECT created_at FROM ai_usage WHERE user_id = $1 ORDER BY created_at", [req.user.id]);
+    const { rows: subscriptions } = await query(
+      `SELECT status, billing_interval AS interval, started_at, current_period_end, cancel_at, withdrawn_at
+       FROM subscriptions WHERE user_id = $1 ORDER BY created_at`,
+      [req.user.id],
+    );
     const u = req.user;
     res.setHeader("Content-Disposition", 'attachment; filename="aiuolalab-dati.json"');
     res.json({
@@ -182,6 +189,7 @@ router.get("/export", async (req, res, next) => {
         marketingConsentAt: u.marketing_consent_at,
         plan: u.plan ?? "free",
       },
+      subscriptions,
       settings: userSettings(u),
       projects,
       pushDevices: devices.length,
@@ -203,6 +211,16 @@ router.delete("/", async (req, res, next) => {
       }
     } else if (body.data.confirm?.trim().toUpperCase() !== "ELIMINA") {
       return res.status(400).json({ error: "Scrivi ELIMINA per confermare" });
+    }
+    // prima si chiude l'abbonamento: senza account non potrebbe più disdirlo
+    try {
+      await cancelAllForUser(req.user.id);
+    } catch (err) {
+      console.error("[account] abbonamento non disdetto, cancellazione sospesa:", err.message);
+      reportError(err, "account-cancellazione-abbonamento");
+      return res.status(502).json({
+        error: "Non riusciamo a disdire il tuo abbonamento Premium in questo momento, quindi l'account non è stato cancellato. Riprova tra qualche minuto o scrivici dalla pagina Contatti.",
+      });
     }
     await query("DELETE FROM projects WHERE owner_key = $1", [`user:${req.user.id}`]);
     await query("DELETE FROM users WHERE id = $1", [req.user.id]); // sessioni, token, push e log in cascata

@@ -2,6 +2,7 @@
 import crypto from "node:crypto";
 import { promisify } from "node:util";
 import { config } from "./config.js";
+import { premiumSql } from "./billing.js";
 import { hasDatabase, query } from "./db.js";
 
 const scrypt = promisify(crypto.scrypt);
@@ -69,15 +70,22 @@ export async function sessionMiddleware(req, res, next) {
   if (!token || !hasDatabase()) return next();
   try {
     const { rows } = await query(
-      `SELECT u.* FROM sessions s JOIN users u ON u.id = s.user_id
+      `SELECT u.*, ${premiumSql("u")} AS has_subscription FROM sessions s JOIN users u ON u.id = s.user_id
        WHERE s.token_hash = $1 AND s.expires_at > now()`,
       [hashToken(token)],
     );
-    req.user = rows[0] ?? null;
+    req.user = rows[0] ? withEffectivePlan(rows[0]) : null;
   } catch (err) {
     console.warn("[auth] sessione non leggibile:", err.message);
   }
   next();
+}
+
+// Piano effettivo: Premium se assegnato a mano (users.plan) oppure con un
+// abbonamento attivo. plan_manual conserva il valore della colonna.
+export function withEffectivePlan(u) {
+  const manual = u.plan ?? "free";
+  return { ...u, plan_manual: manual, plan: manual === "premium" || u.has_subscription ? "premium" : "free" };
 }
 
 export function requireUser(req, res, next) {

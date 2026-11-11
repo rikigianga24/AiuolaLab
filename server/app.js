@@ -19,6 +19,8 @@ import suggestRouter from "./routes/suggest.js";
 import weatherRouter from "./routes/weather.js";
 import contactRouter, { contactEnabled } from "./routes/contact.js";
 import googleRouter, { googleEnabled } from "./routes/google.js";
+import billingRouter, { billingWebhook } from "./routes/billing.js";
+import { billingEnabled } from "./billing.js";
 
 export function createApp() {
   const app = express();
@@ -26,6 +28,10 @@ export function createApp() {
   app.set("trust proxy", 1);
   // File compressi (gzip): codice e grafica pesano circa un quarto.
   app.use(compression());
+  // Avvisi di Paddle: servono i byte originali per controllare la firma,
+  // quindi questa rotta viene prima della lettura JSON, del controllo di
+  // origine e della sessione (la chiamata arriva dai server di Paddle).
+  app.post("/api/billing/webhook", express.raw({ type: "*/*", limit: "1mb" }), billingWebhook);
   app.use(express.json({ limit: "1mb" }));
 
   // Intestazioni di sicurezza di base.
@@ -53,6 +59,8 @@ export function createApp() {
       google: googleEnabled(),
       vapidPublicKey: pushEnabled() ? config.push.publicKey : null,
       contact: contactEnabled(),
+      // abbonamento Premium: il token di Paddle per il browser non è segreto
+      billing: billingEnabled() ? { environment: config.paddle.environment, clientToken: config.paddle.clientToken } : null,
       // registro degli errori e statistiche (spenti senza configurazione)
       sentryDsn: config.sentry.dsn,
       sentryEnvironment: config.sentry.environment,
@@ -86,6 +94,7 @@ export function createApp() {
   app.use("/api/suggest", suggestRouter);
   app.use("/api/weather", weatherRouter);
   app.use("/api/contact", contactRouter);
+  app.use("/api/billing", billingRouter);
 
   app.use("/api", (req, res) => res.status(404).json({ error: "Endpoint non trovato" }));
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { searchPlants } from "../../lib/api";
 import { SPEED_LABEL, overlapText } from "../../lib/forecast";
 import { describeOrientation } from "../../lib/orientation";
@@ -124,6 +125,9 @@ function PremiumTeaser() {
           </li>
         ))}
       </ul>
+      <Link className="button is-small is-primary mt-2" to="/prezzi">
+        <i className="fa-solid fa-seedling" />&nbsp; Scopri Premium
+      </Link>
     </div>
   );
 }

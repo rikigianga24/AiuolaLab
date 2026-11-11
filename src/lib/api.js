@@ -75,6 +75,16 @@ export const accountApi = {
   remove: (password, confirm) => request("/account", { method: "DELETE", body: { password, confirm } }),
 };
 
+// ---- abbonamento Premium ----
+export const billingApi = {
+  get: () => request("/billing"),
+  checkout: (interval) => request("/billing/checkout", { method: "POST", body: { interval, acceptTerms: true } }),
+  portal: () => request("/billing/portal", { method: "POST", body: {} }),
+  cancel: () => request("/billing/cancel", { method: "POST", body: {} }),
+  resume: () => request("/billing/resume", { method: "POST", body: {} }),
+  withdraw: () => request("/billing/withdraw", { method: "POST", body: {} }),
+};
+
 // ---- meteo ----
 export const weatherApi = {
   forecast: ({ lat, lon }, ctx = {}) =>

@@ -119,6 +119,33 @@ CREATE TABLE IF NOT EXISTS ai_cache (
 ALTER TABLE projects ADD COLUMN IF NOT EXISTS share_token TEXT;
 CREATE UNIQUE INDEX IF NOT EXISTS projects_share_token_idx ON projects (share_token) WHERE share_token IS NOT NULL;
 
+-- Abbonamenti Premium (Paddle). Le righe arrivano dagli avvisi di Paddle
+-- (webhook): non modificarle a mano, per regalare Premium usa users.plan.
+-- Un utente è Premium se ha un abbonamento attivo OPPURE plan = 'premium'.
+CREATE TABLE IF NOT EXISTS subscriptions (
+  id                   TEXT PRIMARY KEY,               -- sub_... di Paddle
+  user_id              UUID REFERENCES users(id) ON DELETE CASCADE,
+  customer_id          TEXT NOT NULL,                  -- ctm_... di Paddle
+  status               TEXT NOT NULL,                  -- active, trialing, past_due, paused, canceled
+  price_id             TEXT,
+  billing_interval     TEXT,                           -- month o year
+  started_at           TIMESTAMPTZ,
+  current_period_end   TIMESTAMPTZ,
+  cancel_at            TIMESTAMPTZ,                    -- disdetta programmata a fine periodo
+  withdrawn_at         TIMESTAMPTZ,                    -- recesso entro 14 giorni
+  provider_updated_at  TIMESTAMPTZ,
+  created_at           TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at           TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS subscriptions_user_idx ON subscriptions (user_id);
+
+-- Avvisi di Paddle già ricevuti: Paddle può mandare lo stesso più volte.
+CREATE TABLE IF NOT EXISTS billing_events (
+  event_id     TEXT PRIMARY KEY,
+  event_type   TEXT NOT NULL,
+  received_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- Row Level Security: su Supabase le tabelle dello schema "public" sono
 -- esposte anche dalla sua API REST. Attivando RLS senza regole l'API non
 -- vede niente; il server di AiuolaLab si collega come proprietario delle
@@ -133,6 +160,8 @@ ALTER TABLE notification_log ENABLE ROW LEVEL SECURITY;
 ALTER TABLE app_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ai_usage ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ai_cache ENABLE ROW LEVEL SECURITY;
+ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE billing_events ENABLE ROW LEVEL SECURITY;
 
 -- Pulizia periodica (eseguita all'avvio).
 DELETE FROM sessions WHERE expires_at < now();
@@ -140,3 +169,4 @@ DELETE FROM auth_tokens WHERE expires_at < now();
 DELETE FROM notification_log WHERE sent_at < now() - interval '400 days';
 DELETE FROM ai_usage WHERE created_at < now() - interval '90 days';
 DELETE FROM ai_cache WHERE created_at < now() - interval '30 days';
+DELETE FROM billing_events WHERE received_at < now() - interval '90 days';

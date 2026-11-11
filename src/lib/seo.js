@@ -22,6 +22,10 @@ const STATIC = {
   "/privacy": { title: "Privacy · AiuolaLab", description: DEFAULT_DESCRIPTION },
   "/cookie": { title: "Cookie · AiuolaLab", description: DEFAULT_DESCRIPTION },
   "/contatti": { title: "Contatti e aiuto · AiuolaLab", description: "Domande frequenti e modulo per scriverci: aiuto sull'app, segnalazioni, idee e richieste sui dati personali." },
+  "/prezzi": {
+    title: "Prezzi e piano Premium · AiuolaLab",
+    description: "AiuolaLab è gratis. Premium a 3,99 € al mese o 30 € all'anno: più proposte dal consulente IA e previsione di crescita completa.",
+  },
   "/termini": { title: "Termini di utilizzo · AiuolaLab", description: "Le regole per usare AiuolaLab: servizio, account, contenuti condivisi, limiti e diritti dei consumatori." },
 };
 
@@ -51,4 +55,4 @@ export function pageMeta(pathname) {
 }
 
 /** Pagine da far trovare a Google (sitemap.xml). */
-export const SITEMAP_PATHS = ["/", "/piante", "/stili", ...GARDEN_STYLES.map((s) => `/stili/${s.id}`), "/guida", "/gardencanvas", "/calendario", "/aboutme", "/contatti"];
+export const SITEMAP_PATHS = ["/", "/piante", "/stili", ...GARDEN_STYLES.map((s) => `/stili/${s.id}`), "/guida", "/gardencanvas", "/calendario", "/aboutme", "/prezzi", "/contatti"];
