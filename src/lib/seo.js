@@ -21,6 +21,7 @@ const STATIC = {
   "/aboutme": { title: "Chi sono · AiuolaLab", description: DEFAULT_DESCRIPTION },
   "/privacy": { title: "Privacy · AiuolaLab", description: DEFAULT_DESCRIPTION },
   "/cookie": { title: "Cookie · AiuolaLab", description: DEFAULT_DESCRIPTION },
+  "/contatti": { title: "Contatti e aiuto · AiuolaLab", description: "Domande frequenti e modulo per scriverci: aiuto sull'app, segnalazioni, idee e richieste sui dati personali." },
   "/termini": { title: "Termini di utilizzo · AiuolaLab", description: "Le regole per usare AiuolaLab: servizio, account, contenuti condivisi, limiti e diritti dei consumatori." },
 };
 
@@ -50,4 +51,4 @@ export function pageMeta(pathname) {
 }
 
 /** Pagine da far trovare a Google (sitemap.xml). */
-export const SITEMAP_PATHS = ["/", "/piante", "/stili", ...GARDEN_STYLES.map((s) => `/stili/${s.id}`), "/guida", "/gardencanvas", "/calendario", "/aboutme"];
+export const SITEMAP_PATHS = ["/", "/piante", "/stili", ...GARDEN_STYLES.map((s) => `/stili/${s.id}`), "/guida", "/gardencanvas", "/calendario", "/aboutme", "/contatti"];

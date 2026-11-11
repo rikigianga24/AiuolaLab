@@ -889,3 +889,34 @@
     height: 62vh;
   }
 }
+
+/* --- Contatti --- */
+.contact-faq {
+  border-bottom: 1px dashed rgba(47, 62, 47, 0.2);
+  padding: 0.6rem 0;
+}
+.contact-faq summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--ink);
+}
+.contact-faq p {
+  margin: 0.5rem 0 0.2rem;
+}
+.contact-form {
+  max-width: 560px;
+}
+.contact-form .control.has-icons-left .icon {
+  color: var(--sage);
+}
+.contact-privacy {
+  margin-bottom: 0.9rem;
+}
+/* campo trappola per lo spam: fuori dallo schermo, non visibile */
+.contact-trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

@@ -37,12 +37,17 @@ export function PrivacyPage() {
         <li><strong>Località</strong> (facoltativa): comune o coordinate che scegli per le previsioni meteo.</li>
         <li><strong>Notifiche</strong>: se le attivi, l'indirizzo tecnico del dispositivo fornito dal browser per le notifiche push e l'elenco delle notifiche già inviate.</li>
         <li><strong>Dati tecnici</strong>: indirizzo IP e informazioni sulle richieste, usati per la sicurezza (per esempio per limitare i tentativi di accesso) e conservati per il tempo strettamente necessario.</li>
+        <li><strong>Errori dell'app</strong>: quando qualcosa si rompe registriamo una descrizione tecnica dell'errore, la pagina in cui è successo (senza parametri né codici di condivisione), il tipo di browser e di sistema operativo. Non registriamo il tuo indirizzo IP, la tua email né il contenuto dei progetti.</li>
+        <li><strong>Statistiche di visita</strong>: pagine visitate, sito da cui arrivi, tipo di dispositivo e di browser, paese. Sono statistiche aggregate e anonime, raccolte senza cookie e senza salvare nulla sul tuo dispositivo; se nel browser hai attivato «Do Not Track» non vengono raccolte.</li>
+        <li><strong>Messaggi</strong>: se ci scrivi dalla pagina <Link to="/contatti">Contatti</Link>, la tua email, l'argomento e il testo del messaggio.</li>
       </ul>
 
       <h2>Perché e su quale base</h2>
       <ul>
         <li>Fornirti il servizio (account, progetti, calendario, meteo, notifiche richieste): esecuzione del contratto, art. 6.1.b GDPR.</li>
         <li>Sicurezza e prevenzione degli abusi: legittimo interesse, art. 6.1.f GDPR.</li>
+        <li>Correggere gli errori e capire quali parti dell'app sono usate, per migliorarla: legittimo interesse, art. 6.1.f GDPR. Puoi opporti scrivendoci.</li>
+        <li>Rispondere ai tuoi messaggi: esecuzione di misure richieste da te, art. 6.1.b GDPR.</li>
         <li>Comunicazioni promozionali e offerte: solo con il tuo consenso, art. 6.1.a GDPR, revocabile in ogni momento dall'account.</li>
         <li>Mostrare le foto delle piante da un servizio esterno: solo con il tuo consenso (vedi la <Link to="/cookie">cookie policy</Link>).</li>
       </ul>
@@ -54,7 +59,9 @@ export function PrivacyPage() {
         <li>database: {LEGAL.database};</li>
         <li>invio delle email: {LEGAL.mailProvider};</li>
         <li>consulente IA: Google (servizio Gemini, Stati Uniti), che riceve solo i dati dell'aiuola e le preferenze che scrivi, non la tua email né il tuo nome. Con il servizio gratuito di Google questi testi possono essere usati da Google per migliorare i suoi prodotti: non scrivere dati personali nel campo «Altre richieste»;</li>
-        <li>notifiche push: il servizio di notifiche del tuo browser (per esempio Google, Apple o Mozilla), che riceve il testo della notifica.</li>
+        <li>notifiche push: il servizio di notifiche del tuo browser (per esempio Google, Apple o Mozilla), che riceve il testo della notifica;</li>
+        <li>registro degli errori: Sentry (Functional Software Inc., Stati Uniti, con dati conservati nell'Unione Europea), che riceve solo le informazioni tecniche sugli errori descritte sopra;</li>
+        <li>statistiche di visita: Umami (Umami Software Inc., Stati Uniti), che riceve solo i dati anonimi descritti sopra.</li>
       </ul>
       <p>
         Le previsioni meteo (MET Norway), la ricerca dei comuni (OpenStreetMap), il database delle piante (Perenual) e la ricerca delle
@@ -62,9 +69,31 @@ export function PrivacyPage() {
         interrogati dal nostro server: questi servizi non ricevono il tuo indirizzo IP né dati del tuo account, ma solo le
         coordinate approssimate o il testo della ricerca.
       </p>
+      <h2>Trasferimento dei dati negli Stati Uniti</h2>
       <p>
-        Per i fornitori fuori dall'Unione Europea il trasferimento avviene con le garanzie previste dal GDPR (decisione di
-        adeguatezza UE-USA o clausole contrattuali standard).
+        Alcuni dei fornitori indicati sopra sono società con sede negli <strong>Stati Uniti</strong>, o che fanno parte di gruppi
+        statunitensi. I tuoi dati possono quindi essere trasferiti negli USA, o essere accessibili da lì, anche quando i server si
+        trovano nell'Unione Europea. In particolare:
+      </p>
+      <ul>
+        <li>Google (consulente IA Gemini e, se lo usi, accesso con Google): riceve i dati dell'aiuola e le preferenze che scrivi, oppure la tua email e un identificativo dell'account;</li>
+        <li>i fornitori di hosting e di database, se hanno sede o capogruppo negli USA: possono trattare tutti i dati del servizio;</li>
+        <li>i servizi di notifica dei browser (Google, Apple, Mozilla): ricevono il testo delle notifiche e l'indirizzo tecnico del dispositivo;</li>
+        <li>Sentry e Umami: ricevono le informazioni tecniche sugli errori e le statistiche anonime di visita;</li>
+        <li>iNaturalist e Wikimedia Commons, solo se acconsenti a vedere le foto delle piante: vedono l'indirizzo IP del tuo dispositivo.</li>
+      </ul>
+      <p>
+        Questi trasferimenti avvengono solo con le garanzie previste dal GDPR (capo V):
+      </p>
+      <ul>
+        <li>per i fornitori aderenti al <strong>EU-U.S. Data Privacy Framework</strong>, sulla base della decisione di adeguatezza della Commissione europea del 10 luglio 2023 (art. 45 GDPR);</li>
+        <li>negli altri casi, sulla base delle <strong>clausole contrattuali standard</strong> approvate dalla Commissione europea (art. 46 GDPR), con le eventuali misure aggiuntive (per esempio la cifratura delle connessioni);</li>
+        <li>per i contenuti esterni che carichi solo su tua richiesta (le foto delle piante), anche sul tuo consenso esplicito (art. 49.1.a GDPR).</li>
+      </ul>
+      <p>
+        Negli Stati Uniti le autorità pubbliche possono, in alcuni casi previsti dalla legge, chiedere l'accesso ai dati, e la tutela
+        può essere diversa da quella europea. Riduciamo al minimo i dati inviati: per esempio, al consulente IA non mandiamo né il tuo
+        nome né la tua email. Puoi chiedere informazioni sulle garanzie adottate, o una copia, scrivendo a {LEGAL.email}.
       </p>
 
       <h2>Per quanto tempo</h2>
@@ -72,6 +101,8 @@ export function PrivacyPage() {
         <li>Account e progetti: finché non cancelli l'account.</li>
         <li>Sessioni di accesso: 30 giorni.</li>
         <li>Registro delle notifiche inviate: 13 mesi.</li>
+        <li>Registro degli errori: 90 giorni.</li>
+        <li>Messaggi inviati dalla pagina Contatti: il tempo necessario a rispondere e a gestire eventuali seguiti, al massimo 24 mesi.</li>
         <li>Link di conferma e di recupero password: da 2 a 72 ore.</li>
       </ul>
 
@@ -130,6 +161,14 @@ export function CookiePage() {
           </tbody>
         </table>
       </div>
+
+      <h2>Statistiche di visita (senza cookie)</h2>
+      <p>
+        Per sapere quali pagine sono più usate contiamo le visite con Umami, un servizio di statistiche che non usa cookie, non
+        salva nulla sul tuo dispositivo e non ti riconosce da una visita all'altra: vediamo solo numeri complessivi (pagine,
+        provenienza, tipo di dispositivo, paese). Per questo non serve il consenso. Se nel browser hai attivato «Do Not Track» le
+        tue visite non vengono contate. Allo stesso modo, il registro degli errori (Sentry) non usa cookie né memoria del browser.
+      </p>
 
       <h2>Contenuti esterni (solo con consenso)</h2>
       <p>

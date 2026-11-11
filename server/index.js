@@ -6,11 +6,15 @@ import { initPush } from "./notify.js";
 import { CATALOG } from "./plants/catalog/index.js";
 import { startPhotoWarmup } from "./plants/photos.js";
 import { CROPS } from "../src/lib/crops.js";
+import { initMonitoring, reportError } from "./monitor.js";
+
+await initMonitoring();
 
 try {
   await initDatabase();
 } catch (err) {
   console.error("[db] Connessione a Postgres fallita, continuo senza database:", err.message);
+  reportError(err, "avvio-database");
 }
 
 await initPush();

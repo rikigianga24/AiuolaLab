@@ -80,6 +80,24 @@ export const config = {
   schedulerEnabled: env.SCHEDULER !== "off",
   // PHOTO_WARMUP=off disattiva il download dei link delle foto all'avvio
   photoWarmup: env.PHOTO_WARMUP !== "off",
+
+  // Registro degli errori (Sentry, consigliata la regione UE). Il DSN non è
+  // segreto: viene mandato anche al browser per segnalare i suoi errori.
+  sentry: {
+    dsn: env.SENTRY_DSN || null,
+    environment: env.SENTRY_ENVIRONMENT || (env.NODE_ENV === "production" ? "produzione" : "sviluppo"),
+    // su Render RENDER_GIT_COMMIT è impostato in automatico
+    release: env.RENDER_GIT_COMMIT || undefined,
+  },
+
+  // Statistiche di visita senza cookie (Umami). Senza ID sono spente.
+  analytics: env.UMAMI_WEBSITE_ID
+    ? { websiteId: env.UMAMI_WEBSITE_ID, scriptUrl: env.UMAMI_SCRIPT_URL || "https://cloud.umami.is/script.js" }
+    : null,
+
+  // Indirizzo che riceve i messaggi del modulo "Contatti". Senza, la
+  // pagina mostra solo l'email indicata nelle pagine legali.
+  supportEmail: env.SUPPORT_EMAIL || null,
 };
 
 // Versione dell'informativa privacy accettata alla registrazione.

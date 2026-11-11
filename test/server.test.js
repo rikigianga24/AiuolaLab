@@ -76,6 +76,12 @@ function client() {
   };
 }
 
+test("uptime: controlla anche il database", { skip }, async () => {
+  const r = await fetch(`${base}/api/uptime`);
+  assert.equal(r.status, 200);
+  assert.deepEqual(await r.json(), { ok: true, database: "ok" });
+});
+
 test("registrazione, accesso, impostazioni, export e cancellazione", { skip }, async () => {
   const api = client();
   const email = `mario${Date.now()}@test.aiuolalab`;

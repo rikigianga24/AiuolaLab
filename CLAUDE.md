@@ -57,6 +57,13 @@ node --test --test-name-pattern="notifiche" test/   # tests matching a name
 
 **Garden styles.** Each style has its own page `/stili/:id`. Text is in `gardenStyles.js`, practical info (cost, space, seasons, balcony, quiz sizes) in `styleGuide.js`. Photos are in `public/img/stili/<id>-{640,960,1536}.webp` plus `<id>-og.jpg` (1200×630); list a style in `stylePhotos.js` once its files exist, otherwise the drawn scene is used.
 
+**Monitoring, analytics and contact.**
+- `server/monitor.js` starts Sentry when `SENTRY_DSN` is set; `reportError(err, where)` is called by the API error handler, the scheduler and startup. The browser gets the DSN from `/api/health` and loads `@sentry/react` lazily (`src/lib/observability.js`). Session tracking is off and URLs are scrubbed by `src/lib/scrub.js` (no query strings, no share tokens), so nothing is stored on the device and no consent is needed.
+- Umami (cookieless analytics) is injected by `observability.js` when `UMAMI_WEBSITE_ID` is set; it uses the same scrubbing via `data-before-send`.
+- `GET /api/uptime` is for external uptime monitors: 200 if the server and database answer, 503 if the database does not. `/api/health` stays 200 because the client reads it.
+- `/contatti` (`ContactPage.jsx`) posts to `POST /api/contact`, which emails `SUPPORT_EMAIL` with reply-to set to the sender (rate-limited, honeypot field `website`). Nothing is stored in the database.
+- If you add a third-party service, also update the privacy page (`LegalPages.jsx`), including the USA transfer section.
+
 **User settings.**
 - Settings are one JSONB column on `users`: climate, location, `notify{…}`, `taskState`, pets and so on.
 - The client merges partial patches through `updateSettings`, which debounces `PUT /api/account/settings`. That endpoint validates with a partial zod schema and merges server-side.
