@@ -390,6 +390,136 @@ export const FOTO_FLICKR = {
    "title": "20220429_Terrasse_016"
   }
  ],
+ "Digitalis purpurea 'Camelot Rose'": [
+  {
+   "id": "b3a6cad8-c868-4a06-aacd-b3dc5f73bbf1",
+   "url": "https://live.staticflickr.com/3077/2815271163_8542a8829c_b.jpg",
+   "landing": "https://www.flickr.com/photos/7876691@N03/2815271163",
+   "creator": "echoforsberg",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Scrophulariaceae Digitalis Purpurea p. Camelot Rose"
+  },
+  {
+   "id": "c62fc219-5398-42e3-a871-9fbd0269a75a",
+   "url": "https://live.staticflickr.com/3159/2816194894_3358eaf3f7_b.jpg",
+   "landing": "https://www.flickr.com/photos/7876691@N03/2816194894",
+   "creator": "echoforsberg",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Scrophulariaceae Digitalis Purpurea p. Camelot Rose"
+  }
+ ],
+ "Digitalis purpurea 'Alba'": [
+  {
+   "id": "1792a209-5227-4899-939a-a26b869cfa63",
+   "url": "https://live.staticflickr.com/7299/9478123079_0e15d8146c_b.jpg",
+   "landing": "https://www.flickr.com/photos/47439717@N05/9478123079",
+   "creator": "blumenbiene",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Weißer Fingerhut (Digitalis purpurea 'Alba')"
+  },
+  {
+   "id": "8d852dd8-9c9a-4fa8-b10d-99b15cb05278",
+   "url": "https://live.staticflickr.com/254/519500666_4a532e9ffe.jpg",
+   "landing": "https://www.flickr.com/photos/87547772@N00/519500666",
+   "creator": "Arenamontanus",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Foxglove in perspective"
+  }
+ ],
+ "Echinacea 'Mac 'n' Cheese'": [
+  {
+   "id": "380057ae-21f9-4493-856a-9da0e0a05972",
+   "url": "https://live.staticflickr.com/4029/5167277319_7e12752875.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/5167277319",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Echinacea 'Mac and Cheese'"
+  },
+  {
+   "id": "f8498031-6f88-4486-aa4b-6cbd91b60300",
+   "url": "https://live.staticflickr.com/4127/5090437381_b4c6b77b76.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/5090437381",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Echinacea 'Mac n' Cheese'"
+  }
+ ],
+ "Helenium 'Rubinzwerg'": [
+  {
+   "id": "6230af95-f8c1-4ecb-a6b4-70c7ff1c2b29",
+   "url": "https://live.staticflickr.com/8663/28520888940_cb908ce023_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/28520888940",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Helenium x 'Rubinzwerg', 2016"
+  },
+  {
+   "id": "bcb5aedd-d0ac-4639-b5f7-60267fcd91da",
+   "url": "https://live.staticflickr.com/7126/7690844400_ff056c954d_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/7690844400",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Helenium x 'Rubinzwerg'"
+  },
+  {
+   "id": "c762fa00-4ae8-4730-828f-bba9626b4d24",
+   "url": "https://live.staticflickr.com/8292/7690852518_7a3cb59b71_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/7690852518",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Helenium x 'Rubinzwerg'"
+  },
+  {
+   "id": "b9e7ea49-b5bb-4288-ae18-cc10fd67b488",
+   "url": "https://live.staticflickr.com/8429/7690851236_f7febbbdf0_b.jpg",
+   "landing": "https://www.flickr.com/photos/50697352@N00/7690851236",
+   "creator": "F. D. Richards",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Helenium x 'Rubinzwerg'"
+  }
+ ],
+ "Euonymus fortunei 'Emerald 'n' Gold'": [
+  {
+   "id": "3fd21812-81e7-4406-b1c6-2cee58408593",
+   "url": "https://live.staticflickr.com/1480/26177329873_9d68469ae0_b.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/26177329873",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Euonymus 'Emerald 'n' Gold'"
+  },
+  {
+   "id": "8e6841c0-49a6-4dd4-8346-501af55d7d62",
+   "url": "https://live.staticflickr.com/65535/48749198368_bfeb4564eb_b.jpg",
+   "landing": "https://www.flickr.com/photos/150012178@N06/48749198368",
+   "creator": "Acabashi",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "'Euonymus' - Emerald 'n' Gold, Golden Spindle, at Nuthurst, West Sussex, England"
+  }
+ ],
  "Astrantia major 'Claret'": [
   {
    "id": "b8a60fd7-190f-4a84-83fd-cc0f63a353bc",
@@ -610,6 +740,196 @@ export const FOTO_FLICKR = {
    "title": "Deschampsia cespitosa ‘Goldtau’ (Ruwe smele) - Vlinderhof - Utrecht"
   }
  ],
+ "Echinacea purpurea 'Green Envy'": [
+  {
+   "id": "a1977690-4fef-422c-afcb-b756d7960dd9",
+   "url": "https://live.staticflickr.com/4124/5090436307_fd12296e0b.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/5090436307",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Echinacea 'Green Envy'"
+  },
+  {
+   "id": "d5fb0592-7fff-40d8-bb6e-0fbfdd30d175",
+   "url": "https://live.staticflickr.com/8444/7759192832_c95deeed82.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/7759192832",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Echinacea 'Green Envy'"
+  },
+  {
+   "id": "ac71ef1d-112f-48da-a928-6f4c2fcb7d78",
+   "url": "https://live.staticflickr.com/8284/7759193596_28bcc02a17.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/7759193596",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Echinacea 'Green Envy'"
+  },
+  {
+   "id": "164956df-97e4-4dad-9125-a67da40bfbe8",
+   "url": "https://live.staticflickr.com/8301/7759194160_f21c420825.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/7759194160",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Echinacea 'Green Envy'"
+  }
+ ],
+ "Epimedium x youngianum 'Niveum'": [
+  {
+   "id": "bf7acd8e-7138-4f7d-929d-8072bedf27d1",
+   "url": "https://live.staticflickr.com/7366/26785385986_936083463f_b.jpg",
+   "landing": "https://www.flickr.com/photos/131880272@N06/26785385986",
+   "creator": "cultivar413",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "160430 076 The High Line - Epimedium x youngianum 'Niveum' Barrenwort"
+  },
+  {
+   "id": "01621f1a-67d0-4c35-8792-21750c571512",
+   "url": "https://live.staticflickr.com/3320/4558650930_4c1627ac0a.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/4558650930",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Epimedium x youngianum 'Niveum'"
+  },
+  {
+   "id": "596218b1-b8b5-4e27-946c-973f408a7144",
+   "url": "https://live.staticflickr.com/7686/26716288942_85e56c9881_b.jpg",
+   "landing": "https://www.flickr.com/photos/131880272@N06/26716288942",
+   "creator": "cultivar413",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "160430 077 The High Line - Epimedium x youngianum 'Niveum' Barrenwort"
+  }
+ ],
+ "Euphorbia hypericifolia 'Diamond Frost'": [
+  {
+   "id": "a70be393-0746-4ad9-864c-e19f00747e21",
+   "url": "https://live.staticflickr.com/7376/9652841555_407fd713d0_b.jpg",
+   "landing": "https://www.flickr.com/photos/96522761@N06/9652841555",
+   "creator": "Les Serres Fortier",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Euphorbia Diamond Frost"
+  },
+  {
+   "id": "99b3cf61-1609-4473-b90d-48db400de4b1",
+   "url": "https://live.staticflickr.com/6078/6153819961_759359de70.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/6153819961",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Euphorbia 'Diamond Frost'"
+  },
+  {
+   "id": "fd88ed1f-c7cc-4514-8ca4-aa77bf17ad06",
+   "url": "https://live.staticflickr.com/7244/7328392304_2b313abeab_b.jpg",
+   "landing": "https://www.flickr.com/photos/10873597@N00/7328392304",
+   "creator": "laurent7624",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Euphorbia 'Diamond Frost'"
+  },
+  {
+   "id": "5d1cda59-bd7f-4a71-8c1f-b1044d83f1c3",
+   "url": "https://live.staticflickr.com/6069/6153820071_e0f3b12541.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/6153820071",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Ipomoea batatas 'Marguerite' and Euphorbia 'Diamond Frost'"
+  }
+ ],
+ "Exochorda x macrantha 'The Bride'": [
+  {
+   "id": "54df5d80-1dce-47b8-b760-4d3776ac22f6",
+   "url": "https://live.staticflickr.com/2525/3976146731_65008793cd_b.jpg",
+   "landing": "https://www.flickr.com/photos/26698606@N03/3976146731",
+   "creator": "peganum",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Exochorda The Bride"
+  },
+  {
+   "id": "4012ff30-57af-4290-81f7-7e1c19b90050",
+   "url": "https://live.staticflickr.com/8783/17051337221_62e752dc62_b.jpg",
+   "landing": "https://www.flickr.com/photos/38477752@N04/17051337221",
+   "creator": "je_wyer",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Exochorda × macrantha 'The Bride' at Avonbank Nurseries 1 April 2015.jpg"
+  },
+  {
+   "id": "d32ae241-098e-4541-86d0-8420eef51ae2",
+   "url": "https://live.staticflickr.com/7748/26343482304_b663900cd2_b.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/26343482304",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Exochorda x macrantha 'The Bride'"
+  },
+  {
+   "id": "a3d84f21-cd0a-4319-b5eb-2a82317cd839",
+   "url": "https://live.staticflickr.com/3629/3510768517_59a62bc592.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/3510768517",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Exochorda x macrantha 'The Bride"
+  }
+ ],
+ "Photinia x fraseri 'Red Robin'": [
+  {
+   "id": "19f174db-a14f-4501-bc64-a3a841593101",
+   "url": "https://live.staticflickr.com/5288/13994568861_5db2485640_b.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/13994568861",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Photinia 'Red Robin'"
+  },
+  {
+   "id": "90b92683-6d59-4bd6-b030-825c0e25a6f3",
+   "url": "https://live.staticflickr.com/7264/6945515480_a099bbd450.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/6945515480",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Photinia 'Red Robin'"
+  },
+  {
+   "id": "0a7e6f25-16f6-4b5a-b713-ea43f82b53b6",
+   "url": "https://live.staticflickr.com/2753/4504043592_3a0cb985a3.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/4504043592",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Photinia 'Red Robin' buds"
+  }
+ ],
  "Campsis x tagliabuana 'Madame Galen'": [
   {
    "id": "465f3737-99c7-4b48-8ca6-300f05b9f22b",
@@ -762,6 +1082,84 @@ export const FOTO_FLICKR = {
    "version": "2.0",
    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
    "title": "IMGP9104 Delphinium Pacific Giant 'Galahad' - Ostróżka"
+  }
+ ],
+ "Echinacea 'Tomato Soup'": [
+  {
+   "id": "3513cba2-3cf2-496e-8039-091dbc262fba",
+   "url": "https://live.staticflickr.com/4092/5090437159_2d764c6a2a.jpg",
+   "landing": "https://www.flickr.com/photos/33037982@N04/5090437159",
+   "creator": "wallygrom",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Echinacea 'Tomato Soup'"
+  }
+ ],
+ "Epimedium x versicolor 'Sulphureum'": [
+  {
+   "id": "4b5838bb-5ff0-4326-a75a-91b273c07de6",
+   "url": "https://live.staticflickr.com/8115/29200304744_3153ecfd63_b.jpg",
+   "landing": "https://www.flickr.com/photos/47439717@N05/29200304744",
+   "creator": "blumenbiene",
+   "license": "by",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+   "title": "Elfenblume (Epimedium x versicolor 'Sulphureum')"
+  },
+  {
+   "id": "ee42ae97-77e0-4db2-b514-e2e1f62f13e8",
+   "url": "https://live.staticflickr.com/7038/7118647779_4b2c6fccdc_b.jpg",
+   "landing": "https://www.flickr.com/photos/26698606@N03/7118647779",
+   "creator": "peganum",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Epimedium x versicolor sulphureum"
+  },
+  {
+   "id": "fb9876ea-33cd-4dbf-ae6b-392ea7f4b99e",
+   "url": "https://live.staticflickr.com/3416/4601017192_db6a6ecab5_b.jpg",
+   "landing": "https://www.flickr.com/photos/26698606@N03/4601017192",
+   "creator": "peganum",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Epimedium x versicolor sulphureum"
+  }
+ ],
+ "Festuca glauca 'Elijah Blue'": [
+  {
+   "id": "ddc57f3a-b6b9-4af1-8a0c-b901542832f2",
+   "url": "https://live.staticflickr.com/2466/3712203176_fa9a9a15af_b.jpg",
+   "landing": "https://www.flickr.com/photos/49169223@N00/3712203176",
+   "creator": "daryl_mitchell",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "Elijah Blue Fescue"
+  },
+  {
+   "id": "88ed2478-8659-41e5-a361-eff1462d6a2d",
+   "url": "https://live.staticflickr.com/278/18097503244_3aae9b1e57.jpg",
+   "landing": "https://www.flickr.com/photos/81392060@N06/18097503244",
+   "creator": "Valleybrook Gardens",
+   "license": "pdm",
+   "version": "1.0",
+   "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
+   "title": "11cm Festuca Elijah Blue"
+  }
+ ],
+ "Gaillardia x grandiflora 'Burgunder'": [
+  {
+   "id": "274c3738-e67e-4496-a0d4-4a85be247c85",
+   "url": "https://live.staticflickr.com/4411/36687351426_7fa2668306_b.jpg",
+   "landing": "https://www.flickr.com/photos/52582306@N03/36687351426",
+   "creator": "阿橋花譜 KHQ Flower Guide",
+   "license": "by-sa",
+   "version": "2.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "title": "宿根天人菊 Gaillardia aristata 'Burgunder' [波蘭 Krakow Jagiellonian University Botanic Garden, Poland]"
   }
  ]
 };
