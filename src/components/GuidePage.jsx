@@ -291,7 +291,7 @@ export default function GuidePage() {
               {SYMPTOMS.map((s) => (
                 <div key={s.cause} className="guide-card symptom">
                   <span className={`symptom-tag tone-${s.tone === "!" ? "warn" : s.tone}`}>{s.tone}</span>
-                  <div>
+                  <div className="symptom-text">
                     <p className="symptom-look">{s.look}</p>
                     <p>
                       <strong>{s.cause}.</strong> {s.fix}

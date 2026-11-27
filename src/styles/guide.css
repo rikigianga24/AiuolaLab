@@ -310,6 +310,11 @@
   align-items: flex-start;
 }
 
+.symptom-text {
+  flex: 1;
+  min-width: 0;
+}
+
 .symptom-tag {
   flex: none;
   display: grid;
@@ -506,6 +511,10 @@
   padding: 0 1.1rem 0.9rem;
 }
 
+.guide-photos[data-count="1"] {
+  grid-template-columns: minmax(0, 14rem);
+}
+
 .guide-photos[data-count="2"] {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -543,7 +552,7 @@
 .guide-lightbox {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  z-index: 1000;
   display: grid;
   place-items: center;
   padding: 1rem;
@@ -571,7 +580,8 @@
   color: #f4efea;
 }
 
-.guide-lightbox figcaption a {
+.guide-lightbox figure figcaption strong,
+.guide-lightbox figure figcaption a {
   color: #f4efea;
   text-decoration: underline;
 }
