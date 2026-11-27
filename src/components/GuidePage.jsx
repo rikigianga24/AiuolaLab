@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { FERTILIZERS, MONTHS_SHORT, NUTRIENTS, npkText } from "../lib/fertilizers";
 import { DISEASES, FEEDING_CALENDAR, FEEDING_RULES, LABEL_WORDS, MYTHS, PESTS, SYMPTOMS, TIPS } from "../lib/guide";
+import { GUIDE_PHOTOS } from "../lib/guidePhotos";
 import { PageHero, SectionTitle } from "./decor";
 import "../styles/pages.css";
 import "../styles/guide.css";
@@ -122,6 +123,49 @@ function FeedingCalendar() {
   );
 }
 
+// Foto reali (Wikimedia Commons) di una carenza, malattia o parassita: miniature cliccabili che si ingrandiscono.
+function PhotoStrip({ id, name }) {
+  const [open, setOpen] = useState(null);
+  const photos = GUIDE_PHOTOS[id];
+
+  useEffect(() => {
+    if (open === null) return undefined;
+    const onKey = (e) => e.key === "Escape" && setOpen(null);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  if (!photos?.length) return null;
+  const big = open === null ? null : photos[open];
+  return (
+    <>
+      <div className="guide-photos" data-count={photos.length}>
+        {photos.map((ph, i) => (
+          <button key={ph.file} type="button" className="guide-photo" onClick={() => setOpen(i)} aria-label={`Ingrandisci foto ${i + 1} di ${name}`}>
+            <img src={`/img/guida/${ph.file}-480.webp`} alt={ph.alt ?? `${name}: foto ${i + 1}`} width="480" height="360" loading="lazy" decoding="async" />
+          </button>
+        ))}
+      </div>
+      {big && (
+        <div className="guide-lightbox" role="dialog" aria-modal="true" aria-label={name} onClick={() => setOpen(null)}>
+          <figure onClick={(e) => e.stopPropagation()}>
+            <img src={`/img/guida/${big.file}-960.webp`} alt={big.alt ?? name} />
+            <figcaption>
+              <strong>{name}</strong> · Foto: {big.author || "autore sconosciuto"} ·{" "}
+              <a href={big.page} target="_blank" rel="noopener noreferrer">
+                {big.license}
+              </a>
+            </figcaption>
+            <button type="button" className="guide-lightbox-close" onClick={() => setOpen(null)} aria-label="Chiudi">
+              <i className="fa-solid fa-xmark" />
+            </button>
+          </figure>
+        </div>
+      )}
+    </>
+  );
+}
+
 function Problem({ p, kind }) {
   return (
     <details className="guide-card problem">
@@ -132,6 +176,7 @@ function Problem({ p, kind }) {
           <small>{p.who}</small>
         </span>
       </summary>
+      <PhotoStrip id={p.id} name={p.name} />
       <dl>
         <dt>Quando</dt>
         <dd>{p.when}</dd>
@@ -252,6 +297,7 @@ export default function GuidePage() {
                       <strong>{s.cause}.</strong> {s.fix}
                     </p>
                   </div>
+                  <PhotoStrip id={s.id} name={s.cause} />
                 </div>
               ))}
             </div>
@@ -282,6 +328,10 @@ export default function GuidePage() {
               ))}
             </div>
           </section>
+
+          <p className="guide-credits">
+            <i className="fa-solid fa-camera" /> Le foto arrivano da Wikimedia Commons con licenza libera: clicca su una foto per vedere autore e licenza.
+          </p>
 
           <section id="trucchi" className="guide-section">
             <SectionTitle script="cose non scontate" title="Trucchi e consigli" />
