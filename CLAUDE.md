@@ -72,7 +72,7 @@ node --test --test-name-pattern="notifiche" test/   # tests matching a name
 
 **Domain logic is shared, pure ES modules in `src/lib/`.** The server imports several of them directly. For example, `server/scheduler.js` uses `src/lib/care.js` to generate the same calendar tasks the UI shows. Keep these modules free of browser-only APIs when the server uses them. Main modules:
 - `care.js`: calendar tasks;
-- `irrigation.js`: drip routing and schedules;
+- `irrigation.js`: drip routing and schedules. Routing is built to be installable: one continuous tube per bed (no joints), straight rows in the best direction, smooth U-turns (`pipes.js`, min bend radius 25 cm), short micro-tubes only for plants off the row; each bed is fed from the faucet or by a T off an existing supply tube. `computeIrrigation` returns `pipes` (polylines) and `stubs`, not graph edges;
 - `growth.js` and `forecast.js`: rule-based 1/3/5-year forecast, with no AI;
 - `gardenStyles.js`: garden style categories and plant matching;
 - `layout.js` and `rows.js`: placement and vegetable rows;

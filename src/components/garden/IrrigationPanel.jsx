@@ -64,19 +64,23 @@ export default function IrrigationPanel({ project, irrigation, mode, onStartFauc
             </div>
             <div>
               <strong>{fmtM(irrigation.totals.dripM)}</strong>
-              <span>ala gocciolante</span>
+              <span>tubo in aiuola</span>
             </div>
             <div>
               <strong>{Math.round(irrigation.totals.flowLph)} l/h</strong>
               <span>{irrigation.totals.drippers} gocciolatori</span>
             </div>
           </div>
+          <p className="panel-note">
+            {irrigation.totals.pieces} {irrigation.totals.pieces === 1 ? "tubo continuo" : "tubi continui"} (uno per aiuola, senza giunte)
+            {irrigation.totals.tees > 0 ? ` e ${irrigation.totals.tees} ${irrigation.totals.tees === 1 ? "raccordo a T" : "raccordi a T"} dove il tubo si dirama` : ""}.
+          </p>
           <div className="legend-row">
             <span>
               <i className="legend-line supply" /> adduzione
             </span>
             <span>
-              <i className="legend-line drip" /> ala gocciolante
+              <i className="legend-line drip" /> tubo in aiuola
             </span>
             <span>
               <i className="legend-dot" /> gocciolatore

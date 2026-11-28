@@ -558,20 +558,24 @@ export default function GardenStage({
         {/* Impianto a goccia */}
         {irrigation?.ready && (
           <Group listening={false}>
-            {irrigation.edges.map((e, i) => (
+            {irrigation.pipes.map((pp, i) => (
               <Line
-                key={`e${i}`}
-                points={[e.a.x, e.a.y, e.b.x, e.b.y]}
-                stroke={e.kind === "supply" ? COLORS.supply : COLORS.drip}
-                strokeWidth={e.kind === "supply" ? 4 : 2.5}
-                dash={e.kind === "supply" ? undefined : [10, 4]}
+                key={`p${i}`}
+                points={pp.points.flatMap((q) => [q.x, q.y])}
+                stroke={pp.kind === "supply" ? COLORS.supply : COLORS.drip}
+                strokeWidth={pp.kind === "supply" ? 4 : 2.5}
+                dash={pp.kind === "supply" ? undefined : [10, 4]}
                 lineCap="round"
+                lineJoin="round"
                 strokeScaleEnabled={false}
                 shadowColor="white"
                 shadowOpacity={0.7}
                 shadowBlur={2}
                 opacity={0.9}
               />
+            ))}
+            {irrigation.stubs.map((st, i) => (
+              <Line key={`s${i}`} points={[st.a.x, st.a.y, st.b.x, st.b.y]} stroke={COLORS.dripper} strokeWidth={1.5} lineCap="round" strokeScaleEnabled={false} opacity={0.9} />
             ))}
             {irrigation.drippers.flatMap((d) =>
               Array.from({ length: d.count }, (_, k) => {
