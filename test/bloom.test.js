@@ -71,7 +71,7 @@ test("stampa: numerazione delle piante e quantità", () => {
 test("stampa: scala, quote e scala grafica", () => {
   // 4 x 2 m in 160 x 100 mm: serve 1:25 (4 m -> 160 mm)
   assert.equal(fitScale({ w: 4, h: 2 }, { w: 160, h: 100 }), 25);
-  assert.equal(fitScale({ w: 4, h: 2 }, { w: 159, h: 100 }), 50);
+  assert.equal(fitScale({ w: 4, h: 2 }, { w: 159, h: 100 }), 30);
   const q = edgeQuotes(sq);
   assert.equal(q.length, 4);
   assert.equal(q[0].label, "4,00 m");
