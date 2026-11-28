@@ -22,14 +22,18 @@ function candidates(points) {
 }
 
 // groups: [{ key, layer, quantity, spreadM }]; blocked: [{ x, y, r }] già occupati
-// Restituisce { placed: [{ key, x, y }], skipped: numero non posizionati }
-// Nei vasi le piante possono sporgere dal bordo e stare più fitte.
+// Restituisce { placed: [{ key, x, y }], skipped, substituted }.
+// Se una pianta non trova posto, al suo posto se ne mette un'altra della
+// proposta, più piccola, che entra (substituted); solo se non entra nulla
+// la pianta viene scartata (skipped).
+// Le piante non si sovrappongono oltre una piccola tolleranza (chiome che si
+// sfiorano); nei vasi possono sporgere dal bordo e stare più fitte.
 export function autoLayout(points, groups, { viewedFrom = "all", blocked = [], container = false } = {}) {
   const edgeFactor = container ? 0 : 0.6;
   const edgeMargin = container ? 0.02 : 0.06;
-  const tolerances = container ? [0.95, 0.75, 0.55, 0.4] : [0.95, 0.75, 0.55];
+  const tolerances = container ? [0.95, 0.75, 0.55, 0.4] : [0.95, 0.85, 0.8];
   const cells = candidates(points);
-  if (!cells.length) return { placed: [], skipped: groups.reduce((s, g) => s + g.quantity, 0) };
+  if (!cells.length) return { placed: [], skipped: groups.reduce((s, g) => s + g.quantity, 0), substituted: 0 };
 
   // "Profondità": 1 dove vanno le piante alte, 0 sul bordo in vista.
   const maxEdge = Math.max(...cells.map((c) => c.edge)) || 1;
@@ -47,52 +51,72 @@ export function autoLayout(points, groups, { viewedFrom = "all", blocked = [], c
   const placed = blocked.map((b) => ({ key: null, ...b }));
   const fixed = placed.length;
   let skipped = 0;
+  let substituted = 0;
   const sorted = [...groups].sort((a, b) => ORDER.indexOf(a.layer) - ORDER.indexOf(b.layer));
 
-  for (const g of sorted) {
+  // Miglior punto libero per un esemplare del gruppo g, o null se non entra.
+  const findSpot = (g) => {
     const r = g.spreadM / 2;
     const target = TARGET[g.layer] ?? 0.5;
     const spreadOut = g.layer === "bassa" || g.layer === "copertura";
-    for (let n = 0; n < g.quantity; n++) {
+    for (const tolerance of tolerances) {
       let best = null;
-      for (const tolerance of tolerances) {
-        let bestScore = -Infinity;
-        for (let i = 0; i < cells.length; i++) {
-          const c = cells[i];
-          // non sopra la bordura (circa 6 cm verso l'interno)
-          if (c.edge < r * edgeFactor + edgeMargin) continue;
-          let ok = true;
-          let nearSame = Infinity;
-          for (const p of placed) {
-            const d = Math.hypot(p.x - c.x, p.y - c.y);
-            if (d < (p.r + r) * tolerance) {
-              ok = false;
-              break;
-            }
-            if (p.key === g.key) nearSame = Math.min(nearSame, d);
+      let bestScore = -Infinity;
+      for (let i = 0; i < cells.length; i++) {
+        const c = cells[i];
+        // non sopra la bordura (circa 6 cm verso l'interno)
+        if (c.edge < r * edgeFactor + edgeMargin) continue;
+        let ok = true;
+        let nearSame = Infinity;
+        for (const p of placed) {
+          const d = Math.hypot(p.x - c.x, p.y - c.y);
+          if (d < (p.r + r) * tolerance) {
+            ok = false;
+            break;
           }
-          if (!ok) continue;
-          let score = -Math.abs(depth[i] - target) * 3;
-          if (spreadOut) {
-            // Bordure e tappezzanti: distribuite lungo tutto il perimetro.
-            if (nearSame < Infinity) score += Math.min(nearSame / g.spreadM, 6) * 0.25;
-          } else if (nearSame < Infinity) {
-            // Piante strutturali e di riempimento: a gruppi.
-            score += nearSame < g.spreadM * 1.6 ? 1 : -0.2;
-          }
-          if (score > bestScore) {
-            bestScore = score;
-            best = c;
-          }
+          if (p.key === g.key) nearSame = Math.min(nearSame, d);
         }
-        if (best) break;
+        if (!ok) continue;
+        let score = -Math.abs(depth[i] - target) * 3;
+        if (spreadOut) {
+          // Bordure e tappezzanti: distribuite lungo tutto il perimetro.
+          if (nearSame < Infinity) score += Math.min(nearSame / g.spreadM, 6) * 0.25;
+        } else if (nearSame < Infinity) {
+          // Piante strutturali e di riempimento: a gruppi.
+          score += nearSame < g.spreadM * 1.6 ? 1 : -0.2;
+        }
+        if (score > bestScore) {
+          bestScore = score;
+          best = c;
+        }
       }
-      if (!best) {
-        skipped += 1;
+      if (best) return best;
+    }
+    return null;
+  };
+
+  for (const g of sorted) {
+    for (let n = 0; n < g.quantity; n++) {
+      const spot = findSpot(g);
+      if (spot) {
+        placed.push({ key: g.key, x: spot.x, y: spot.y, r: g.spreadM / 2 });
         continue;
       }
-      placed.push({ key: g.key, x: best.x, y: best.y, r });
+      // Non entra: ne va un'altra più piccola, prima dello stesso livello e poi la più grande che ci sta.
+      const others = sorted
+        .filter((o) => o !== g && o.spreadM < g.spreadM)
+        .sort((a, b) => (a.layer === g.layer ? 0 : 1) - (b.layer === g.layer ? 0 : 1) || b.spreadM - a.spreadM);
+      let done = false;
+      for (const o of others) {
+        const alt = findSpot(o);
+        if (!alt) continue;
+        placed.push({ key: o.key, x: alt.x, y: alt.y, r: o.spreadM / 2 });
+        substituted += 1;
+        done = true;
+        break;
+      }
+      if (!done) skipped += 1;
     }
   }
-  return { placed: placed.slice(fixed).map(({ key, x, y }) => ({ key, x, y })), skipped };
+  return { placed: placed.slice(fixed).map(({ key, x, y }) => ({ key, x, y })), skipped, substituted };
 }

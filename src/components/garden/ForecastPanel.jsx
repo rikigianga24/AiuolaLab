@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { searchPlants } from "../../lib/api";
-import { SPEED_LABEL, overlapText } from "../../lib/forecast";
+import { SPEED_LABEL, summarizeOverlaps, summarizeRoots, summarizeShade } from "../../lib/forecast";
 import { describeOrientation } from "../../lib/orientation";
 import { planFeatures } from "../../lib/plans";
 import { useSession } from "../../lib/session";
@@ -192,7 +192,7 @@ export default function ForecastPanel({ project, bed, analysis, year, onYear, on
           Sul disegno le piante hanno la misura prevista.{" "}
           {year > 0 && (
             <>
-              <span className="fc-dot is-risk" /> a rischio <span className="fc-dot is-dominant" /> dominante <span className="fc-dot is-dead" /> da sostituire
+              <span className="fc-dot is-dominant" /> dominante <span className="fc-dot is-dead" /> da sostituire
             </>
           )}
         </p>
@@ -268,14 +268,11 @@ export default function ForecastPanel({ project, bed, analysis, year, onYear, on
           <Section title="Previsione a 3 anni" icon="fa-tree">
             <YearHead y={a.years[3]} occupied />
             <p className="fc-k">Sovraffollamento</p>
-            <List items={a.years[3].overlaps.map((o) => `${cap(overlapText(o))}${o.severe ? " (forte)" : ""}.`)} empty="Le chiome si toccano senza soffocarsi." />
+            <List items={overlapLines(a.years[3].overlaps)} empty="Le chiome si toccano senza soffocarsi." />
             <p className="fc-k">Competizione radicale</p>
-            <List
-              items={a.years[3].roots.map((r) => (r.a.name === r.b.name ? `Due ${r.a.name} vicine si contendono acqua e spazio.` : `${r.strong.name} (${r.reason}) toglie acqua e spazio a ${r.weak.name}.`))}
-              empty="Nessuna competizione importante tra le radici."
-            />
+            <List items={rootLines(a.years[3].roots)} empty="Nessuna competizione importante tra le radici." />
             <p className="fc-k">Ombreggiamento</p>
-            <List items={a.years[3].shade.map((s) => `${s.tall.name} (${cm(s.tallH)}) fa ombra ${s.side} a ${s.small.name} (${cm(s.smallH)}), che vuole il sole.`)} empty="Nessuna pianta toglie il sole alle altre." />
+            <List items={shadeLines(a.years[3].shade)} empty="Nessuna pianta toglie il sole alle altre." />
             <p className="fc-k">Irrigazione</p>
             <List items={a.current.compat.filter((t) => /acqua/.test(t))} empty="Le piante hanno bisogni d'acqua simili: un'unica irrigazione va bene." />
             <p className="fc-k">Manutenzione</p>
@@ -297,7 +294,7 @@ export default function ForecastPanel({ project, bed, analysis, year, onYear, on
           </Section>
 
           <Section title="Problemi futuri" icon="fa-triangle-exclamation">
-            <List items={a.problems} empty="Non sono previsti problemi." />
+            <ProblemGroups groups={a.problemGroups} />
           </Section>
 
           <Section title="Suggerimenti migliorativi" icon="fa-lightbulb">
@@ -346,15 +343,58 @@ function YearHead({ y, occupied = false }) {
   );
 }
 
+function overlapLines(list) {
+  return summarizeOverlaps(list).map((o) =>
+    o.same ? `${o.name}: esemplari troppo vicini, si coprono fino al ${pct(o.ratio * 100)}${o.severe ? " (forte)" : ""}.` : `${o.winner} copre fino al ${pct(o.ratio * 100)} di ${o.loser}${o.severe ? " (forte)" : ""}.`,
+  );
+}
+
+function rootLines(list) {
+  return summarizeRoots(list).map((r) => (r.same ? `${r.same}: esemplari vicini si contendono acqua e spazio.` : `${r.strong} (${r.reason}) toglie acqua e spazio a ${r.weak.join(", ")}.`));
+}
+
+function shadeLines(list) {
+  return summarizeShade(list).map((sh) => `${sh.name} (vuole il sole): ombra da ${sh.sources.join(", ")}.`);
+}
+
 function yearProblems(y) {
   return [
-    ...y.overlaps.filter((o) => o.severe).map((o) => `${cap(overlapText(o))} già al primo anno.`),
-    ...y.shade.map((s) => `${s.tall.name} fa ombra a ${s.small.name}.`),
+    ...overlapLines(y.overlaps.filter((o) => o.severe)).map((t) => `${t.replace(/\.$/, "")} già al primo anno.`),
+    ...shadeLines(y.shade),
     ...(y.coverage < 50 ? [`Terreno ancora molto scoperto (${pct(100 - y.coverage)}): pacciama bene per le erbacce.`] : []),
   ];
 }
 
-const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
+const KIND_ICON = { ombra: "fa-cloud-sun", radici: "fa-seedling", chiome: "fa-maximize", vita: "fa-hourglass-end", aiuola: "fa-triangle-exclamation" };
+const KIND_TITLE = { ombra: "Ombra", radici: "Radici", chiome: "Spazio", vita: "Durata", aiuola: "Aiuola" };
+const YEAR_BADGE = { 1: "1 anno", 3: "3 anni", 5: "5 anni" };
+
+// Problemi futuri: una scheda per pianta, una riga per tipo di problema (niente ripetizioni).
+function ProblemGroups({ groups }) {
+  if (!groups.length) return <p className="fc-ok">Non sono previsti problemi.</p>;
+  return (
+    <div className="fc-problems">
+      {groups.map((g) => (
+        <div key={g.name ?? "aiuola"} className="fc-plant">
+          <p className="fc-plant-name">
+            {g.name ?? "Tutta l'aiuola"}
+            {g.count > 1 && <small> ×{g.count}</small>}
+          </p>
+          <ul>
+            {g.items.map((it) => (
+              <li key={it.kind + it.text} className={`is-${it.kind}`}>
+                <i className={`fa-solid ${KIND_ICON[it.kind]}`} title={KIND_TITLE[it.kind]} aria-label={KIND_TITLE[it.kind]} />
+                <span>{it.text}{it.sun ? " · vuole il sole" : ""}</span>
+                {it.year && <em>{YEAR_BADGE[it.year]}</em>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 
 function uniqueNames(list) {
   return [...new Set(list.map((p) => p.name))];

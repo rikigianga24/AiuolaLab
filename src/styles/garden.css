@@ -2250,14 +2250,6 @@ p.fc-k {
 
 /* ===== Calendario di fioritura ===== */
 
-.tool-label {
-  white-space: nowrap;
-}
-
-.is-mobile .tool-label {
-  display: none;
-}
-
 .blossom {
   display: inline-block;
   vertical-align: middle;
@@ -2561,4 +2553,75 @@ p.fc-k {
 .gp-tabs .gp-tab {
   flex: 1 0 25%;
   min-width: 0;
+}
+
+/* problemi futuri: una scheda per pianta */
+.fc-problems {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fc-plant {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid rgba(47, 62, 47, 0.12);
+  border-radius: 10px;
+  background: #fbfaf5;
+}
+
+.fc-plant-name {
+  margin: 0 0 0.25rem !important;
+  font-weight: 700;
+  color: var(--green-dark);
+}
+
+.fc-plant-name small {
+  font-weight: 600;
+  color: #5d6b5f;
+}
+
+.fc-plant ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fc-plant li {
+  display: grid;
+  grid-template-columns: 1.3rem 1fr auto;
+  align-items: start;
+  gap: 0.35rem;
+  padding: 0.18rem 0;
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+.fc-plant li i {
+  margin-top: 0.15rem;
+  text-align: center;
+  color: #8a6d2f;
+}
+
+.fc-plant li.is-radici i {
+  color: #7a5a3a;
+}
+
+.fc-plant li.is-chiome i {
+  color: #4f7942;
+}
+
+.fc-plant li.is-vita i {
+  color: #6b6b6b;
+}
+
+.fc-plant li em {
+  align-self: start;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: #ece9dc;
+  font-size: 0.7rem;
+  font-style: normal;
+  font-weight: 700;
+  white-space: nowrap;
+  color: #4a5a4c;
 }

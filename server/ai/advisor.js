@@ -6,6 +6,7 @@ import { config } from "../config.js";
 import { generateJson } from "./gemini.js";
 import { candidatePlants, findByScientificName, getPlant } from "../plants/service.js";
 import { CROPS, cropAsPlant, monthsLabel } from "../../src/lib/crops.js";
+import { fitQuantities } from "../../src/lib/capacity.js";
 
 export const SuggestRequest = z.object({
   bed: z.object({
@@ -68,6 +69,7 @@ const OUTPUT_SCHEMA = {
           "layer",
           "quantity",
           "spacing_cm",
+          "spread_5y_cm",
           "height_cm",
           "flower_colors",
           "bloom_seasons",
@@ -80,7 +82,8 @@ const OUTPUT_SCHEMA = {
           layer: { type: "STRING", enum: LAYERS },
           quantity: { type: "INTEGER" },
           spacing_cm: { type: "INTEGER", description: "Distanza di impianto tra esemplari" },
-          height_cm: { type: "INTEGER", description: "Altezza da adulta" },
+          spread_5y_cm: { type: "INTEGER", description: "Diametro della chioma a 5 anni dall'impianto, in cm" },
+          height_cm: { type: "INTEGER", description: "Altezza a 5 anni dall'impianto, in cm" },
           flower_colors: { type: "ARRAY", items: str() },
           bloom_seasons: { type: "ARRAY", items: SEASON_ENUM },
           reason: str("Perché è adatta, una frase"),
@@ -99,7 +102,9 @@ Progetti composizioni belle e realistiche: piante compatibili tra loro per luce,
 Regole:
 - Rispetta sempre le condizioni di esposizione, acqua e terreno indicate: non proporre piante che non le tollerano.
 - Preferisci le piante dell'elenco di candidate (riporta il loro candidate_id). Puoi aggiungerne altre solo se mancano piante adatte; in quel caso candidate_id è null e il nome scientifico deve essere preciso.
-- Le quantità devono stare nell'area disponibile: usa la distanza di impianto (spacing_cm) per calcolarle. Lo spazio occupato da ogni esemplare è circa spacing_cm al quadrato.
+- Ragiona sempre sulle misure che le piante avranno a 5 anni dall'impianto, non su quelle del vaso di vivaio: spread_5y_cm è il diametro della chioma a 5 anni, height_cm l'altezza a 5 anni. Considera anche le piante che si allargano (stoloni, polloni, autosemina).
+- Le quantità devono stare nell'area disponibile: ogni esemplare occupa circa π/4 × spread_5y_cm² (in m²). La somma di quantity × quell'area non deve superare l'80% dell'area dell'aiuola: lascia libero il 20% per i passaggi e la crescita. Meglio meno piante e ben distanziate che un'aiuola affollata.
+- spacing_cm è la distanza consigliata tra i centri degli esemplari della stessa specie (di solito circa 0,8 × spread_5y_cm).
 - Usa i livelli: "alta" per piante strutturali (al centro se l'aiuola si vede da tutti i lati, sul fondo se si vede da un lato solo), "media" per il riempimento, "bassa" per la bordura, "copertura" per tappezzanti.
 - Ripeti poche specie in gruppi (da 3 a 7 specie per aiuole piccole) invece di metterne tante isolate.
 - Scrivi in italiano, in modo semplice e pratico e senza dilungarti: frasi brevi, al massimo 5 consigli di cura e 5 avvertenze.
@@ -205,7 +210,14 @@ async function linkToDatabase(plants, candidates) {
         lookups += 1;
         dbPlant = await findByScientificName(p.scientific_name).catch(() => null);
       }
-      return { ...p, quantity: Math.max(1, Math.min(200, p.quantity)), plant: dbPlant ?? null };
+      const spread = Number(p.spread_5y_cm);
+      return {
+        ...p,
+        quantity: Math.max(1, Math.min(200, p.quantity)),
+        // misura a 5 anni: tenuta in un intervallo sensato (la distanza di impianto resta il ripiego)
+        spread_5y_cm: Number.isFinite(spread) && spread > 0 ? Math.max(10, Math.min(300, Math.round(spread))) : undefined,
+        plant: dbPlant ?? null,
+      };
     }),
   );
 }
@@ -221,7 +233,7 @@ export class AdvisorError extends Error {
 // senza chiamare di nuovo l'IA. Per l'orto conta anche il mese.
 export function cacheKey(req) {
   const month = req.environment === "vegetable" ? new Date().getMonth() : null;
-  const raw = JSON.stringify({ v: 1, model: config.gemini.model, month, req });
+  const raw = JSON.stringify({ v: 2, model: config.gemini.model, month, req });
   return crypto.createHash("sha256").update(raw).digest("hex");
 }
 
@@ -236,10 +248,21 @@ export async function suggestBed(req) {
     schema: OUTPUT_SCHEMA,
   });
   if (!Array.isArray(proposal?.plants)) throw new AdvisorError("Risposta del consulente IA non valida.", 502);
+  let plants = await linkToDatabase(proposal.plants, candidates);
+  let warnings = proposal.warnings ?? [];
+  // In piena terra si controlla che le chiome a 5 anni entrino nell'area: se l'IA ha esagerato si riducono le quantità.
+  if (!req.bed.container && req.environment !== "vegetable") {
+    const fit = fitQuantities(plants, req.bed.areaM2);
+    if (fit.reduced) {
+      plants = fit.plants;
+      warnings = [...warnings, "Ho ridotto le quantità proposte: a 5 anni le piante non starebbero tutte nell'aiuola."].slice(-5);
+    }
+  }
   return {
     proposal: {
       ...proposal,
-      plants: await linkToDatabase(proposal.plants, candidates),
+      plants,
+      warnings,
       source: candidates[0]?.source ?? null,
     },
     usage,

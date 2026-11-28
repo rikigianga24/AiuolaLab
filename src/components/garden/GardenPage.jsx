@@ -179,7 +179,6 @@ export default function GardenPage() {
     if (!y) return null;
     const marks = {};
     for (const p of y.dominant) marks[p.id] = "dominant";
-    for (const p of y.atRisk) marks[p.id] = "risk";
     return marks;
   }, [forecast, forecastYear]);
 
@@ -453,7 +452,9 @@ export default function GardenPage() {
         scientificName: p.scientific_name,
         flowerColors: [],
       };
-      const spreadM = Math.min(3, Math.max(0.1, (p.spacing_cm || 40) / 100));
+      // in piena terra si usa la chioma prevista a 5 anni; nei vasi e nell'orto la distanza di impianto
+      const useCanopy = !isPot(bed) && bed.kind !== "veg" && p.spread_5y_cm;
+      const spreadM = Math.min(3, Math.max(0.1, (useCanopy ? p.spread_5y_cm : p.spacing_cm || 40) / 100));
       const colorCodes = source.flowerColors?.length ? source.flowerColors : mapColorNames(p.flower_colors);
       const iconSource = { ...source, commonName: p.common_name, scientificName: p.scientific_name, flowerColors: colorCodes };
       return {
@@ -471,7 +472,7 @@ export default function GardenPage() {
     });
     const others = replace ? [] : bed.plants;
     const blocked = others.map((p) => ({ x: p.x, y: p.y, r: p.spreadM / 2 }));
-    const { placed, skipped } = autoLayout(bed.points, groups, {
+    const { placed, skipped, substituted } = autoLayout(bed.points, groups, {
       viewedFrom: bed.viewedFrom,
       blocked,
       container: isPot(bed),
@@ -491,11 +492,13 @@ export default function GardenPage() {
     updateBed(bedId, (b) => ({ ...b, plants: [...others, ...newPlants], suggestion: proposal.title }));
     setSelection({ bedId, plantId: null });
     if (isMobile) setSheetOpen(false);
+    const extra = [
+      substituted ? `${substituted} sostituiti con piante più piccole che entravano` : null,
+      skipped ? `${skipped} non entravano nello spazio` : null,
+    ].filter(Boolean);
     notify(
-      skipped
-        ? `Piantati ${newPlants.length} esemplari, ${skipped} non entravano nello spazio.`
-        : `Piantati ${newPlants.length} esemplari secondo il progetto.`,
-      skipped ? "warning" : "success",
+      extra.length ? `Piantati ${newPlants.length} esemplari: ${extra.join(", ")}.` : `Piantati ${newPlants.length} esemplari secondo il progetto.`,
+      skipped || substituted ? "warning" : "success",
     );
   };
 
@@ -739,8 +742,8 @@ export default function GardenPage() {
           >
             <Blossom size={18} />
           </button>
-          <button className="tool-btn" onClick={() => setPrintOpen(true)} disabled={!project.beds.length} title="Stampa tecnica del progetto">
-            <i className="fa-solid fa-print" /> <span className="tool-label">Stampa progetto</span>
+          <button className="tool-btn icon" onClick={() => setPrintOpen(true)} disabled={!project.beds.length} title="Stampa progetto" aria-label="Stampa progetto">
+            <i className="fa-solid fa-print" />
           </button>
           <button className="tool-btn icon" onClick={() => setTourOpen(true)} aria-label="Guida" title="Guida">
             <i className="fa-solid fa-question" />

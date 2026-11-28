@@ -13,7 +13,6 @@ const ZONE_LABEL = { nord: "al Nord", centro: "al Centro", sud: "al Sud" };
 const SEASON_ORDER = ["spring", "summer", "autumn", "winter"];
 const SEASON_IT = { spring: "primavera", summer: "estate", autumn: "autunno", winter: "inverno" };
 
-const cm = (m) => `${Math.round(m * 100)} cm`;
 const pct = (v) => `${Math.round(v)}%`;
 const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
 const plural = (n, one, many) => (n === 1 ? one : many);
@@ -63,6 +62,49 @@ function snapshot(plants, profiles, year) {
 /** Frase per una sovrapposizione di chiome (anche tra due esemplari uguali). */
 export function overlapText(o) {
   return o.a.name === o.b.name ? `due ${o.a.name} si coprono per il ${pct(o.ratio * 100)}` : `${o.winner.name} copre il ${pct(o.ratio * 100)} di ${o.loser.name}`;
+}
+
+// ---- sintesi senza ripetizioni: una riga per specie, non per coppia di esemplari ----
+
+/** Ombra: [{ name, sources: [nomi delle specie che la fanno] }] (una voce per specie all'ombra). */
+export function summarizeShade(list) {
+  const m = new Map();
+  for (const s of list) {
+    const g = m.get(s.small.name) ?? { name: s.small.name, sources: new Map() };
+    g.sources.set(s.tall.name, Math.max(g.sources.get(s.tall.name) ?? 0, s.tallH));
+    m.set(s.small.name, g);
+  }
+  return [...m.values()].map((g) => ({ name: g.name, sources: [...g.sources].sort((a, b) => b[1] - a[1]).map(([n]) => n) }));
+}
+
+/** Radici: [{ strong, reason, weak: [nomi] }] (una voce per specie invadente) e [{ same }] per esemplari uguali. */
+export function summarizeRoots(list) {
+  const same = new Set();
+  const m = new Map();
+  for (const r of list) {
+    if (r.a.name === r.b.name) {
+      same.add(r.a.name);
+      continue;
+    }
+    const g = m.get(r.strong.name) ?? { strong: r.strong.name, reason: r.reason, weak: new Set() };
+    g.weak.add(r.weak.name);
+    m.set(r.strong.name, g);
+  }
+  return [...[...same].map((n) => ({ same: n })), ...[...m.values()].map((g) => ({ ...g, weak: [...g.weak] }))];
+}
+
+/** Chiome sovrapposte: una voce per coppia di specie, con la copertura massima. */
+export function summarizeOverlaps(list) {
+  const m = new Map();
+  for (const o of list) {
+    const same = o.a.name === o.b.name;
+    const key = same ? o.a.name : `${o.winner.name}>${o.loser.name}`;
+    const g = m.get(key) ?? { same, winner: o.winner?.name, loser: o.loser?.name, name: o.a.name, ratio: 0, severe: false };
+    g.ratio = Math.max(g.ratio, o.ratio);
+    g.severe ||= o.severe;
+    m.set(key, g);
+  }
+  return [...m.values()];
 }
 
 function pairs(list) {
@@ -317,31 +359,46 @@ export function analyzeBed(bed, { viewer = null, northDeg = null, climate = "cen
     }),
   );
 
-  // ---- problemi futuri (solo previsti, senza ripetizioni) ----
-  const problems = [];
-  const seen = new Set();
-  const add = (key, text) => {
-    if (seen.has(key)) return;
-    seen.add(key);
-    problems.push(text);
+  // ---- problemi futuri: raggruppati per pianta, una riga per tipo di problema ----
+  const byName = new Map(species.map((sp) => [sp.name, { name: sp.name, count: sp.ids.length, items: new Map() }]));
+  const note = (name, kind, year, others, text) => {
+    const g = byName.get(name);
+    if (!g) return;
+    const it = g.items.get(kind) ?? { kind, year, others: new Set(), text };
+    it.year = Math.min(it.year, year);
+    others.forEach((o) => it.others.add(o));
+    g.items.set(kind, it);
   };
   for (const yy of YEARS) {
     const Y = years[yy];
-    for (const o of Y.overlaps.filter((o) => o.severe))
-      add(`ov:${o.a.id}:${o.b.id}`, `Entro ${yy} ${plural(yy, "anno", "anni")} ${overlapText(o)}: troppo vicine.`);
-    for (const r of Y.roots)
-      add(
-        `rt:${r.a.id}:${r.b.id}`,
-        r.a.name === r.b.name
-          ? `Entro ${yy} ${plural(yy, "anno", "anni")} le radici di due ${r.a.name} vicine si contendono acqua e spazio.`
-          : `Entro ${yy} ${plural(yy, "anno", "anni")} le radici di ${r.strong.name} (${r.reason}) entrano in competizione con ${r.weak.name}.`,
-      );
-    for (const s of Y.shade) add(`sh:${s.tall.id}:${s.small.id}`, `Entro ${yy} ${plural(yy, "anno", "anni")} ${s.tall.name} (alta ${cm(s.tallH)}) fa ombra ${s.side} a ${s.small.name}, che vuole il pieno sole.`);
-    for (const d of Y.dead) add(`dd:${d.name}`, `${d.name}: vive circa ${profiles[d.id].lifespan} anni, al ${yy}° anno va sostituita.`);
+    for (const o of summarizeOverlaps(Y.overlaps.filter((o) => o.severe))) {
+      if (o.same) note(o.name, "chiome", yy, [], `Esemplari troppo vicini: si coprono fino al ${pct(o.ratio * 100)}`);
+      else note(o.loser, "chiome", yy, [o.winner], "Coperta da");
+    }
+    for (const r of summarizeRoots(Y.roots)) {
+      if (r.same) note(r.same, "radici", yy, [], "Esemplari vicini: si contendono acqua e spazio");
+      else for (const w of r.weak) note(w, "radici", yy, [r.strong], "Radici in competizione con");
+    }
+    for (const sh of summarizeShade(Y.shade)) note(sh.name, "ombra", yy, sh.sources, "Ombra da");
+    for (const d of Y.dead) note(d.name, "vita", yy, [], `Fine vita (circa ${profiles[d.id].lifespan} anni): da sostituire`);
   }
-  if (years[5].density > 130) add("dens", `A 5 anni le chiome occupano il ${pct(years[5].density)} della superficie: l'aiuola sarà sovraffollata.`);
-  if (years[3].coverage < 60) add("bare", `A 3 anni resta scoperto il ${pct(100 - years[3].coverage)} del terreno: crescono le erbacce.`);
-  for (const t of compat) add(`cp:${t}`, t);
+  const ORDER_KIND = { ombra: 0, radici: 1, chiome: 2, vita: 3 };
+  const problemGroups = [...byName.values()]
+    .map((g) => ({
+      name: g.name,
+      count: g.count,
+      items: [...g.items.values()]
+        .map((it) => ({ kind: it.kind, year: it.year, text: it.others.size ? `${it.text} ${[...it.others].join(", ")}` : it.text, sun: it.kind === "ombra" }))
+        .sort((a, b) => ORDER_KIND[a.kind] - ORDER_KIND[b.kind]),
+    }))
+    .filter((g) => g.items.length)
+    .sort((a, b) => b.items.length - a.items.length || a.name.localeCompare(b.name, "it"));
+  // problemi di tutta l'aiuola
+  const general = [];
+  if (years[5].density > 130) general.push({ kind: "aiuola", year: 5, text: `Le chiome occupano il ${pct(years[5].density)} della superficie: sovraffollata` });
+  if (years[3].coverage < 60) general.push({ kind: "aiuola", year: 3, text: `Resta scoperto il ${pct(100 - years[3].coverage)} del terreno: crescono le erbacce` });
+  for (const t of compat) general.push({ kind: "aiuola", year: null, text: t });
+  if (general.length) problemGroups.push({ name: null, count: 0, items: general });
 
   // ---- suggerimenti ----
   const reduce = [], increase = [], alternatives = [];
@@ -423,7 +480,7 @@ export function analyzeBed(bed, { viewer = null, northDeg = null, climate = "cen
     development,
     years,
     maintenance,
-    problems,
+    problemGroups,
     suggestions: { reduce, increase, alternatives },
     scores: {
       aestheticNow: aesNow.score,

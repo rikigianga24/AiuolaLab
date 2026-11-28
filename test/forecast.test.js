@@ -39,7 +39,7 @@ test("previsione: due lavande troppo vicine si sovrappongono", () => {
   assert.equal(r.ok, true);
   assert.ok(r.current.tooClose.length === 1, "segnalate come troppo vicine già nel progetto");
   assert.ok(r.years[3].overlaps.some((o) => o.severe), "a 3 anni sovrapposizione forte");
-  assert.ok(r.problems.some((t) => /troppo vicine/.test(t)));
+  assert.ok(r.problemGroups.some((g) => g.name === "Lavanda" && g.items.some((i) => i.kind === "chiome" && /troppo vicini/.test(i.text))));
   assert.ok(r.years[3].coverage > r.years[1].coverage - 1);
 });
 

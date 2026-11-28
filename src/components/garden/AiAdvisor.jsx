@@ -277,7 +277,7 @@ export default function AiAdvisor({ bed, environment, onUpdateBed, onApply }) {
                 </div>
                 <em>{p.scientific_name}</em>
                 <small>
-                  h {p.height_cm} cm · distanza {p.spacing_cm} cm
+                  {p.spread_5y_cm ? `a 5 anni: h ${p.height_cm} cm, larga ${p.spread_5y_cm} cm` : `h ${p.height_cm} cm`} · distanza {p.spacing_cm} cm
                   {p.flower_colors?.length ? ` · ${p.flower_colors.join(", ")}` : ""}
                   {p.bloom_seasons?.length ? ` · ${p.bloom_seasons.map((s) => SEASONS[s] ?? s).join(", ")}` : ""}
                 </small>
