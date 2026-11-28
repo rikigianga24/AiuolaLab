@@ -38,9 +38,9 @@ test("consigli pratici completi per ogni stile", () => {
 test("foto degli stili: anteprima solo se c'è la foto", () => {
   assert.ok(hasStylePhoto("cottage"));
   assert.equal(stylePhoto("cottage").og, "/img/stili/cottage-og.jpg");
-  assert.equal(stylePhoto("roccioso"), null);
+  assert.equal(stylePhoto("inesistente"), null);
   assert.equal(pageMeta("/stili/cottage").image, "/img/stili/cottage-og.jpg");
-  assert.equal(pageMeta("/stili/roccioso").image, "/img/og-aiuolalab.jpg");
+  assert.equal(pageMeta("/stili/inesistente").image, "/img/og-aiuolalab.jpg");
 });
 
 test("i meta finiscono nell'HTML, con i caratteri speciali protetti", () => {
