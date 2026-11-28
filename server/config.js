@@ -26,7 +26,7 @@ export const config = {
   gemini: {
     apiKey: env.GEMINI_API_KEY || null,
     enabled: Boolean(env.GEMINI_API_KEY),
-    model: env.GEMINI_MODEL || "gemini-2.5-flash",
+    model: env.GEMINI_MODEL || "gemini-3.8-flash",
     // token massimi di "ragionamento" per proposta ("auto" = decide il modello)
     thinkingBudget: env.GEMINI_THINKING_BUDGET === "auto" ? null : Number(env.GEMINI_THINKING_BUDGET) || 1024,
     timeoutMs: 90_000,

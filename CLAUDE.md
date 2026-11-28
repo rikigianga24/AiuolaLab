@@ -97,7 +97,7 @@ node --test --test-name-pattern="notifiche" test/   # tests matching a name
 - Plant icons are drawn procedurally into cached canvases (`src/lib/plantIcons.js`). Several art styles are selected through `artStyle.js`; the "tempera" style lives in `tempera.js` and `temperaGround.js`.
 
 **AI advisor and plans.**
-- `server/ai/advisor.js` builds the prompt (about 40 catalog candidates plus the form data) and calls Google Gemini through `server/ai/gemini.js`. That file is plain `fetch` to `generateContent`, with structured JSON output and a capped thinking budget. It needs `GEMINI_API_KEY`; `GEMINI_MODEL` defaults to `gemini-2.5-flash`.
+- `server/ai/advisor.js` builds the prompt (about 40 catalog candidates plus the form data) and calls Google Gemini through `server/ai/gemini.js`. That file is plain `fetch` to `generateContent`, with structured JSON output and a capped thinking budget. It needs `GEMINI_API_KEY`; `GEMINI_MODEL` defaults to `gemini-3.8-flash`.
 - The advisor needs both the key and the database, and only logged-in users can use it.
 - Plans live in `src/lib/plans.js`, a shared module. It sets the AI quota per plan (free: 1 every 48h; premium: 3 every 24h, rolling windows) and `fullForecast`. Without `fullForecast`, the "Crescita" panel shows only the aesthetic scores and a Premium teaser.
 - `users.plan` is `'free'` or `'premium'` and is the *manual* plan (the owner can gift Premium in Supabase). The *effective* plan is computed in `sessionMiddleware` (`server/auth.js`): Premium if `users.plan = 'premium'` or the user has an active row in `subscriptions` (`premiumSql()` in `server/billing.js`). `req.user.plan` is the effective plan, `req.user.plan_manual` the column.
