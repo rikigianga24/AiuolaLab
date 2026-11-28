@@ -1,0 +1,378 @@
+/* ===== Stampa tecnica del progetto ===== */
+/* La tavola è dimensionata in millimetri: sullo schermo viene ridotta con
+   transform (anteprima), in stampa va al 100% sulla pagina scelta. */
+
+.print-root {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  background: #4b5148;
+  color: #2f3a33;
+}
+
+.print-ui {
+  flex: none;
+  max-height: 46vh;
+  overflow: auto;
+  padding: 0.65rem 1rem 0.55rem;
+  background: #fff;
+  border-bottom: 1px solid rgba(47, 62, 47, 0.15);
+}
+
+.print-ui-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.print-ui-title {
+  font-size: 1rem;
+  color: var(--green-dark);
+}
+
+.print-ui-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.print-ui-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.6rem;
+  margin-top: 0.5rem;
+}
+
+.print-ui-opts fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+  font-size: 0.85rem;
+}
+
+.print-ui-opts legend {
+  padding: 0;
+  margin-bottom: 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--green-primary);
+}
+
+.print-ui-opts label {
+  display: block;
+  margin-right: 0.8rem;
+}
+
+.print-ui-opts fieldset:first-child label {
+  display: inline-block;
+}
+
+.print-ui-bloom {
+  flex: 1 1 22rem;
+  max-width: 32rem;
+}
+
+.print-ui-bloom .month-grid {
+  margin-top: 0.4rem;
+}
+
+.print-ui-bloom .month-presets {
+  margin-top: 0.4rem;
+}
+
+.print-ui-notes {
+  flex: 1 1 18rem;
+}
+
+.print-ui-notes textarea {
+  width: 100%;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid rgba(47, 62, 47, 0.2);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.85rem;
+  resize: vertical;
+}
+
+.print-ui-tip {
+  margin: 0.5rem 0 0;
+  font-size: 0.76rem;
+  color: #5d6b5f;
+}
+
+.print-preview {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px;
+}
+
+.print-pages {
+  margin: 0 auto;
+}
+
+.print-page-frame {
+  margin-bottom: 14px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+}
+
+/* ---- la tavola ---- */
+
+.plan-sheet {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 5mm;
+  overflow: hidden;
+  background: #fff;
+  color: #2f3a33;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  font-size: 2.7mm;
+  line-height: 1.35;
+  transform: scale(var(--zoom, 1));
+  transform-origin: top left;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.plan-sheet h1,
+.plan-sheet h2,
+.plan-sheet p,
+.plan-sheet dl,
+.plan-sheet dd,
+.plan-sheet dt {
+  margin: 0;
+  padding: 0;
+}
+
+.plan-head {
+  flex: none;
+  height: 22mm;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 8mm;
+  padding-bottom: 2.5mm;
+  border-bottom: 0.35mm solid #2f3a33;
+}
+
+.plan-eyebrow {
+  font-size: 2.3mm;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #5f7f55;
+}
+
+.plan-head h1 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 7.5mm;
+  line-height: 1.1;
+  font-weight: 700;
+  color: #2f3a33;
+}
+
+.plan-sub {
+  margin-top: 1mm;
+  font-size: 3mm;
+  color: #4d5a50;
+}
+
+.plan-meta {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 0.6mm 4mm;
+  font-size: 2.6mm;
+  text-align: left;
+}
+
+.plan-meta dt {
+  color: #6b756d;
+}
+
+.plan-meta dd {
+  font-weight: 600;
+}
+
+.plan-main {
+  flex: none;
+  display: grid;
+  min-height: 0;
+}
+
+.plan-drawing {
+  min-width: 0;
+  min-height: 0;
+}
+
+.plan-svg {
+  display: block;
+}
+
+.plan-empty {
+  padding: 10mm;
+  color: #6b756d;
+}
+
+.plan-side {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.plan-side.is-wide {
+  width: 100%;
+}
+
+.plan-side h2 {
+  margin-bottom: 1.8mm;
+  padding-bottom: 0.8mm;
+  border-bottom: 0.25mm solid #5f7f55;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  font-size: 2.6mm;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #5f7f55;
+}
+
+.plan-side h2:not(:first-child) {
+  margin-top: 5mm;
+}
+
+.plan-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 2.6mm;
+}
+
+.plan-table th {
+  padding: 0.7mm 1mm;
+  border-bottom: 0.3mm solid #2f3a33;
+  text-align: left;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.plan-table td {
+  padding: 0.8mm 1mm;
+  border-bottom: 0.12mm solid #d5dad1;
+  vertical-align: top;
+}
+
+.plan-table .num,
+.plan-table .qty,
+.plan-table .flag {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.plan-table td.num {
+  font-weight: 700;
+}
+
+.plan-total {
+  margin-top: 1.5mm;
+  font-size: 2.5mm;
+  color: #4d5a50;
+}
+
+.plan-note {
+  margin-top: 2mm;
+  font-size: 2.4mm;
+  color: #4d5a50;
+}
+
+.plan-note .blossom {
+  margin-right: 0.8mm;
+}
+
+.plan-info > div {
+  margin-bottom: 1.6mm;
+}
+
+.plan-info dt {
+  font-size: 2.3mm;
+  color: #6b756d;
+}
+
+.plan-info dd {
+  font-weight: 600;
+}
+
+.plan-notes-text {
+  white-space: pre-wrap;
+}
+
+.plan-foot {
+  flex: none;
+  height: 7mm;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 1.5mm;
+  border-top: 0.2mm solid #b9c0b6;
+  font-size: 2.3mm;
+  color: #6b756d;
+}
+
+/* ---- stampa: si vede solo la tavola ---- */
+
+@media print {
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  body.printing-plan > *:not(.print-root) {
+    display: none !important;
+  }
+
+  .print-ui {
+    display: none !important;
+  }
+
+  .print-root {
+    position: static;
+    display: block;
+    background: #fff;
+  }
+
+  .print-preview {
+    padding: 0;
+    overflow: visible;
+  }
+
+  .print-pages {
+    width: auto !important;
+    margin: 0;
+  }
+
+  .print-page-frame {
+    height: auto !important;
+    margin: 0;
+    overflow: visible;
+    box-shadow: none;
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .print-page-frame:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  .plan-sheet {
+    transform: none !important;
+    break-inside: avoid;
+  }
+}

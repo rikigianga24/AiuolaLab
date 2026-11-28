@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useElementSize } from "../../hooks/useElementSize";
 import { useHistory } from "../../hooks/useHistory";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
+import { useBloomMonths } from "../../hooks/useBloomMonths";
+import { bloomSummary, monthsInRange, periodLabel } from "../../lib/bloom";
 import { autoLayout } from "../../lib/layout";
 import { pointInPolygon, polygonArea, segmentsCross } from "../../lib/geometry";
 import { newId } from "../../lib/ids";
@@ -19,6 +21,8 @@ import ConfirmDialog from "../ConfirmDialog";
 import GardenStage from "./GardenStage";
 import SidePanel from "./SidePanel";
 import Tour from "./Tour";
+import PrintDialog from "./PrintDialog";
+import { Blossom } from "./PlanSymbols";
 import { Compass, OrientationDialog } from "./Orientation";
 import { analyzeBed } from "../../lib/forecast";
 import StylePicker from "../StylePicker";
@@ -129,6 +133,15 @@ export default function GardenPage() {
 
   // ---- previsione di crescita ----
   const [forecastYear, setForecastYear] = useState(3);
+  // calendario di fioritura: solo visualizzazione, il progetto non cambia
+  const [bloom, setBloomState] = useState({ on: false, from: new Date().getMonth() + 1, to: new Date().getMonth() + 1, picking: false });
+  const setBloom = (patch) => setBloomState((b) => ({ ...b, ...patch }));
+  const [printOpen, setPrintOpen] = useState(false);
+  const { monthsOf, loading: bloomLoading } = useBloomMonths(project.beds, bloom.on || tab === "fioritura" || printOpen);
+  const bloomIds = useMemo(
+    () => (bloom.on ? bloomSummary(project.beds, monthsInRange(bloom.from, bloom.to), monthsOf).bloomingIds : null),
+    [bloom.on, bloom.from, bloom.to, project.beds, monthsOf],
+  );
   const [orientOpen, setOrientOpen] = useState(false);
   const placeViewer = (p) => {
     setProject((pr) => ({ ...pr, viewer: p }));
@@ -565,6 +578,7 @@ export default function GardenPage() {
             onViewerMove={(p) => setProject((pr) => ({ ...pr, viewer: p }))}
             growthYear={tab === "crescita" ? forecastYear : null}
             growthMarks={growthMarks}
+            bloomIds={bloomIds}
             onDraftPoint={addDraftPoint}
             onDraftClose={closeDraft}
             onSelect={handleSelect}
@@ -710,6 +724,24 @@ export default function GardenPage() {
               </div>
             )}
           </div>
+          <button
+            className={`tool-btn icon ${bloom.on ? "is-on" : ""}`}
+            onClick={() => {
+              setBloom({ on: !bloom.on });
+              if (!bloom.on) {
+                setTab("fioritura");
+                if (isMobile) setSheetOpen(true);
+              }
+            }}
+            aria-pressed={bloom.on}
+            aria-label="Calendario di fioritura"
+            title="Calendario di fioritura"
+          >
+            <Blossom size={18} />
+          </button>
+          <button className="tool-btn" onClick={() => setPrintOpen(true)} disabled={!project.beds.length} title="Stampa tecnica del progetto">
+            <i className="fa-solid fa-print" /> <span className="tool-label">Stampa progetto</span>
+          </button>
           <button className="tool-btn icon" onClick={() => setTourOpen(true)} aria-label="Guida" title="Guida">
             <i className="fa-solid fa-question" />
           </button>
@@ -729,6 +761,16 @@ export default function GardenPage() {
         {(project.northDeg != null || tab === "crescita") && (
           <div className="compass-wrap">
             <Compass northDeg={project.northDeg ?? null} onClick={() => setOrientOpen(true)} size={isMobile ? 52 : 64} />
+          </div>
+        )}
+
+        {bloom.on && (
+          <div className="bloom-legend" role="note">
+            <strong>{periodLabel(bloom)}</strong>
+            <span>
+              <Blossom size={15} /> In fioritura
+            </span>
+            <span className="bloom-legend-off">Nessun simbolo: fuori periodo</span>
           </div>
         )}
 
@@ -790,7 +832,13 @@ export default function GardenPage() {
         onStartViewer={startViewer}
         onOpenOrientation={() => setOrientOpen(true)}
         onSelectForecastBed={(bedId) => setSelection({ bedId, plantId: null })}
+        bloom={bloom}
+        onBloomChange={setBloom}
+        monthsOf={monthsOf}
+        bloomLoading={bloomLoading}
       />
+
+      {printOpen && <PrintDialog project={project} monthsOf={monthsOf} bloom={bloom} onClose={() => setPrintOpen(false)} />}
 
       {orientOpen && (
         <OrientationDialog northDeg={project.northDeg ?? null} onSave={(deg) => setProject((pr) => ({ ...pr, northDeg: deg }))} onClose={() => setOrientOpen(false)} />

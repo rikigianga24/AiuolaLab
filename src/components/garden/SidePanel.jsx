@@ -6,12 +6,14 @@ import ProjectPanel from "./ProjectPanel";
 import { ENVIRONMENTS } from "../../lib/projects";
 import CropCatalog from "./CropCatalog";
 import ForecastPanel from "./ForecastPanel";
+import BloomPanel from "./BloomPanel";
 
 const TABS = [
   { id: "piante", label: "Piante", icon: "fa-seedling" },
   { id: "aiuola", label: "Aiuola", icon: "fa-draw-polygon" },
   { id: "ia", label: "Consigli IA", icon: "fa-wand-magic-sparkles" },
   { id: "irrigazione", label: "Irrigazione", icon: "fa-faucet-drip" },
+  { id: "fioritura", label: "Fioritura", icon: "fa-spa" },
   { id: "crescita", label: "Crescita", icon: "fa-chart-line" },
   { id: "progetto", label: "Progetto", icon: "fa-folder-open" },
 ];
@@ -74,6 +76,9 @@ export default function SidePanel({ isMobile, open, onOpenChange, tab, onTabChan
           ) : (
             <PlantCatalog selectedBed={props.selectedBed} onPickPlant={props.onPickPlant} />
           ))}
+        {tab === "fioritura" && (
+          <BloomPanel project={props.project} bloom={props.bloom} onChange={props.onBloomChange} monthsOf={props.monthsOf} loading={props.bloomLoading} />
+        )}
         {tab === "crescita" && (
           <ForecastPanel
             project={props.project}

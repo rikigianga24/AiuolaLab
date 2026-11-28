@@ -124,8 +124,8 @@ export function hardinessInfo(hardiness) {
 
 // ---- dettagli delle schede: mesi di fioritura e crescita ----
 
-const MONTH_NAMES = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"];
-const MONTH_SHORT = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
+export const MONTH_NAMES = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"];
+export const MONTH_SHORT = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
 
 /** Mesi in sequenze continue, anche a cavallo d'anno: [11,12,1,2] -> [[11,2]]. */
 export function monthRuns(months = []) {

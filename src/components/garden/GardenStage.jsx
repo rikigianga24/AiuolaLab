@@ -42,6 +42,22 @@ const rotationFor = (id) => {
 };
 
 // Barra della scala con una lunghezza "tonda" tra 60 e 160 px.
+// Fiore rosa che segnala una pianta in fioritura. Sta in un gruppo con scala 1/zoom:
+// misura sempre lo stesso in pixel e resta ancorato alla pianta durante zoom e pan.
+// Non ascolta gli eventi, quindi non interferisce con selezione e trascinamento.
+const PETAL_ANGLES = [0, 1, 2, 3, 4].map((i) => ((i * 72 - 90) * Math.PI) / 180);
+function BloomMark({ x, y, scale }) {
+  return (
+    <Group x={x} y={y} scaleX={1 / scale} scaleY={1 / scale} listening={false}>
+      <Circle radius={9.5} fill="rgba(255,255,255,0.92)" />
+      {PETAL_ANGLES.map((a, i) => (
+        <Circle key={i} x={Math.cos(a) * 4.6} y={Math.sin(a) * 4.6} radius={3.9} fill="#f08cb0" stroke="#cf5e89" strokeWidth={0.7} />
+      ))}
+      <Circle radius={2.3} fill="#f7d154" stroke="#c9a227" strokeWidth={0.5} />
+    </Group>
+  );
+}
+
 function scaleBar(scale) {
   const steps = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50];
   const m = steps.find((s) => s * scale >= 60) ?? 50;
@@ -152,6 +168,7 @@ export default function GardenStage({
   onViewerMove,
   growthYear = null,
   growthMarks = null,
+  bloomIds = null,
 }) {
   const stageRef = useRef(null);
   const layerRef = useRef(null);
@@ -468,6 +485,7 @@ export default function GardenStage({
                         listening={false}
                       />
                     )}
+                    {bloomIds?.has(pl.id) && <BloomMark x={r * 0.74} y={-r * 0.74} scale={scale} />}
                     {(isSel || (showLabels && r * scale > 26)) && (
                       // Etichetta in pixel: resta nitida a qualsiasi zoom.
                       <Group y={r} scaleX={1 / scale} scaleY={1 / scale} listening={false}>

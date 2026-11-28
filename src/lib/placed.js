@@ -23,6 +23,7 @@ export function toPlaced(plant, point, overrides = {}) {
     cycle: plant.cycle ?? null,
     sunlight: plant.sunlight ?? null,
     seasons: plant.floweringSeasons ?? null,
+    floweringMonths: Array.isArray(plant.floweringMonths) ? plant.floweringMonths : null,
     flowerCodes: plant.flowerColors ?? null,
     soilPh: plant.soil?.ph ?? null,
     hardinessMin: Number.isFinite(Number.parseFloat(plant.hardiness?.min)) ? Number.parseFloat(plant.hardiness.min) : null,
