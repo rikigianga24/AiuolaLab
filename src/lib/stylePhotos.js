@@ -5,7 +5,7 @@
 // Quando si aggiunge la foto di un nuovo stile, basta aggiungere qui il suo id.
 // Modulo condiviso: lo usa anche il server per le anteprime dei link.
 
-const WITH_PHOTO = new Set(["cottage", "italiano", "francese", "impollinatori", "ombra", "roccioso", "naturalistico", "geometrico", "moderno", "giapponese"]);
+const WITH_PHOTO = new Set(["cottage", "italiano", "francese", "impollinatori", "ombra", "roccioso", "naturalistico", "geometrico", "moderno", "giapponese", "mediterraneo"]);
 
 export const PHOTO_WIDTHS = [640, 960, 1536];
 
