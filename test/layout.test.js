@@ -45,3 +45,33 @@ test("orto: file parallele al lato lungo con le distanze dell'ortaggio", async (
   const again = fillRows(bed, { row: 40, plant: 30 }, { occupied: pts.map((p) => ({ ...p, r: 0.15 })) });
   assert.equal(again.length, 0, "non sovrappone le piante esistenti");
 });
+
+test("se una pianta non entra, ne va una più piccola che entra al suo posto", () => {
+  const small = [{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: 2, y: 2 }, { x: 0, y: 2 }];
+  const groups = [
+    { key: "grande", layer: "alta", quantity: 6, spreadM: 1.2 },
+    { key: "piccola", layer: "bassa", quantity: 2, spreadM: 0.3 },
+  ];
+  const { placed, skipped, substituted } = autoLayout(small, groups);
+  const grandi = placed.filter((p) => p.key === "grande").length;
+  assert.ok(grandi < 6, "non tutte le grandi entrano");
+  assert.ok(substituted > 0, "al posto di quelle che non entrano ne vengono messe di piccole");
+  assert.equal(placed.length + skipped, 8, "ogni esemplare richiesto è piantato, sostituito o scartato");
+  assert.ok(placed.filter((p) => p.key === "piccola").length > 2, "le sostitute sono della specie più piccola");
+});
+
+test("le piante non si sovrappongono più di una piccola tolleranza", () => {
+  const groups = [
+    { key: "a", layer: "alta", quantity: 4, spreadM: 0.8 },
+    { key: "b", layer: "media", quantity: 8, spreadM: 0.5 },
+    { key: "c", layer: "bassa", quantity: 20, spreadM: 0.3 },
+  ];
+  const r = Object.fromEntries(groups.map((g) => [g.key, g.spreadM / 2]));
+  const { placed } = autoLayout(square, groups);
+  for (let i = 0; i < placed.length; i++) {
+    for (let j = i + 1; j < placed.length; j++) {
+      const d = Math.hypot(placed[i].x - placed[j].x, placed[i].y - placed[j].y);
+      assert.ok(d >= (r[placed[i].key] + r[placed[j].key]) * 0.8 - 1e-9, "distanza minima rispettata");
+    }
+  }
+});

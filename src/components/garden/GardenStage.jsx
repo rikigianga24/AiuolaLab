@@ -463,12 +463,12 @@ export default function GardenStage({
                       listening={false}
                       perfectDrawEnabled={false}
                     />
-                    {growthYear != null && (mark || (grown && !grown.alive)) && (
+                    {growthYear != null && (mark === "dominant" || (grown && !grown.alive)) && (
                       <Circle
                         radius={r * 1.02}
-                        stroke={grown && !grown.alive ? "#6b6b6b" : mark === "dominant" ? "#e0a526" : "#d6453a"}
+                        stroke={grown && !grown.alive ? "#6b6b6b" : "#e0a526"}
                         strokeWidth={3}
-                        dash={mark === "dominant" ? undefined : [8, 5]}
+                        dash={grown && !grown.alive ? [8, 5] : undefined}
                         strokeScaleEnabled={false}
                         listening={false}
                       />
