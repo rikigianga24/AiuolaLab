@@ -31,19 +31,20 @@ export const FEEDING_CALENDAR = [
 
 // Come riconoscere carenze ed eccessi dalle foglie.
 export const SYMPTOMS = [
-  { look: "Foglie vecchie (in basso) gialle in modo uniforme, pianta pallida e che cresce poco", cause: "Carenza di azoto", fix: "Concime azotato o organico; nei vasi spesso il terriccio è semplicemente esaurito.", tone: "N" },
-  { look: "Foglie giovani (in cima) gialle con le nervature che restano verdi", cause: "Clorosi ferrica", fix: "Tipica di terreni calcarei e acqua dura, soprattutto su acidofile e agrumi: ferro chelato EDDHA e, a lungo termine, concime acidificante e acqua piovana.", tone: "Fe" },
-  { look: "Foglie vecchie gialle tra le nervature, a chiazze, a volte rossicce", cause: "Carenza di magnesio", fix: "Solfato di magnesio (sale inglese): un cucchiaio in 5 litri d'acqua, 2-3 volte. Frequente su rose, agrumi e pomodori.", tone: "Mg" },
-  { look: "Bordi delle foglie vecchie secchi e marroni, come bruciati; fiori e frutti scarsi", cause: "Carenza di potassio (o eccesso di sali)", fix: "Concime ricco di potassio; se il terriccio ha una crosta bianca, prima lava il vaso con molta acqua.", tone: "K" },
-  { look: "Foglie verde scuro tendenti al violaceo, crescita bloccata, poche radici", cause: "Carenza di fosforo (o freddo)", fix: "Spesso è il terreno freddo che blocca l'assorbimento: aspetta il caldo. Se persiste, concime fosfatico vicino alle radici.", tone: "P" },
-  { look: "Tante foglie grandi e scure, pochi o nessun fiore, tanti afidi", cause: "Eccesso di azoto", fix: "Sospendi l'azoto e passa a un concime ricco di potassio. Tipico di glicini e pomodori concimati troppo.", tone: "N" },
-  { look: "Punte e bordi bruciati anche sulle foglie nuove, crosta bianca sul terriccio o sul vaso", cause: "Eccesso di concime o di sali (acqua dura)", fix: "Annaffia abbondantemente facendo uscire l'acqua dai fori, 2-3 volte. Salta le concimazioni per un mese.", tone: "!" },
-  { look: "Macchia nera e secca sotto il frutto del pomodoro o del peperone", cause: "Marciume apicale (calcio)", fix: "Quasi sempre annaffiature irregolari, non mancanza di calcio nel terreno: annaffia con regolarità e pacciama.", tone: "Ca" },
+  { id: "carenza-azoto", look: "Foglie vecchie (in basso) gialle in modo uniforme, pianta pallida e che cresce poco", cause: "Carenza di azoto", fix: "Concime azotato o organico; nei vasi spesso il terriccio è semplicemente esaurito.", tone: "N" },
+  { id: "clorosi-ferrica", look: "Foglie giovani (in cima) gialle con le nervature che restano verdi", cause: "Clorosi ferrica", fix: "Tipica di terreni calcarei e acqua dura, soprattutto su acidofile e agrumi: ferro chelato EDDHA e, a lungo termine, concime acidificante e acqua piovana.", tone: "Fe" },
+  { id: "carenza-magnesio", look: "Foglie vecchie gialle tra le nervature, a chiazze, a volte rossicce", cause: "Carenza di magnesio", fix: "Solfato di magnesio (sale inglese): un cucchiaio in 5 litri d'acqua, 2-3 volte. Frequente su rose, agrumi e pomodori.", tone: "Mg" },
+  { id: "carenza-potassio", look: "Bordi delle foglie vecchie secchi e marroni, come bruciati; fiori e frutti scarsi", cause: "Carenza di potassio (o eccesso di sali)", fix: "Concime ricco di potassio; se il terriccio ha una crosta bianca, prima lava il vaso con molta acqua.", tone: "K" },
+  { id: "carenza-fosforo", look: "Foglie verde scuro tendenti al violaceo, crescita bloccata, poche radici", cause: "Carenza di fosforo (o freddo)", fix: "Spesso è il terreno freddo che blocca l'assorbimento: aspetta il caldo. Se persiste, concime fosfatico vicino alle radici.", tone: "P" },
+  { id: "eccesso-azoto", look: "Tante foglie grandi e scure, pochi o nessun fiore, tanti afidi", cause: "Eccesso di azoto", fix: "Sospendi l'azoto e passa a un concime ricco di potassio. Tipico di glicini e pomodori concimati troppo.", tone: "N" },
+  { id: "eccesso-sali", look: "Punte e bordi bruciati anche sulle foglie nuove, crosta bianca sul terriccio o sul vaso", cause: "Eccesso di concime o di sali (acqua dura)", fix: "Annaffia abbondantemente facendo uscire l'acqua dai fori, 2-3 volte. Salta le concimazioni per un mese.", tone: "!" },
+  { id: "marciume-apicale", look: "Macchia nera e secca sotto il frutto del pomodoro o del peperone", cause: "Marciume apicale (calcio)", fix: "Quasi sempre annaffiature irregolari, non mancanza di calcio nel terreno: annaffia con regolarità e pacciama.", tone: "Ca" },
 ];
 
 // Malattie fungine e batteriche.
 export const DISEASES = [
   {
+    id: "oidio",
     name: "Oidio (mal bianco)",
     icon: "fa-cloud",
     who: "Rose, zucchine, zucche, cetrioli, salvie, ortensie, querce, viti",
@@ -53,6 +54,7 @@ export const DISEASES = [
     cure: "Togli le foglie colpite. Zolfo bagnabile nelle ore fresche (mai sopra 30 °C: brucia le foglie) oppure bicarbonato di potassio. Anche il latte diluito al 10% ha un effetto preventivo.",
   },
   {
+    id: "ticchiolatura-rosa",
     name: "Ticchiolatura della rosa (macchia nera)",
     icon: "fa-circle",
     who: "Rose",
@@ -62,6 +64,7 @@ export const DISEASES = [
     cure: "Togli foglie malate (non nel compost). Prodotti a base di rame in primavera, oppure fungicidi specifici ammessi per uso hobbistico.",
   },
   {
+    id: "peronospora",
     name: "Peronospora",
     icon: "fa-droplet",
     who: "Pomodori, patate, vite, basilico, cipolle, zucchine",
@@ -71,6 +74,7 @@ export const DISEASES = [
     cure: "Rame (ossicloruro o idrossido) dopo le piogge, nelle ore fresche. Le piante molto colpite vanno tolte. Il rame si accumula nel suolo: usalo solo quando serve.",
   },
   {
+    id: "ruggine",
     name: "Ruggine",
     icon: "fa-fire",
     who: "Rose, malvarosa, gerani, pervinche, menta, fagioli, porri",
@@ -80,6 +84,7 @@ export const DISEASES = [
     cure: "Zolfo o rame; le foglie malate vanno eliminate, non compostate.",
   },
   {
+    id: "botrite",
     name: "Botrite (muffa grigia)",
     icon: "fa-smog",
     who: "Fragole, peonie, gerani, ciclamini, pomodori, uva, fiori recisi",
@@ -89,6 +94,7 @@ export const DISEASES = [
     cure: "Rimuovi tutte le parti colpite. Esistono prodotti biologici a base di Bacillus subtilis o Trichoderma.",
   },
   {
+    id: "marciume-radicale",
     name: "Marciume radicale e del colletto",
     icon: "fa-water",
     who: "Piante in vaso, lavanda, rosmarino, piante grasse, agrumi, bosso",
@@ -98,6 +104,7 @@ export const DISEASES = [
     cure: "Raramente si salva: svasa, taglia le radici marce, rinvasa in terriccio nuovo e asciutto. Prevenire è l'unica vera cura.",
   },
   {
+    id: "fumaggine",
     name: "Fumaggine",
     icon: "fa-paintbrush",
     who: "Agrumi, oleandri, alloro, pittosporo, olivo",
@@ -107,6 +114,7 @@ export const DISEASES = [
     cure: "Elimina prima cocciniglie e afidi, poi lava le foglie con acqua e sapone molle potassico.",
   },
   {
+    id: "bolla-pesco",
     name: "Corineo e bolla del pesco",
     icon: "fa-circle-dot",
     who: "Pesco, albicocco, ciliegio, alloro ceraso (corineo); pesco (bolla)",
@@ -120,6 +128,7 @@ export const DISEASES = [
 // Insetti e altri parassiti.
 export const PESTS = [
   {
+    id: "afidi",
     name: "Afidi",
     icon: "fa-bug",
     who: "Rose, fave, cavoli, peperoni, lupini, agrumi, quasi tutto",
@@ -129,6 +138,7 @@ export const PESTS = [
     tip: "Troppo azoto li attira: foglie molli e tenere sono il loro piatto preferito.",
   },
   {
+    id: "cocciniglie",
     name: "Cocciniglie",
     icon: "fa-shield",
     who: "Agrumi, oleandri, palme, piante grasse, alloro, olivo",
@@ -138,6 +148,7 @@ export const PESTS = [
     tip: "Sui balconi riparati e caldi proliferano: arieggia e controlla l'interno della chioma.",
   },
   {
+    id: "ragnetto-rosso",
     name: "Ragnetto rosso",
     icon: "fa-spider",
     who: "Rose, fagioli, pomodori, cetrioli, conifere nane, piante da balcone",
@@ -147,6 +158,7 @@ export const PESTS = [
     tip: "Se vedi le ragnatele l'infestazione è già avanzata: controlla con una lente sotto le foglie da giugno.",
   },
   {
+    id: "oziorrinco",
     name: "Oziorrinco",
     icon: "fa-moon",
     who: "Piante in vaso, rododendri, azalee, ortensie, fragole, tasso, alloro, heuchera",
@@ -156,6 +168,7 @@ export const PESTS = [
     tip: "Se la pianta in vaso cede senza motivo, svasa e guarda le radici: trovare larve a C è la conferma.",
   },
   {
+    id: "piralide-bosso",
     name: "Piralide del bosso",
     icon: "fa-leaf",
     who: "Bosso",
@@ -165,6 +178,7 @@ export const PESTS = [
     tip: "Dove la piralide è diffusa considera sostituti del bosso come Ilex crenata, Euonymus 'Green Spire' o Teucrium.",
   },
   {
+    id: "popillia",
     name: "Popillia japonica",
     icon: "fa-triangle-exclamation",
     who: "Rose, viti, piccoli frutti, glicine, tigli, prati (larve)",
@@ -174,6 +188,7 @@ export const PESTS = [
     tip: "È un organismo da quarantena presente in Piemonte, Lombardia ed Emilia: se lo vedi fuori da queste zone segnalalo al Servizio Fitosanitario della regione.",
   },
   {
+    id: "cimice-asiatica",
     name: "Cimice asiatica",
     icon: "fa-bug-slash",
     who: "Frutteti, pomodori, peperoni, fagioli, mais, nocciolo",
@@ -183,6 +198,7 @@ export const PESTS = [
     tip: "Non schiacciarla in casa (puzza a lungo): aspirapolvere con un sacchetto dedicato.",
   },
   {
+    id: "mosca-bianca",
     name: "Mosca bianca e tripidi",
     icon: "fa-feather",
     who: "Pomodori, gerani, poinsettie, fucsie, salvie, piante da balcone",
@@ -192,6 +208,7 @@ export const PESTS = [
     tip: "Le trappole servono prima di tutto per accorgersene presto: appendine una a primavera.",
   },
   {
+    id: "tuta",
     name: "Tuta absoluta (tignola del pomodoro)",
     icon: "fa-apple-whole",
     who: "Pomodoro, melanzana, patata",
@@ -201,6 +218,7 @@ export const PESTS = [
     tip: "Non lasciare a fine stagione le piante di pomodoro nell'orto: lì svernano le pupe.",
   },
   {
+    id: "punteruolo",
     name: "Punteruolo rosso",
     icon: "fa-tree",
     who: "Palme (Phoenix, anche Chamaerops e Washingtonia)",
@@ -210,6 +228,7 @@ export const PESTS = [
     tip: "In molte regioni c'è l'obbligo di segnalazione e di abbattimento delle palme morte.",
   },
   {
+    id: "lumache",
     name: "Lumache e limacce",
     icon: "fa-shrimp",
     who: "Hosta, insalate, fragole, basilico, delphinium, piantine appena trapiantate",
@@ -219,6 +238,7 @@ export const PESTS = [
     tip: "Annaffia la mattina invece che la sera: il terreno arriva asciutto alla notte e si muovono molto meno.",
   },
   {
+    id: "processionaria",
     name: "Processionaria",
     icon: "fa-ellipsis",
     who: "Pini, cedri e querce (anche in giardino)",
